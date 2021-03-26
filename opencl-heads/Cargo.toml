@@ -1,13 +1,25 @@
 [package]
 name = "opencl-heads"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["Xenon Lucifer Diablo <code@nmnx.org>"]
 edition = "2018"
-description = "OpenCL FFI headers implementation in Rust"
+description = "LTS maintained OpenCL FFI headers in Rust"
 license = "Apache-2.0"
 homepage = "https://nmnx.org/dev/opencl"
 repository = "https://github.com/diabloxenon/opencl"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+# Updated listing of OpenCL versions.
+cl_version_1_1 = []
+cl_version_1_2 = []
+cl_version_2_0 = []
+cl_version_2_1 = []
+cl_version_2_2 = []
+cl_version_3_0 = []
+
+default = ["cl_version_3_0", "cl_version_1_2"]
+
 [dependencies]
+libc = "0.2.91"
