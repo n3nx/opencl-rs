@@ -185,7 +185,7 @@ pub const CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST: cl_int = -14;
 // #endif
 
 // #ifdef CL_VERSION_1_2
-pub const CL_COMPLIE_PROGRAM_FAILURE: cl_int = -15;
+pub const CL_COMPILE_PROGRAM_FAILURE: cl_int = -15;
 pub const CL_LINKER_NOT_AVAILABLE: cl_int = -16;
 pub const CL_LINK_PROGRAM_FAILURE: cl_int = -17;
 pub const CL_DEVICE_PARTITION_FAILED: cl_int = -18;
@@ -455,7 +455,6 @@ pub const CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN: cl_uint = 0x1088;
 // #endif;
 
 // #ifdef CL_VERSION_1_2;
-
 /* cl_device_affinity_domain */
 pub const CL_DEVICE_AFFINITY_DOMAIN_NUMA: cl_bitfield = 1 << 0;
 pub const CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE: cl_bitfield = 1 << 1;
@@ -1782,6 +1781,108 @@ extern "system" {
         event_wait_list: *const cl_event,
         event: *mut cl_event,
     ) -> cl_int;
+    // #endif
+
+    /***************************************************************************************************
+     * Deprecated section ahead
+     */
+    // #ifdef CL_VERSION_1_2
+    //CHECKPOINT
+    // /* Extension function access
+    //  *
+    //  * Returns the extension function address for the given function name,
+    //  * or NULL if a valid function can not be found.  The client must
+    //  * check to make sure the address is not NULL, before using or
+    //  * calling the returned function address.
+    //  */
+    #[cfg(feature = "cl_version_1_2")]
+    pub fn clGetExtensionFunctionAddressForPlatform(
+        platform: cl_platform_id,
+        func_name: *const c_char,
+    ) -> *mut c_void;
 
     // #endif
+
+    // #ifdef CL_USE_DEPRECATED_OPENCL_1_0_APIS
+    /*
+     *  WARNING:
+     *     This API introduces mutable state into the OpenCL implementation. It has been REMOVED
+     *  to better facilitate thread safety.  The 1.0 API is not thread safe. It is not tested by the
+     *  OpenCL 1.1 conformance test, and consequently may not work or may not work dependably.
+     *  It is likely to be non-performant. Use of this API is not advised. Use at your own risk.
+     *
+     *  Software developers previously relying on this API are instructed to set the command queue
+     *  properties when creating the queue, instead.
+     */
+    //     extern CL_API_ENTRY cl_int CL_API_CALL
+    //     clSetCommandQueueProperty(cl_command_queue              command_queue,
+    //                               cl_command_queue_properties   properties,
+    //                               cl_bool                       enable,
+    //                               cl_command_queue_properties * old_properties) CL_API_SUFFIX__VERSION_1_0_DEPRECATED;
+    // #endif /* CL_USE_DEPRECATED_OPENCL_1_0_APIS */
+    // /* Deprecated OpenCL 1.1 APIs */
+    // extern CL_API_ENTRY CL_API_PREFIX__VERSION_1_1_DEPRECATED cl_mem CL_API_CALL
+    // clCreateImage2D(cl_context              context,
+    //                 cl_mem_flags            flags,
+    //                 const cl_image_format * image_format,
+    //                 size_t                  image_width,
+    //                 size_t                  image_height,
+    //                 size_t                  image_row_pitch,
+    //                 void *                  host_ptr,
+    //                 cl_int *                errcode_ret) CL_API_SUFFIX__VERSION_1_1_DEPRECATED;
+
+    // extern CL_API_ENTRY CL_API_PREFIX__VERSION_1_1_DEPRECATED cl_mem CL_API_CALL
+    // clCreateImage3D(cl_context              context,
+    //                 cl_mem_flags            flags,
+    //                 const cl_image_format * image_format,
+    //                 size_t                  image_width,
+    //                 size_t                  image_height,
+    //                 size_t                  image_depth,
+    //                 size_t                  image_row_pitch,
+    //                 size_t                  image_slice_pitch,
+    //                 void *                  host_ptr,
+    //                 cl_int *                errcode_ret) CL_API_SUFFIX__VERSION_1_1_DEPRECATED;
+
+    // pub fn clEnqueueMarker(command_queue: cl_command_queue, event: *mut cl_event) -> cl_int;
+
+    // pub fn clEnqueueWaitForEvents(
+    //     command_queue: cl_command_queue,
+    //     num_events: cl_uint,
+    //     event_list: *const cl_event,
+    // ) -> cl_int;
+
+    // pub fn clEnqueueBarrier(command_queue: cl_command_queue) -> cl_int;
+
+    // pub fn clUnloadCompiler() -> cl_int;
+
+    // pub fn clGetExtensionFunctionAddress(func_name: *const c_char) -> *mut c_void;
+
+    // /* Deprecated OpenCL 2.0 APIs */
+    #[cfg(feature = "cl_version_1_2")]
+    pub fn clCreateCommandQueue(
+        context: cl_context,
+        device: cl_device_id,
+        properties: cl_command_queue_properties,
+        errcode_ret: *mut cl_int,
+    ) -> cl_command_queue;
+
+    // extern CL_API_ENTRY CL_API_PREFIX__VERSION_1_2_DEPRECATED cl_sampler CL_API_CALL
+    #[cfg(feature = "cl_version_1_2")]
+    pub fn clCreateSampler(
+        context: cl_context,
+        normalized_coords: cl_bool,
+        addressing_mode: cl_addressing_mode,
+        filter_mode: cl_filter_mode,
+        errcode_ret: *mut cl_int,
+    ) -> cl_sampler;
+
+    #[cfg(feature = "cl_version_1_2")]
+    pub fn clEnqueueTask(
+        command_queue: cl_command_queue,
+        kernel: cl_kernel,
+        num_events_in_wait_list: cl_uint,
+        event_wait_list: *const cl_event,
+        event: *mut cl_event,
+    ) -> cl_int;
+
 }

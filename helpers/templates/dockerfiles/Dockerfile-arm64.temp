@@ -1,0 +1,33 @@
+FROM %%BASE%%
+LABEL maintainer="Xenon Lucifer Diablo <code@nmnx.org>"
+LABEL source="%%REPO%%"
+
+ENV RUSTUP_HOME=%%RUSTUP-HOME%% \
+    CARGO_HOME=%%CARGO-HOME%% \
+    PATH=%%PATH%%\
+    RUST_VERSION=%%RUST-VERSION%% \
+    RUSTUP_VERSION=%%RUSTUP-VERSION%%
+
+ADD ./helpers /tmp/helpers
+
+RUN apt-get update && apt-get install -y tzdata &&\
+    echo "Europe/Switzerland" > /etc/timezone    &&\
+    dpkg-reconfigure -f noninteractive tzdata &&\
+    apt-get install -y --no-install-recommends\
+    apt-utils\
+    curl\
+    gnupg2\
+    ca-certificates\
+    gcc\
+    libc6-dev\
+    clinfo &&\
+    sh /tmp/helpers/add_intel_ocl.sh &&\
+    sh /tmp/helpers/add_rust_lang.sh &&\
+    apt-get remove -y --auto-remove \
+    apt-utils \
+    curl \
+    gnupg2 \
+    ; \
+    rm -rf /var/lib/apt/lists/*;
+
+CMD ["clinfo"]

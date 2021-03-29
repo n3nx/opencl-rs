@@ -1,15 +1,14 @@
 [package]
-name = "opencl"
+name = "opencl-api"
 version = "0.1.0"
 authors = ["Xenon Lucifer Diablo <code@nmnx.org>"]
 edition = "2018"
-description = "Continuously maintained Rust interfaces for Khronos OpenCL API"
+description = "LTS maintained OpenCL type associations for Rust"
+license = "Apache-2.0"
 homepage = "https://nmnx.org/dev/opencl"
 repository = "https://github.com/diabloxenon/opencl"
-license = "Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-opencl-heads = { version = "0.1.0", path = "../opencl-heads" }
-opencl-api = { version = "0.1.0", path = "../opencl-api" }
+opencl-heads = { version = "0.1.0", path = "../opencl-heads", features = ["all"] }
