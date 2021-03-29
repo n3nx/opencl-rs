@@ -1,3 +1,4 @@
+#!/usr/bin/python
 ######################################################################
 #
 # helpers.py - Assorted utilites and helper functions for maintainance.
@@ -23,13 +24,13 @@ from urllib import request
 from collections import namedtuple
 
 ## Constants ##
-project_version = "0.1.0"
 repo_name = "https://github.com/diabloxenon/opencl"
 rust_version = "1.51.0"
 rustup_version = "1.23.1"
 rustup_home = "/usr/local/rustup"
 cargo_home = "/usr/local/cargo"
 path = "/usr/local/cargo/bin:$PATH"
+pwd = os.getcwd()
 
 DebianArch = namedtuple("DebianArch", ["bashbrew", "dpkg", "rust", "docker"])
 
@@ -44,6 +45,7 @@ debian_arches = [
 
 
 def update_versions():
+    project_version = read_version()
     update_cargo_version(project_version)
     build_version_update(project_version)
     drone_build_update(project_version)
@@ -56,7 +58,7 @@ def update_all():
 
 def update_cargo_version(version):
     ver = 'version = "' + version + '"'
-    for dirs in os.walk("../"):
+    for dirs in os.walk(pwd):
         dir_name, _, files = dirs
         if "Cargo.toml" in files:
             location = dir_name + "/" + "Cargo.toml"
@@ -69,28 +71,28 @@ def update_cargo_version(version):
 
 
 def drone_build_update(version):
-    template = read_file('./templates/drone.temp')
+    template = read_file(pwd+'/helpers/templates/drone.temp')
     rendered = template
     for arch in debian_arches:
         image = generate_image_name(version, arch.dpkg)
         rendered = rendered.replace(
             "%%IMAGE-VERSION-"+arch.dpkg.upper()+"%%", image)
-    write_file('../.drone.yml', rendered)
+    write_file(pwd+'/.drone.yml', rendered)
 
 
 def build_version_update(version):
     tag_name = generate_tag_name()
-    template = read_file('./templates/build.temp')
+    template = read_file(pwd+'/helpers/templates/build.temp')
     rendered = template \
         .replace("%%TAG-NAME%%", tag_name)\
         .replace("%%TAG-VERSION%%", version)
-    write_file('./docker-build.sh', rendered)
+    write_file(pwd+'/helpers/docker-build.sh', rendered)
 
 
 def dockerfile_image_generate():
     for arch in debian_arches:
         template = read_file(
-            './templates/dockerfiles/Dockerfile-'+arch.dpkg+'.temp')
+            pwd+'/helpers/templates/dockerfiles/Dockerfile-'+arch.dpkg+'.temp')
         rendered = template\
             .replace("%%BASE%%", arch.docker)\
             .replace("%%REPO%%", repo_name)\
@@ -99,7 +101,7 @@ def dockerfile_image_generate():
             .replace("%%CARGO-HOME%%", cargo_home)\
             .replace("%%RUSTUP-HOME%%", rustup_home)\
             .replace("%%PATH%%", path)
-        write_file('./docker/Dockerfile-'+arch.dpkg, rendered)
+        write_file(pwd+'/helpers/docker/Dockerfile-'+arch.dpkg, rendered)
 
 
 def generate_rust_helper():
@@ -111,7 +113,7 @@ def generate_rust_helper():
     arch_match += '        *) echo >&2 "unsupported architecture: ${dpkgArch}"; exit 1 ;; \n'
     arch_match += '    esac'
 
-    template = read_file("./templates/add_rust_lang.temp")
+    template = read_file(pwd+"/helpers/templates/add_rust_lang.temp")
 
     rendered = template \
         .replace("%%RUST-VERSION%%", rust_version) \
@@ -120,7 +122,7 @@ def generate_rust_helper():
         .replace("%%CARGO-HOME%%", cargo_home) \
         .replace("%%PATH%%", path) \
         .replace("%%ARCH-MATCH%%", arch_match)
-    write_file("./add_rust_lang.sh", rendered)
+    write_file(pwd+"/helpers/add_rust_lang.sh", rendered)
 
 
 def rustup_hash(arch):
@@ -132,6 +134,10 @@ def rustup_hash(arch):
 def generate_image_name(version, arch):
     tag_name = generate_tag_name()
     return tag_name+":"+version+"-"+arch
+
+
+def read_version():
+    return read_file(pwd+"/VERSION")
 
 
 def generate_tag_name():
@@ -149,3 +155,8 @@ def write_file(file, contents):
         os.makedirs(dir)
     with open(file, "w") as f:
         f.write(contents)
+
+
+if __name__ == '__main__':
+    update_versions()
+    update_all()

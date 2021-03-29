@@ -19,7 +19,7 @@
 ######################################################################
 set -euxo
 
-docker build -f=./docker/Dockerfile-amd64 -t diabloxenon/opencl:0.1.0-amd64 ../
+docker build -f=./helpers/docker/Dockerfile-amd64 -t diabloxenon/opencl:0.1.0-amd64 .
 docker images
 docker tag diabloxenon/opencl:0.1.0-amd64 diabloxenon/opencl:0.1.0
 docker tag diabloxenon/opencl:0.1.0-amd64 diabloxenon/opencl:latest

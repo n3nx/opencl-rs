@@ -19,7 +19,7 @@
 ######################################################################
 set -euxo
 
-docker build -f=Dockerfile-amd64 -t %%TAG-NAME%%:%%TAG-VERSION%%-amd64 ../
+docker build -f=./helpers/docker/Dockerfile-amd64 -t %%TAG-NAME%%:%%TAG-VERSION%%-amd64 .
 docker images
 docker tag %%TAG-NAME%%:%%TAG-VERSION%%-amd64 %%TAG-NAME%%:%%TAG-VERSION%%
 docker tag %%TAG-NAME%%:%%TAG-VERSION%%-amd64 %%TAG-NAME%%:latest
