@@ -1,0 +1,44 @@
+kind: pipeline
+type: kubernetes
+name: opencl-linux-amd64
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: opencl-test
+    image: %%IMAGE-VERSION-AMD64%%
+    pull: always
+    commands:
+      - cargo check
+      - cargo build --verbose --all
+      - cargo test --verbose --all
+trigger:
+  branch:
+    - master
+  event:
+    - push
+
+---
+kind: pipeline
+type: kubernetes
+name: opencl-linux-arm64
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+  - name: opencl-test
+    image: %%IMAGE-VERSION-ARM64%%
+    pull: always
+    commands:
+      - cargo check
+      - cargo build --verbose --all
+      - cargo test --verbose --all
+trigger:
+  branch:
+    - arm64
+  event:
+    - push

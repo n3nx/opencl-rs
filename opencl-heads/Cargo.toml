@@ -19,7 +19,9 @@ cl_version_2_1 = []
 cl_version_2_2 = []
 cl_version_3_0 = []
 
-default = ["cl_version_3_0", "cl_version_1_2"]
+default = ["cl_version_3_0", "cl_version_1_2", "cl_version_1_1"]
+
+all = ["cl_version_3_0", "cl_version_2_2", "cl_version_2_1", "cl_version_2_0", "cl_version_1_2", "cl_version_1_1"]
 
 [dependencies]
 libc = "0.2.91"

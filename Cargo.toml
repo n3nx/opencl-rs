@@ -1,5 +1,6 @@
 [workspace]
 members = [
     'opencl-heads',
+    'opencl-api',
     'opencl',
 ]
