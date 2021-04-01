@@ -17,9 +17,11 @@
 */
 
 mod cl;
+mod consts;
+mod types;
 
 // Types
-pub use self::cl::{
+pub use self::types::{
     cl_addressing_mode, cl_bitfield, cl_bool, cl_buffer_create_type, cl_build_status,
     cl_channel_order, cl_channel_type, cl_char, cl_command_queue, cl_command_queue_info,
     cl_command_queue_properties, cl_command_type, cl_context, cl_context_info,
@@ -40,11 +42,11 @@ pub use self::cl::{
 
 // Structs
 
-pub use self::cl::{cl_buffer_region, cl_image_desc, cl_image_format, cl_name_version};
+pub use self::types::{cl_buffer_region, cl_image_desc, cl_image_format, cl_name_version};
 
 //Constants
 
-pub use self::cl::{
+pub use self::consts::{
     CL_BUILD_PROGRAM_FAILURE, CL_COMPILER_NOT_AVAILABLE, CL_COMPILE_PROGRAM_FAILURE,
     CL_DEVICE_NOT_AVAILABLE, CL_DEVICE_NOT_FOUND, CL_DEVICE_PARTITION_FAILED,
     CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST, CL_IMAGE_FORMAT_MISMATCH,
@@ -67,7 +69,7 @@ pub use self::cl::{
     CL_PROFILING_INFO_NOT_AVAILABLE, CL_SUCCESS,
 };
 
-pub use self::cl::{
+pub use self::consts::{
     CL_RGBx, CL_RGx, CL_Rx, CL_sBGRA, CL_sRGB, CL_sRGBA, CL_sRGBx, CL_A, CL_ABGR, CL_ADDRESS_CLAMP,
     CL_ADDRESS_CLAMP_TO_EDGE, CL_ADDRESS_MIRRORED_REPEAT, CL_ADDRESS_NONE, CL_ADDRESS_REPEAT,
     CL_ARGB, CL_BGRA, CL_BLOCKING, CL_BUFFER_CREATE_TYPE_REGION, CL_BUILD_ERROR,
