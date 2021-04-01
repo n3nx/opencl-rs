@@ -19,7 +19,77 @@
 #![allow(dead_code)]
 use opencl_heads::*;
 
+// Status Codes
+#[repr(i32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum Status {
+    Success = CL_SUCCESS,
+    DeviceNotFound = CL_DEVICE_NOT_FOUND,
+    DeviceNotAvailable = CL_DEVICE_NOT_AVAILABLE,
+    CompilerNotAvailable = CL_COMPILER_NOT_AVAILABLE,
+    MemObjectAllocationFailure = CL_MEM_OBJECT_ALLOCATION_FAILURE,
+    OutOfResources = CL_OUT_OF_RESOURCES,
+    OutOfHostMemory = CL_OUT_OF_HOST_MEMORY,
+    ProfilingInfoNotAvailable = CL_PROFILING_INFO_NOT_AVAILABLE,
+    MemCopyOverlap = CL_MEM_COPY_OVERLAP,
+    ImageFormatMismatch = CL_IMAGE_FORMAT_MISMATCH,
+    ImageFormatNotSupported = CL_IMAGE_FORMAT_NOT_SUPPORTED,
+    BuildProgramFailure = CL_BUILD_PROGRAM_FAILURE,
+    MapFailure = CL_MAP_FAILURE,
+    MisalignedSubBufferOffset = CL_MISALIGNED_SUB_BUFFER_OFFSET,
+    ExecStatusErrorForEventsInWaitList = CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST,
+    CompileProgramFailure = CL_COMPILE_PROGRAM_FAILURE,
+    LinkerNotAvailable = CL_LINKER_NOT_AVAILABLE,
+    LinkProgramFailure = CL_LINK_PROGRAM_FAILURE,
+    DevicePartitionFailed = CL_DEVICE_PARTITION_FAILED,
+    KernelArgInfoNotAvailable = CL_KERNEL_ARG_INFO_NOT_AVAILABLE,
+    InvalidValue = CL_INVALID_VALUE,
+    InvalidDeviceType = CL_INVALID_DEVICE_TYPE,
+    InvalidPlatform = CL_INVALID_PLATFORM,
+    InvalidDevice = CL_INVALID_DEVICE,
+    InvalidContext = CL_INVALID_CONTEXT,
+    InvalidQueueProperties = CL_INVALID_QUEUE_PROPERTIES,
+    InvalidCommandQueue = CL_INVALID_COMMAND_QUEUE,
+    InvalidHostPtr = CL_INVALID_HOST_PTR,
+    InvalidMemObject = CL_INVALID_MEM_OBJECT,
+    InvalidImageFormatDescriptor = CL_INVALID_IMAGE_FORMAT_DESCRIPTOR,
+    InvalidImageSize = CL_INVALID_IMAGE_SIZE,
+    InvalidSampler = CL_INVALID_SAMPLER,
+    InvalidBinary = CL_INVALID_BINARY,
+    InvalidBuildOptions = CL_INVALID_BUILD_OPTIONS,
+    InvalidProgram = CL_INVALID_PROGRAM,
+    InvalidProgramExecutable = CL_INVALID_PROGRAM_EXECUTABLE,
+    InvalidKernelName = CL_INVALID_KERNEL_NAME,
+    InvalidKernelDefinition = CL_INVALID_KERNEL_DEFINITION,
+    InvalidKernel = CL_INVALID_KERNEL,
+    InvalidArgIndex = CL_INVALID_ARG_INDEX,
+    InvalidArgValue = CL_INVALID_ARG_VALUE,
+    InvalidArgSize = CL_INVALID_ARG_SIZE,
+    InvalidKernelArgs = CL_INVALID_KERNEL_ARGS,
+    InvalidWorkDimension = CL_INVALID_WORK_DIMENSION,
+    InvalidWorkGroupSize = CL_INVALID_WORK_GROUP_SIZE,
+    InvalidWorkItemSize = CL_INVALID_WORK_ITEM_SIZE,
+    InvalidGlobalOffset = CL_INVALID_GLOBAL_OFFSET,
+    InvalidEventWaitList = CL_INVALID_EVENT_WAIT_LIST,
+    InvalidEvent = CL_INVALID_EVENT,
+    InvalidOperation = CL_INVALID_OPERATION,
+    InvalidGLObject = CL_INVALID_GL_OBJECT,
+    InvalidBufferSize = CL_INVALID_BUFFER_SIZE,
+    InvalidMIPLevel = CL_INVALID_MIP_LEVEL,
+    InvalidGlobalWorkSize = CL_INVALID_GLOBAL_WORK_SIZE,
+    InvalidProperty = CL_INVALID_PROPERTY,
+    InvalidImageDescriptor = CL_INVALID_IMAGE_DESCRIPTOR,
+    InvalidCompilerOptions = CL_INVALID_COMPILER_OPTIONS,
+    InvalidLinkerOptions = CL_INVALID_LINKER_OPTIONS,
+    InvalidDevicePartitionCount = CL_INVALID_DEVICE_PARTITION_COUNT,
+    InvalidPipeSize = CL_INVALID_PIPE_SIZE,
+    InvalidDeviceQueue = CL_INVALID_DEVICE_QUEUE,
+    InvalidDeviceSpecId = CL_INVALID_SPEC_ID,
+    MaxSizeRestrictionExceeded = CL_MAX_SIZE_RESTRICTION_EXCEEDED,
+}
+
 #[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum PlatformInfo {
     Profile = CL_PLATFORM_PROFILE,
     Version = CL_PLATFORM_VERSION,
@@ -35,6 +105,7 @@ pub enum PlatformInfo {
 }
 
 #[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum DeviceType {
     DEFAULT = CL_DEVICE_TYPE_DEFAULT,
     CPU = CL_DEVICE_TYPE_CPU,
@@ -44,8 +115,9 @@ pub enum DeviceType {
     ALL = CL_DEVICE_TYPE_ALL,
 }
 
-#[repr(u32)]
 /* cl_device_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum DeviceInfo {
     Type = CL_DEVICE_TYPE,
     VendorId = CL_DEVICE_VENDOR_ID,
@@ -174,8 +246,9 @@ pub enum DeviceInfo {
     // #endif
 }
 
-#[repr(u64)]
 /* cl_device_fp_config - bitfield */
+#[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum DeviceFPConfig {
     Denorm = CL_FP_DENORM,
     Infinite = CL_FP_INF_NAN,
@@ -193,6 +266,7 @@ pub enum DeviceFPConfig {
 
 /* cl_device_mem_cache_type */
 #[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum DeviceMemCacheType {
     None = CL_NONE,
     ReadOnlyCache = CL_READ_ONLY_CACHE,
@@ -201,6 +275,7 @@ pub enum DeviceMemCacheType {
 
 /* cl_device_local_mem_type */
 #[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum DeviceLocalMemType {
     Local = CL_LOCAL,
     Global = CL_GLOBAL,
@@ -208,12 +283,14 @@ pub enum DeviceLocalMemType {
 
 /* cl_device_exec_capabilities - bitfield */
 #[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum DeviceExecCapabilities {
     ExecKernel = CL_EXEC_KERNEL,
     ExecNativeKernel = CL_EXEC_NATIVE_KERNEL,
 }
 
 #[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum CommandQueueProperties {
     OutOfOrderExecModeEnable = CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE,
     ProfilingEnable = CL_QUEUE_PROFILING_ENABLE,
@@ -224,6 +301,7 @@ pub enum CommandQueueProperties {
 }
 
 #[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum ContextInfo {
     ReferenceCount = CL_CONTEXT_REFERENCE_COUNT,
     Devices = CL_CONTEXT_DEVICES,
@@ -235,6 +313,7 @@ pub enum ContextInfo {
 
 /* cl_context_properties */
 #[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum ContextProperties {
     Platform = CL_CONTEXT_PLATFORM,
     // #ifdef CL_VERSION_1_2;
@@ -245,6 +324,7 @@ pub enum ContextProperties {
 // #ifdef CL_VERSION_1_2;
 /* cl_device_partition_property */
 #[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum DevicePartitionProperty {
     Equally = CL_DEVICE_PARTITION_EQUALLY,
     ByCounts = CL_DEVICE_PARTITION_BY_COUNTS,
@@ -256,6 +336,7 @@ pub enum DevicePartitionProperty {
 // #ifdef CL_VERSION_1_2;
 /* cl_device_affinity_domain */
 #[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum DeviceAffinityDomain {
     Numa = CL_DEVICE_AFFINITY_DOMAIN_NUMA,
     L4Cache = CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE,
@@ -269,6 +350,7 @@ pub enum DeviceAffinityDomain {
 // #ifdef CL_VERSION_2_0;
 /* cl_device_svm_capabilities */
 #[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum DeviceSVMCapabilities {
     CoarseGrainBuffer = CL_DEVICE_SVM_COARSE_GRAIN_BUFFER,
     FineGrainBuffer = CL_DEVICE_SVM_FINE_GRAIN_BUFFER,
@@ -277,8 +359,9 @@ pub enum DeviceSVMCapabilities {
 }
 // #endif;
 
-#[repr(u32)]
 /* cl_command_queue_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum CommandQueueInfo {
     Context = CL_QUEUE_CONTEXT,
     Device = CL_QUEUE_DEVICE,
@@ -295,8 +378,9 @@ pub enum CommandQueueInfo {
     // #endif;
 }
 
-#[repr(u64)]
 /* cl_mem_flags and cl_svm_mem_flags - bitfield */
+#[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum MemFlags {
     ReadWrite = CL_MEM_READ_WRITE,
     ReadOnly = CL_MEM_READ_ONLY,
@@ -317,6 +401,7 @@ pub enum MemFlags {
 
 // #ifdef CL_VERSION_2_0;
 #[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum SVMMemFlags {
     MemFlags,
     FineGrainBuffer = CL_MEM_SVM_FINE_GRAIN_BUFFER, /* used by cl_svm_mem_flags only */
@@ -324,17 +409,19 @@ pub enum SVMMemFlags {
 }
 // #endif;
 
-#[repr(u64)]
 // #ifdef CL_VERSION_1_2;
 /* cl_mem_migration_flags - bitfield */
+#[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum MemMigrationFlags {
     ObjectHost = CL_MIGRATE_MEM_OBJECT_HOST,
     ObjectContentUndefined = CL_MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED,
 }
 // #endif;
 
-#[repr(u32)]
 /* cl_channel_order */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum ChannelOrder {
     R = CL_R,
     A = CL_A,
@@ -364,8 +451,9 @@ pub enum ChannelOrder {
     // #endif
 }
 
-#[repr(u32)]
 /* cl_channel_type */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum ChannelType {
     SNormInt8 = CL_SNORM_INT8,
     SNormInt16 = CL_SNORM_INT16,
@@ -390,8 +478,9 @@ pub enum ChannelType {
     // #endif;
 }
 
-#[repr(u32)]
 /* cl_mem_object_type */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum MemObjectType {
     Buffer = CL_MEM_OBJECT_BUFFER,
     Image2D = CL_MEM_OBJECT_IMAGE2D,
@@ -406,8 +495,9 @@ pub enum MemObjectType {
     ObjectPipe = CL_MEM_OBJECT_PIPE, // #endif
 }
 
-#[repr(u32)]
 /* cl_mem_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum MemInfo {
     Type = CL_MEM_TYPE,
     Flags = CL_MEM_FLAGS,
@@ -428,8 +518,9 @@ pub enum MemInfo {
     // #endif;
 }
 
-#[repr(u32)]
 /* cl_image_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum ImageInfo {
     Format = CL_IMAGE_FORMAT,
     ElementSize = CL_IMAGE_ELEMENT_SIZE,
@@ -446,8 +537,9 @@ pub enum ImageInfo {
     // #endif;
 }
 
-#[repr(u32)]
 /* cl_pipe_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum PipeInfo {
     // #ifdef CL_VERSION_2_0;
     PacketSize = CL_PIPE_PACKET_SIZE,
@@ -458,8 +550,9 @@ pub enum PipeInfo {
     // #endif;
 }
 
-#[repr(u32)]
 /* cl_addressing_mode */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum AddressingMode {
     None = CL_ADDRESS_NONE,
     ClampToEdge = CL_ADDRESS_CLAMP_TO_EDGE,
@@ -470,15 +563,17 @@ pub enum AddressingMode {
     // #endif;
 }
 
-#[repr(u32)]
 /* cl_filter_mode */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum FilterMode {
     Nearest = CL_FILTER_NEAREST,
     Linear = CL_FILTER_LINEAR,
 }
 
-#[repr(u32)]
 /* cl_sampler_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum SamplerInfo {
     ReferenceCount = CL_SAMPLER_REFERENCE_COUNT,
     Context = CL_SAMPLER_CONTEXT,
@@ -498,8 +593,9 @@ pub enum SamplerInfo {
     // #endif;
 }
 
-#[repr(u64)]
 /* cl_map_flags - bitfield */
+#[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum MapFlags {
     Read = CL_MAP_READ,
     Write = CL_MAP_WRITE,
@@ -507,8 +603,9 @@ pub enum MapFlags {
     WriteInvalidateRegion = CL_MAP_WRITE_INVALIDATE_REGION, // #endif;
 }
 
-#[repr(u32)]
 /* cl_program_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum ProgramInfo {
     ReferenceCount = CL_PROGRAM_REFERENCE_COUNT,
     Context = CL_PROGRAM_CONTEXT,
@@ -529,8 +626,9 @@ pub enum ProgramInfo {
     ScopeGlobalDtorsPresent = CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT, // #endif;
 }
 
-#[repr(u32)]
 /* cl_program_build_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum ProgramBuildInfo {
     Status = CL_PROGRAM_BUILD_STATUS,
     Options = CL_PROGRAM_BUILD_OPTIONS,
@@ -542,9 +640,10 @@ pub enum ProgramBuildInfo {
     BuildGlobalVariableTotalSize = CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE, // #endif;
 }
 
-#[repr(u32)]
 // #ifdef CL_VERSION_1_2;
 /* cl_program_binary_type */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum ProgramBinaryType {
     None = CL_PROGRAM_BINARY_TYPE_NONE,
     CompiledObject = CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT,
@@ -553,8 +652,9 @@ pub enum ProgramBinaryType {
 }
 // #endif;
 
-#[repr(i32)]
 /* cl_build_status */
+#[repr(i32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum BuildStatus {
     Success = CL_BUILD_SUCCESS,
     None = CL_BUILD_NONE,
@@ -562,8 +662,9 @@ pub enum BuildStatus {
     BuildInProgress = CL_BUILD_IN_PROGRESS,
 }
 
-#[repr(u32)]
 /* cl_kernel_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum KernelInfo {
     FunctionName = CL_KERNEL_FUNCTION_NAME,
     NumArgs = CL_KERNEL_NUM_ARGS,
@@ -575,9 +676,10 @@ pub enum KernelInfo {
     // #endif;
 }
 
-#[repr(u32)]
 // #ifdef CL_VERSION_1_2;
 /* cl_kernel_arg_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum KernelArgInfo {
     AddressQualifier = CL_KERNEL_ARG_ADDRESS_QUALIFIER,
     AccessQualifier = CL_KERNEL_ARG_ACCESS_QUALIFIER,
@@ -587,9 +689,10 @@ pub enum KernelArgInfo {
 }
 // #endif;
 
-#[repr(u32)]
 // #ifdef CL_VERSION_1_2;
 /* cl_kernel_arg_address_qualifier */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum KernelArgAddressQualifier {
     Global = CL_KERNEL_ARG_ADDRESS_GLOBAL,
     Local = CL_KERNEL_ARG_ADDRESS_LOCAL,
@@ -598,9 +701,10 @@ pub enum KernelArgAddressQualifier {
 }
 // #endif;
 
-#[repr(u32)]
 // #ifdef CL_VERSION_1_2;
 /* cl_kernel_arg_access_qualifier */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum KernelArgAccessQualifier {
     ReadOnly = CL_KERNEL_ARG_ACCESS_READ_ONLY,
     WriteOnly = CL_KERNEL_ARG_ACCESS_WRITE_ONLY,
@@ -609,9 +713,10 @@ pub enum KernelArgAccessQualifier {
 }
 // #endif;
 
-#[repr(u64)]
 // #ifdef CL_VERSION_1_2;
 /* cl_kernel_arg_type_qualifier */
+#[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum KernelArgTypeQualifier {
     None = CL_KERNEL_ARG_TYPE_NONE,
     Const = CL_KERNEL_ARG_TYPE_CONST,
@@ -623,8 +728,9 @@ pub enum KernelArgTypeQualifier {
 }
 // #endif;
 
-#[repr(u32)]
 /* cl_kernel_work_group_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum KernelWorkGroupInfo {
     WorkGroupSize = CL_KERNEL_WORK_GROUP_SIZE,
     CompileWorkGroupSize = CL_KERNEL_COMPILE_WORK_GROUP_SIZE,
@@ -636,9 +742,10 @@ pub enum KernelWorkGroupInfo {
     // #endif;
 }
 
-#[repr(u32)]
 // #ifdef CL_VERSION_2_1;
 /* cl_kernel_sub_group_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum KernelSubGroupInfo {
     MaxSubGroupSizeForNDRange = CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE,
     SubGroupCountForNDRange = CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE,
@@ -648,17 +755,19 @@ pub enum KernelSubGroupInfo {
 }
 // #endif;
 
-#[repr(u32)]
 // #ifdef CL_VERSION_2_0;
 /* cl_kernel_exec_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum KernelExecInfo {
     SVMPointers = CL_KERNEL_EXEC_INFO_SVM_PTRS,
     SVMFineGrainSystem = CL_KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM,
 }
 // #endif;
 
-#[repr(u32)]
 /* cl_event_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum EventInfo {
     CommandQueue = CL_EVENT_COMMAND_QUEUE,
     CommandType = CL_EVENT_COMMAND_TYPE,
@@ -669,8 +778,9 @@ pub enum EventInfo {
     // #endif;
 }
 
-#[repr(u32)]
 /* cl_command_type */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum CommandType {
     NDRangeKernel = CL_COMMAND_NDRANGE_KERNEL,
     Task = CL_COMMAND_TASK,
@@ -713,25 +823,28 @@ pub enum CommandType {
     // #endif;
 }
 
+/// command execution status
 #[repr(u32)]
-/* command execution status */
-pub enum Status {
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum CommandExecutionStatus {
     Complete = CL_COMPLETE,
     Running = CL_RUNNING,
     Submitted = CL_SUBMITTED,
     Queued = CL_QUEUED,
 }
 
-#[repr(u32)]
-/* cl_buffer_create_type */
 // #ifdef CL_VERSION_1_1;
+/* cl_buffer_create_type */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum BufferCreateType {
     Region = CL_BUFFER_CREATE_TYPE_REGION,
 }
 // #endif;
 
-#[repr(u32)]
 /* cl_profiling_info */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum ProfilingInfo {
     Queued = CL_PROFILING_COMMAND_QUEUED,
     Submit = CL_PROFILING_COMMAND_SUBMIT,
@@ -742,9 +855,10 @@ pub enum ProfilingInfo {
     // #endif;
 }
 
-#[repr(u64)]
-/* cl_device_atomic_capabilities - bitfield */
 // #ifdef CL_VERSION_3_0;
+/* cl_device_atomic_capabilities - bitfield */
+#[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum DeviceAtomicCapabilities {
     OrderRelaxed = CL_DEVICE_ATOMIC_ORDER_RELAXED,
     OrderAcqRel = CL_DEVICE_ATOMIC_ORDER_ACQ_REL,
@@ -756,17 +870,19 @@ pub enum DeviceAtomicCapabilities {
 }
 // #endif;
 
-#[repr(u64)]
-/* cl_device_device_enqueue_capabilities - bitfield */
 // #ifdef CL_VERSION_3_0;
+/* cl_device_device_enqueue_capabilities - bitfield */
+#[repr(u64)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum DeviceDeviceEnqueueCapabilities {
     Supported = CL_DEVICE_QUEUE_SUPPORTED,
     ReplaceableDefault = CL_DEVICE_QUEUE_REPLACEABLE_DEFAULT,
 }
 // #endif;
 
-#[repr(u32)]
 /* cl_khronos_vendor_id */
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum KhronosVendorId {
     Codeplay = CL_KHRONOS_VENDOR_ID_CODEPLAY,
 }

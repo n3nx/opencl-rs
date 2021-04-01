@@ -1,5 +1,5 @@
 /*
- * cl.rs - OpenCL header ABI bindings. See CREDITS.md for full details.
+ * consts.rs - OpenCL header ABI bindings. See CREDITS.md for full details.
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
