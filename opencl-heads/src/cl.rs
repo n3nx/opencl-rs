@@ -886,9 +886,9 @@ pub const CL_KHRONOS_VENDOR_ID_CODEPLAY: cl_uint = 0x10004;
 // #ifdef CL_VERSION_3_0
 
 /* cl_version */
-const CL_VERSION_MAJOR_BITS: cl_uchar = 10;
-const CL_VERSION_MINOR_BITS: cl_uchar = 10;
-const CL_VERSION_PATCH_BITS: cl_uchar = 12;
+pub const CL_VERSION_MAJOR_BITS: cl_uchar = 10;
+pub const CL_VERSION_MINOR_BITS: cl_uchar = 10;
+pub const CL_VERSION_PATCH_BITS: cl_uchar = 12;
 
 pub const CL_VERSION_MAJOR_MASK: cl_bitfield = 1 << CL_VERSION_MAJOR_BITS - 1;
 pub const CL_VERSION_MINOR_MASK: cl_bitfield = 1 << CL_VERSION_MINOR_BITS - 1;

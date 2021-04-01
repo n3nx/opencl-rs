@@ -1,5 +1,5 @@
 /*
- * lib.rs - Lightweight OpenCL API bindings.
+ * queue.rs - Command Queue APIs.
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -16,5 +16,4 @@
  * limitations under the License.
 */
 
-mod enums;
-mod command_queue;
+// Considering OpenCL 1.x as base.
