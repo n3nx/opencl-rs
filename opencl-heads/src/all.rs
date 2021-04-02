@@ -1,5 +1,5 @@
 /*
- * lib.rs - Lightweight OpenCL API bindings.
+ * all.rs - All OpenCL header objects (types, constants, functions).
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -16,6 +16,8 @@
  * limitations under the License.
 */
 
-mod enums;
-mod queue;
-mod structs;
+// pub use crate::consts::StatusCode::{
+//     CL_BUILD_PROGRAM_FAILURE, CL_BUILD_PROGRAM_FAILURE, CL_BUILD_PROGRAM_FAILURE
+// };
+
+
