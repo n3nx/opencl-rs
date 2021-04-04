@@ -17,6 +17,7 @@
 */
 
 #![allow(dead_code)]
+use crate::errors::UndefinedError;
 use crate::structs::StatusCode;
 use opencl_heads::*;
 
@@ -91,7 +92,7 @@ pub enum Status {
 }
 
 impl Status {
-    pub fn to_status_code(&self) -> Result<cl_int, String> {
+    pub fn to_status_code(&self) -> Result<cl_int, UndefinedError> {
         let data = match self {
             Status::Success => StatusCode::SUCCESS,
             Status::DeviceNotFound => StatusCode::DEVICE_NOT_FOUND,
@@ -158,7 +159,12 @@ impl Status {
             Status::InvalidDeviceQueue => StatusCode::INVALID_DEVICE_QUEUE,
             Status::InvalidSpecId => StatusCode::INVALID_SPEC_ID,
             Status::MaxSizeRestrictionExceeded => StatusCode::MAX_SIZE_RESTRICTION_EXCEEDED,
-            Status::Undefined(msg) => return Err("<PLACEHOLDER>".to_string() + msg),
+            Status::Undefined(msg) => {
+                return Err(match msg.to_lowercase().as_str() {
+                    "status code not found" => UndefinedError::InvalidStatusCode,
+                    _ => UndefinedError::InvalidError,
+                })
+            }
         };
         Ok(data)
     }
@@ -229,7 +235,7 @@ impl Status {
             StatusCode::INVALID_DEVICE_QUEUE => Status::InvalidDeviceQueue,
             StatusCode::INVALID_SPEC_ID => Status::InvalidSpecId,
             StatusCode::MAX_SIZE_RESTRICTION_EXCEEDED => Status::MaxSizeRestrictionExceeded,
-            _ => Status::Undefined(String::from("Undefined Error")),
+            _ => Status::Undefined("Status Code Not Found".to_string()),
         }
     }
 }
@@ -241,7 +247,7 @@ mod tests {
     fn test_status_code_to_status() {
         let status_code = -69;
         let status = Status::from(status_code);
-        assert_ne!(Status::Success, status);
+        assert_eq!(Status::InvalidPipeSize, status);
     }
     #[test]
     fn test_status_to_status_code() {
@@ -250,9 +256,21 @@ mod tests {
         assert_eq!(status_code, 0)
     }
     #[test]
-    fn test_undefined_error() {
+    fn test_status_from_status_code() {
+        let status_code = -9999;
+        let status = Status::from(status_code);
+        assert_eq!(status, Status::Undefined("Status Code Not Found".to_string()))
+    }
+    #[test]
+    fn test_undefined_error_invalid_error() {
         let status = Status::Undefined("Nothing".to_string());
-        let status_code = status.to_status_code().unwrap();
-        assert_eq!(status_code, -999999)
+        let status_code = status.to_status_code().expect_err("FUNDS ARE SAIFU");
+        assert_eq!(status_code, UndefinedError::InvalidError)
+    }
+    #[test]
+    fn test_undefined_error_invalid_status_code() {
+        let status = Status::Undefined("Status Code Not Found".to_string());
+        let status_code = status.to_status_code().expect_err("FUNDS ARE SAIFU");
+        assert_eq!(status_code, UndefinedError::InvalidStatusCode)
     }
 }

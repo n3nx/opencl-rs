@@ -17,5 +17,6 @@
 */
 
 mod enums;
+mod errors;
 mod queue;
 mod structs;
