@@ -97,6 +97,176 @@ impl StatusCode {
     pub const MAX_SIZE_RESTRICTION_EXCEEDED: cl_int = CL_MAX_SIZE_RESTRICTION_EXCEEDED;
 }
 
+/********************************************************************
+ * Bitfields
+ */
+
+#[non_exhaustive]
+pub struct DeviceType;
+impl DeviceType {
+    /* cl_device_type - cl_bitfield */
+    pub const DEFAULT: cl_device_type = CL_DEVICE_TYPE_DEFAULT;
+    pub const CPU: cl_device_type = CL_DEVICE_TYPE_CPU;
+    pub const GPU: cl_device_type = CL_DEVICE_TYPE_GPU;
+    pub const ACCELERATOR: cl_device_type = CL_DEVICE_TYPE_ACCELERATOR;
+    // 1.2;
+    pub const CUSTOM: cl_device_type = CL_DEVICE_TYPE_CUSTOM;
+    pub const ALL: cl_device_type = CL_DEVICE_TYPE_ALL;
+}
+
+#[non_exhaustive]
+pub struct DeviceFPConfig;
+impl DeviceFPConfig {
+    /* cl_device_fp_config - cl_bitfield */
+    pub const DENORM: cl_device_fp_config = CL_FP_DENORM;
+    pub const INF_NAN: cl_device_fp_config = CL_FP_INF_NAN;
+    pub const ROUND_TO_NEAREST: cl_device_fp_config = CL_FP_ROUND_TO_NEAREST;
+    pub const ROUND_TO_ZERO: cl_device_fp_config = CL_FP_ROUND_TO_ZERO;
+    pub const ROUND_TO_INF: cl_device_fp_config = CL_FP_ROUND_TO_INF;
+    pub const FMA: cl_device_fp_config = CL_FP_FMA;
+    // #ifdef CL_VERSION_1_1;
+    pub const SOFT_FLOAT: cl_device_fp_config = CL_FP_SOFT_FLOAT;
+    // #endif;
+    // #ifdef CL_VERSION_1_2;
+    pub const CORRECTLY_ROUNDED_DIVIDE_SQRT: cl_device_fp_config =
+        CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT;
+    // #endif;
+}
+
+#[non_exhaustive]
+pub struct DeviceExecCapabilities;
+impl DeviceExecCapabilities {
+    /* cl_device_exec_capabilities - cl_bitfield */
+    pub const KERNEL: cl_device_exec_capabilities = CL_EXEC_KERNEL;
+    pub const NATIVE_KERNEL: cl_device_exec_capabilities = CL_EXEC_NATIVE_KERNEL;
+}
+
+#[non_exhaustive]
+pub struct CommandQueueProperties;
+impl CommandQueueProperties {
+    /* cl_command_queue_properties - cl_bitfield */
+    pub const OUT_OF_ORDER_EXEC_MODE_ENABLE: cl_command_queue_properties =
+        CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE;
+    pub const PROFILING_ENABLE: cl_command_queue_properties = CL_QUEUE_PROFILING_ENABLE;
+    // #ifdef CL_VERSION_2_0;
+    pub const ON_DEVICE: cl_command_queue_properties = CL_QUEUE_ON_DEVICE;
+    pub const ON_DEVICE_DEFAULT: cl_command_queue_properties = CL_QUEUE_ON_DEVICE_DEFAULT;
+    // #endif;
+}
+
+#[non_exhaustive]
+pub struct DeviceAffinityDomain;
+impl DeviceAffinityDomain {
+    // #ifdef CL_VERSION_1_2;
+    /* cl_device_affinity_domain - cl_bitfield*/
+    pub const NUMA: cl_device_affinity_domain = CL_DEVICE_AFFINITY_DOMAIN_NUMA;
+    pub const L4_CACHE: cl_device_affinity_domain = CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE;
+    pub const L3_CACHE: cl_device_affinity_domain = CL_DEVICE_AFFINITY_DOMAIN_L3_CACHE;
+    pub const L2_CACHE: cl_device_affinity_domain = CL_DEVICE_AFFINITY_DOMAIN_L2_CACHE;
+    pub const L1_CACHE: cl_device_affinity_domain = CL_DEVICE_AFFINITY_DOMAIN_L1_CACHE;
+    pub const NEXT_PARTITIONABLE: cl_device_affinity_domain =
+        CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE;
+    // #endif;
+}
+
+#[non_exhaustive]
+pub struct DeviceSVMCapabilities;
+impl DeviceSVMCapabilities {
+    // #ifdef CL_VERSION_2_0;
+    /* cl_device_svm_capabilities - cl_bitfield */
+    pub const COARSE_GRAIN_BUFFER: cl_device_svm_capabilities = CL_DEVICE_SVM_COARSE_GRAIN_BUFFER;
+    pub const FINE_GRAIN_BUFFER: cl_device_svm_capabilities = CL_DEVICE_SVM_FINE_GRAIN_BUFFER;
+    pub const FINE_GRAIN_SYSTEM: cl_device_svm_capabilities = CL_DEVICE_SVM_FINE_GRAIN_SYSTEM;
+    pub const ATOMICS: cl_device_svm_capabilities = CL_DEVICE_SVM_ATOMICS;
+    // #endif;
+}
+
+#[non_exhaustive]
+pub struct MemFlags;
+impl MemFlags {
+    /* cl_mem_flags and cl_svm_mem_flags - cl_bitfield */
+    pub const READ_WRITE: cl_mem_flags = CL_MEM_READ_WRITE;
+    pub const WRITE_ONLY: cl_mem_flags = CL_MEM_WRITE_ONLY;
+    pub const READ_ONLY: cl_mem_flags = CL_MEM_READ_ONLY;
+    pub const USE_HOST_PTR: cl_mem_flags = CL_MEM_USE_HOST_PTR;
+    pub const ALLOC_HOST_PTR: cl_mem_flags = CL_MEM_ALLOC_HOST_PTR;
+    pub const COPY_HOST_PTR: cl_mem_flags = CL_MEM_COPY_HOST_PTR;
+    /* reserved: cl_bitfield = 1 << 6: cl_bitfield = */
+    // #ifdef CL_VERSION_1_2;
+    pub const HOST_WRITE_ONLY: cl_mem_flags = CL_MEM_HOST_WRITE_ONLY;
+    pub const HOST_READ_ONLY: cl_mem_flags = CL_MEM_HOST_READ_ONLY;
+    pub const HOST_NO_ACCESS: cl_mem_flags = CL_MEM_HOST_NO_ACCESS;
+    // #endif;
+    // #ifdef CL_VERSION_2_0;
+    pub const KERNEL_READ_AND_WRITE: cl_mem_flags = CL_MEM_KERNEL_READ_AND_WRITE;
+    pub const SVM_FINE_GRAIN_BUFFER: cl_mem_flags = CL_MEM_SVM_FINE_GRAIN_BUFFER; /* used by cl_svm_mem_flags only */
+    pub const SVM_ATOMICS: cl_mem_flags = CL_MEM_SVM_ATOMICS; /* used by cl_svm_mem_flags only */
+    // #endif;
+}
+
+// #ifdef CL_VERSION_1_2;
+/* cl_mem_migration_flags - cl_bitfield */
+#[non_exhaustive]
+pub struct MemMigrationFlags;
+impl MemMigrationFlags {
+    pub const OBJECT_HOST: cl_mem_migration_flags = CL_MIGRATE_MEM_OBJECT_HOST;
+    pub const OBJECT_CONTENT_UNDEFINED: cl_mem_migration_flags =
+        CL_MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED;
+}
+// #endif;
+
+#[non_exhaustive]
+pub struct MapFlags;
+impl MapFlags {
+    /* cl_map_flags - cl_bitfield */
+    pub const READ: cl_map_flags = CL_MAP_READ;
+    pub const WRITE: cl_map_flags = CL_MAP_WRITE;
+    // #ifdef CL_VERSION_1_2;
+    pub const WRITE_INVALIDATE_REGION: cl_map_flags = CL_MAP_WRITE_INVALIDATE_REGION;
+    // #endif;
+}
+
+#[non_exhaustive]
+pub struct KernelArgTypeQualifier;
+impl KernelArgTypeQualifier {
+    // #ifdef CL_VERSION_1_2;
+    /* cl_kernel_arg_type_qualifier - cl_bitfield */
+    pub const NONE: cl_kernel_arg_type_qualifier = CL_KERNEL_ARG_TYPE_NONE;
+    pub const CONST: cl_kernel_arg_type_qualifier = CL_KERNEL_ARG_TYPE_CONST;
+    pub const RESTRICT: cl_kernel_arg_type_qualifier = CL_KERNEL_ARG_TYPE_RESTRICT;
+    pub const VOLATILE: cl_kernel_arg_type_qualifier = CL_KERNEL_ARG_TYPE_VOLATILE;
+    // #ifdef CL_VERSION_2_0;
+    pub const PIPE: cl_kernel_arg_type_qualifier = CL_KERNEL_ARG_TYPE_PIPE;
+    // #endif;
+    // #endif;
+}
+
+#[non_exhaustive]
+pub struct DeviceAtomicCapabilities;
+impl DeviceAtomicCapabilities {
+    /* cl_device_atomic_capabilities - cl_bitfield */
+    // #ifdef CL_VERSION_3_0;
+    pub const ORDER_RELAXED: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_ORDER_RELAXED;
+    pub const ORDER_ACQ_REL: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_ORDER_ACQ_REL;
+    pub const ORDER_SEQ_CST: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_ORDER_SEQ_CST;
+    pub const SCOPE_WORK_ITEM: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_SCOPE_WORK_ITEM;
+    pub const SCOPE_WORK_GROUP: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_SCOPE_WORK_GROUP;
+    pub const SCOPE_DEVICE: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_SCOPE_DEVICE;
+    pub const SCOPE_ALL_DEVICES: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_SCOPE_ALL_DEVICES;
+    // #endif;
+}
+
+#[non_exhaustive]
+pub struct DeviceDeviceEnqueueCapabilities;
+impl DeviceDeviceEnqueueCapabilities {
+    /* cl_device_device_enqueue_capabilities - cl_bitfield */
+    // #ifdef CL_VERSION_3_0;
+    pub const SUPPORTED: cl_device_device_enqueue_capabilities = CL_DEVICE_QUEUE_SUPPORTED;
+    pub const REPLACEABLE_DEFAULT: cl_device_device_enqueue_capabilities =
+        CL_DEVICE_QUEUE_REPLACEABLE_DEFAULT;
+    // #endif;
+}
+
 #[non_exhaustive]
 pub struct PlatformInfo;
 impl PlatformInfo {
@@ -112,19 +282,6 @@ impl PlatformInfo {
     pub const NUMERIC_VERSION: cl_platform_info = CL_PLATFORM_NUMERIC_VERSION;
     // 3.0
     pub const EXTENSIONS_WITH_VERSION: cl_platform_info = CL_PLATFORM_EXTENSIONS_WITH_VERSION;
-}
-
-#[non_exhaustive]
-pub struct DeviceType;
-impl DeviceType {
-    /* cl_device_type - cl_bitfield */
-    pub const DEFAULT: cl_device_type = CL_DEVICE_TYPE_DEFAULT;
-    pub const CPU: cl_device_type = CL_DEVICE_TYPE_CPU;
-    pub const GPU: cl_device_type = CL_DEVICE_TYPE_GPU;
-    pub const ACCELERATOR: cl_device_type = CL_DEVICE_TYPE_ACCELERATOR;
-    // 1.2;
-    pub const CUSTOM: cl_device_type = CL_DEVICE_TYPE_CUSTOM;
-    pub const ALL: cl_device_type = CL_DEVICE_TYPE_ALL;
 }
 
 #[non_exhaustive]
@@ -272,25 +429,6 @@ impl DeviceInfo {
 }
 
 #[non_exhaustive]
-pub struct DeviceFPConfig;
-impl DeviceFPConfig {
-    /* cl_device_fp_config - cl_bitfield */
-    pub const DENORM: cl_device_fp_config = CL_FP_DENORM;
-    pub const INF_NAN: cl_device_fp_config = CL_FP_INF_NAN;
-    pub const ROUND_TO_NEAREST: cl_device_fp_config = CL_FP_ROUND_TO_NEAREST;
-    pub const ROUND_TO_ZERO: cl_device_fp_config = CL_FP_ROUND_TO_ZERO;
-    pub const ROUND_TO_INF: cl_device_fp_config = CL_FP_ROUND_TO_INF;
-    pub const FMA: cl_device_fp_config = CL_FP_FMA;
-    // #ifdef CL_VERSION_1_1;
-    pub const SOFT_FLOAT: cl_device_fp_config = CL_FP_SOFT_FLOAT;
-    // #endif;
-    // #ifdef CL_VERSION_1_2;
-    pub const CORRECTLY_ROUNDED_DIVIDE_SQRT: cl_device_fp_config =
-        CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT;
-    // #endif;
-}
-
-#[non_exhaustive]
 pub struct DeviceMemCacheType;
 impl DeviceMemCacheType {
     /* cl_device_mem_cache_type - cl_uint */
@@ -305,27 +443,6 @@ impl DeviceLocalMemType {
     /* cl_device_local_mem_type - cl_uint */
     pub const LOCAL: cl_device_local_mem_type = CL_LOCAL;
     pub const GLOBAL: cl_device_local_mem_type = CL_GLOBAL;
-}
-
-#[non_exhaustive]
-pub struct DeviceExecCapabilities;
-impl DeviceExecCapabilities {
-    /* cl_device_exec_capabilities - cl_bitfield */
-    pub const KERNEL: cl_device_exec_capabilities = CL_EXEC_KERNEL;
-    pub const NATIVE_KERNEL: cl_device_exec_capabilities = CL_EXEC_NATIVE_KERNEL;
-}
-
-#[non_exhaustive]
-pub struct CommandQueueProperties;
-impl CommandQueueProperties {
-    /* cl_command_queue_properties - cl_bitfield */
-    pub const OUT_OF_ORDER_EXEC_MODE_ENABLE: cl_command_queue_properties =
-        CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE;
-    pub const PROFILING_ENABLE: cl_command_queue_properties = CL_QUEUE_PROFILING_ENABLE;
-    // #ifdef CL_VERSION_2_0;
-    pub const ON_DEVICE: cl_command_queue_properties = CL_QUEUE_ON_DEVICE;
-    pub const ON_DEVICE_DEFAULT: cl_command_queue_properties = CL_QUEUE_ON_DEVICE_DEFAULT;
-    // #endif;
 }
 
 #[non_exhaustive]
@@ -363,33 +480,6 @@ impl DevicePartitionProperty {
 }
 
 #[non_exhaustive]
-pub struct DeviceAffinityDomain;
-impl DeviceAffinityDomain {
-    // #ifdef CL_VERSION_1_2;
-    /* cl_device_affinity_domain - cl_bitfield*/
-    pub const NUMA: cl_device_affinity_domain = CL_DEVICE_AFFINITY_DOMAIN_NUMA;
-    pub const L4_CACHE: cl_device_affinity_domain = CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE;
-    pub const L3_CACHE: cl_device_affinity_domain = CL_DEVICE_AFFINITY_DOMAIN_L3_CACHE;
-    pub const L2_CACHE: cl_device_affinity_domain = CL_DEVICE_AFFINITY_DOMAIN_L2_CACHE;
-    pub const L1_CACHE: cl_device_affinity_domain = CL_DEVICE_AFFINITY_DOMAIN_L1_CACHE;
-    pub const NEXT_PARTITIONABLE: cl_device_affinity_domain =
-        CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE;
-    // #endif;
-}
-
-#[non_exhaustive]
-pub struct DeviceSVMCapabilities;
-impl DeviceSVMCapabilities {
-    // #ifdef CL_VERSION_2_0;
-    /* cl_device_svm_capabilities - cl_bitfield */
-    pub const COARSE_GRAIN_BUFFER: cl_device_svm_capabilities = CL_DEVICE_SVM_COARSE_GRAIN_BUFFER;
-    pub const FINE_GRAIN_BUFFER: cl_device_svm_capabilities = CL_DEVICE_SVM_FINE_GRAIN_BUFFER;
-    pub const FINE_GRAIN_SYSTEM: cl_device_svm_capabilities = CL_DEVICE_SVM_FINE_GRAIN_SYSTEM;
-    pub const ATOMICS: cl_device_svm_capabilities = CL_DEVICE_SVM_ATOMICS;
-    // #endif;
-}
-
-#[non_exhaustive]
 pub struct CommandQueueInfo;
 impl CommandQueueInfo {
     /* cl_command_queue_info - cl_uint */
@@ -407,40 +497,6 @@ impl CommandQueueInfo {
     pub const PROPERTIES_ARRAY: cl_command_queue_info = CL_QUEUE_PROPERTIES_ARRAY;
     // #endif;
 }
-
-#[non_exhaustive]
-pub struct MemFlags;
-impl MemFlags {
-    /* cl_mem_flags and cl_svm_mem_flags - cl_bitfield */
-    pub const READ_WRITE: cl_mem_flags = CL_MEM_READ_WRITE;
-    pub const WRITE_ONLY: cl_mem_flags = CL_MEM_WRITE_ONLY;
-    pub const READ_ONLY: cl_mem_flags = CL_MEM_READ_ONLY;
-    pub const USE_HOST_PTR: cl_mem_flags = CL_MEM_USE_HOST_PTR;
-    pub const ALLOC_HOST_PTR: cl_mem_flags = CL_MEM_ALLOC_HOST_PTR;
-    pub const COPY_HOST_PTR: cl_mem_flags = CL_MEM_COPY_HOST_PTR;
-    /* reserved: cl_bitfield = 1 << 6: cl_bitfield = */
-    // #ifdef CL_VERSION_1_2;
-    pub const HOST_WRITE_ONLY: cl_mem_flags = CL_MEM_HOST_WRITE_ONLY;
-    pub const HOST_READ_ONLY: cl_mem_flags = CL_MEM_HOST_READ_ONLY;
-    pub const HOST_NO_ACCESS: cl_mem_flags = CL_MEM_HOST_NO_ACCESS;
-    // #endif;
-    // #ifdef CL_VERSION_2_0;
-    pub const KERNEL_READ_AND_WRITE: cl_mem_flags = CL_MEM_KERNEL_READ_AND_WRITE;
-    pub const SVM_FINE_GRAIN_BUFFER: cl_mem_flags = CL_MEM_SVM_FINE_GRAIN_BUFFER; /* used by cl_svm_mem_flags only */
-    pub const SVM_ATOMICS: cl_mem_flags = CL_MEM_SVM_ATOMICS; /* used by cl_svm_mem_flags only */
-    // #endif;
-}
-
-// #ifdef CL_VERSION_1_2;
-/* cl_mem_migration_flags - cl_bitfield */
-#[non_exhaustive]
-pub struct MemMigrationFlags;
-impl MemMigrationFlags {
-    pub const OBJECT_HOST: cl_mem_migration_flags = CL_MIGRATE_MEM_OBJECT_HOST;
-    pub const OBJECT_CONTENT_UNDEFINED: cl_mem_migration_flags =
-        CL_MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED;
-}
-// #endif;
 
 #[non_exhaustive]
 pub struct ChannelOrder;
@@ -618,17 +674,6 @@ impl SamplerInfo {
 }
 
 #[non_exhaustive]
-pub struct MapFlags;
-impl MapFlags {
-    /* cl_map_flags - cl_bitfield */
-    pub const READ: cl_map_flags = CL_MAP_READ;
-    pub const WRITE: cl_map_flags = CL_MAP_WRITE;
-    // #ifdef CL_VERSION_1_2;
-    pub const WRITE_INVALIDATE_REGION: cl_map_flags = CL_MAP_WRITE_INVALIDATE_REGION;
-    // #endif;
-}
-
-#[non_exhaustive]
 pub struct ProgramInfo;
 impl ProgramInfo {
     /* cl_program_info - cl_uint */
@@ -738,21 +783,6 @@ impl KernelArgAccessQualifier {
     pub const WRITE_ONLY: cl_kernel_arg_access_qualifier = CL_KERNEL_ARG_ACCESS_WRITE_ONLY;
     pub const READ_WRITE: cl_kernel_arg_access_qualifier = CL_KERNEL_ARG_ACCESS_READ_WRITE;
     pub const NONE: cl_kernel_arg_access_qualifier = CL_KERNEL_ARG_ACCESS_NONE;
-    // #endif;
-}
-
-#[non_exhaustive]
-pub struct KernelArgTypeQualifier;
-impl KernelArgTypeQualifier {
-    // #ifdef CL_VERSION_1_2;
-    /* cl_kernel_arg_type_qualifier - cl_bitfield */
-    pub const NONE: cl_kernel_arg_type_qualifier = CL_KERNEL_ARG_TYPE_NONE;
-    pub const CONST: cl_kernel_arg_type_qualifier = CL_KERNEL_ARG_TYPE_CONST;
-    pub const RESTRICT: cl_kernel_arg_type_qualifier = CL_KERNEL_ARG_TYPE_RESTRICT;
-    pub const VOLATILE: cl_kernel_arg_type_qualifier = CL_KERNEL_ARG_TYPE_VOLATILE;
-    // #ifdef CL_VERSION_2_0;
-    pub const PIPE: cl_kernel_arg_type_qualifier = CL_KERNEL_ARG_TYPE_PIPE;
-    // #endif;
     // #endif;
 }
 
@@ -886,32 +916,6 @@ impl ProfilingInfo {
     pub const END: cl_profiling_info = CL_PROFILING_COMMAND_END;
     // #ifdef CL_VERSION_2_0;
     pub const COMPLETE: cl_profiling_info = CL_PROFILING_COMMAND_COMPLETE;
-    // #endif;
-}
-
-#[non_exhaustive]
-pub struct DeviceAtomicCapabilities;
-impl DeviceAtomicCapabilities {
-    /* cl_device_atomic_capabilities - cl_bitfield */
-    // #ifdef CL_VERSION_3_0;
-    pub const ORDER_RELAXED: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_ORDER_RELAXED;
-    pub const ORDER_ACQ_REL: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_ORDER_ACQ_REL;
-    pub const ORDER_SEQ_CST: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_ORDER_SEQ_CST;
-    pub const SCOPE_WORK_ITEM: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_SCOPE_WORK_ITEM;
-    pub const SCOPE_WORK_GROUP: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_SCOPE_WORK_GROUP;
-    pub const SCOPE_DEVICE: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_SCOPE_DEVICE;
-    pub const SCOPE_ALL_DEVICES: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_SCOPE_ALL_DEVICES;
-    // #endif;
-}
-
-#[non_exhaustive]
-pub struct DeviceDeviceEnqueueCapabilities;
-impl DeviceDeviceEnqueueCapabilities {
-    /* cl_device_device_enqueue_capabilities - cl_bitfield */
-    // #ifdef CL_VERSION_3_0;
-    pub const SUPPORTED: cl_device_device_enqueue_capabilities = CL_DEVICE_QUEUE_SUPPORTED;
-    pub const REPLACEABLE_DEFAULT: cl_device_device_enqueue_capabilities =
-        CL_DEVICE_QUEUE_REPLACEABLE_DEFAULT;
     // #endif;
 }
 
