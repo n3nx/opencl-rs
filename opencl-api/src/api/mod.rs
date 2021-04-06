@@ -1,5 +1,5 @@
 /*
- * lib.rs - OpenCL header ABI and FFI native mappings.
+ * api.rs - API collections and bindings to respective headers.
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -16,7 +16,4 @@
  * limitations under the License.
 */
 
-mod cl;
-pub mod consts;
-pub mod ffi;
-pub mod types;
+mod platform;

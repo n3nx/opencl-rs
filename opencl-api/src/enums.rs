@@ -19,7 +19,8 @@
 #![allow(dead_code)]
 use crate::errors::UndefinedError;
 use crate::structs::StatusCode;
-use opencl_heads::*;
+use opencl_heads::consts::*;
+use opencl_heads::types::*;
 
 // Status Codes
 #[repr(i32)]
@@ -259,7 +260,10 @@ mod tests {
     fn test_status_from_status_code() {
         let status_code = -9999;
         let status = Status::from(status_code);
-        assert_eq!(status, Status::Undefined("Status Code Not Found".to_string()))
+        assert_eq!(
+            status,
+            Status::Undefined("Status Code Not Found".to_string())
+        )
     }
     #[test]
     fn test_undefined_error_invalid_error() {

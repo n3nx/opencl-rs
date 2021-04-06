@@ -718,7 +718,6 @@ pub const CL_DEVICE_QUEUE_REPLACEABLE_DEFAULT: cl_device_device_enqueue_capabili
 pub const CL_KHRONOS_VENDOR_ID_CODEPLAY: cl_khronos_vendor_id = 0x10004;
 
 // #ifdef CL_VERSION_3_0
-
 /* cl_version */
 pub const CL_VERSION_MAJOR_BITS: cl_version = 10;
 pub const CL_VERSION_MINOR_BITS: cl_version = 10;

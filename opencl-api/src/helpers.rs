@@ -1,5 +1,5 @@
 /*
- * all.rs - All OpenCL header objects (types, constants, functions).
+ * helpers.rs - Helper functions for OpenCL APIs.
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -16,8 +16,14 @@
  * limitations under the License.
 */
 
-// pub use crate::consts::StatusCode::{
-//     CL_BUILD_PROGRAM_FAILURE, CL_BUILD_PROGRAM_FAILURE, CL_BUILD_PROGRAM_FAILURE
-// };
+use crate::enums::Status;
+use crate::structs::StatusCode;
+use opencl_heads::types::*;
 
-
+pub fn status_update<T>(status_code: cl_int, result: T) -> Result<T, Status> {
+    if StatusCode::SUCCESS != status_code {
+        Err(Status::from(status_code))
+    } else {
+        Ok(result)
+    }
+}
