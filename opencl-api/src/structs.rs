@@ -17,7 +17,8 @@
 */
 
 #![allow(non_upper_case_globals, dead_code)]
-use opencl_heads::*;
+use opencl_heads::consts::*;
+use opencl_heads::types::*;
 
 #[non_exhaustive]
 pub struct StatusCode;
