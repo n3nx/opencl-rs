@@ -241,6 +241,57 @@ impl Status {
     }
 }
 
+#[allow(non_camel_case_types)]
+pub enum Size {
+    i8,
+    u8,
+    i16,
+    u16,
+    i32,
+    u32,
+    i64,
+    u64,
+    f32,
+    f64,
+}
+impl Size {
+    pub fn get(&self) -> usize {
+        match self {
+            Size::i8 | Size::u8 => 1,
+            Size::i16 | Size::u16 => 2,
+            Size::i32 | Size::u32 | Size::f32 => 4,
+            Size::i64 | Size::u64 | Size::f64 => 8,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub enum ParamValue {
+    String(String),
+    UInt(cl_uint),
+}
+
+impl ParamValue {
+    pub fn unwrap_string(&self) -> Option<&str> {
+        match self {
+            ParamValue::String(dat) => Some(dat.as_str()),
+            _ => None,
+        }
+    }
+    pub fn unwrap_uint(&self) -> Option<cl_uint> {
+        match self {
+            ParamValue::UInt(dat) => Some(*dat),
+            _ => None,
+        }
+    }
+}
+
+impl Default for ParamValue {
+    fn default() -> Self {
+        ParamValue::UInt(0)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
