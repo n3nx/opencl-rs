@@ -16,9 +16,8 @@
  * limitations under the License.
 */
 
-mod api;
+pub mod api;
 mod enums;
 mod errors;
 mod helpers;
-mod queue;
 mod structs;

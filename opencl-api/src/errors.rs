@@ -16,7 +16,36 @@
  * limitations under the License.
 */
 
+use crate::enums::Status;
 use std::{error, fmt};
+
+#[derive(Debug)]
+pub enum Error {
+    StatusError(Status),
+    APIError(ValidationError),
+    UtilError(UtilError),
+}
+
+impl Error {
+    pub fn get_status_error(&self) -> Option<&Status> {
+        match self {
+            Error::StatusError(x) => Some(x),
+            _ => None,
+        }
+    }
+    pub fn get_api_error(&self) -> Option<&ValidationError> {
+        match self {
+            Error::APIError(x) => Some(x),
+            _ => None,
+        }
+    }
+    pub fn get_util_error(&self) -> Option<&UtilError> {
+        match self {
+            Error::UtilError(x) => Some(x),
+            _ => None,
+        }
+    }
+}
 
 #[derive(Debug, PartialEq)]
 pub enum UndefinedError {
@@ -40,3 +69,9 @@ impl fmt::Display for UndefinedError {
 
 #[derive(Debug, PartialEq)]
 pub enum ValidationError {}
+
+#[derive(Debug, PartialEq)]
+pub enum UtilError {
+    // BytesIntoString(std::string::FromUtf8Error),
+    BytesIntoString,
+}
