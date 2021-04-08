@@ -17,24 +17,17 @@
  */
 #![allow(dead_code, unused_assignments, unused_macros)]
 
-use crate::enums::{Size, ParamValue};
+use crate::enums::{ParamValue, Size};
 use crate::errors::Error;
 use crate::helpers::*;
 use crate::size_getter;
-use crate::structs::{PlatformInfo} ;
+use crate::structs::PlatformInfo;
 use libc::{c_void, size_t};
 use opencl_heads::ffi::*;
 use std::ptr;
 use std::vec;
 
 pub type PlatformsList = Vec<cl_platform_id>;
-
-// fn get_size(num_entries: cl_uint) -> Result<cl_uint, Status> {
-//     let mut platform_count: cl_uint = 0;
-//     let status_code =
-//         unsafe { clGetPlatformIDs(num_entries, ptr::null_mut(), &mut platform_count) };
-//     status_update(status_code, platform_count)
-// }
 
 fn get_platform_count(num_entries: cl_uint) -> Result<cl_uint, Error> {
     let mut platform_count: cl_uint = 0;
@@ -100,6 +93,64 @@ pub fn get_platform_info(
                 )
             }
         }
+        // >= CL 2.1
+        PlatformInfo::HOST_TIMER_RESOLUTION => {
+            let size = Size::u64.get();
+            let mut param_value: u64 = 0;
+            let status_code = unsafe {
+                clGetPlatformInfo(
+                    platform,
+                    param_name,
+                    size,
+                    to_mut_ptr(&mut param_value) as *mut c_void,
+                    ptr::null_mut(),
+                )
+            };
+            status_update(status_code, ParamValue::ULong(param_value))
+        }
+        // >= CL 3.0
+        PlatformInfo::NUMERIC_VERSION => {
+            let size = Size::u32.get();
+            let mut param_value: u32 = 0;
+            let status_code = unsafe {
+                clGetPlatformInfo(
+                    platform,
+                    param_name,
+                    size,
+                    to_mut_ptr(&mut param_value) as *mut c_void,
+                    ptr::null_mut(),
+                )
+            };
+            status_update(status_code, ParamValue::UInt(param_value))
+        }
+        // >= CL 3.0
+        PlatformInfo::EXTENSIONS_WITH_VERSION => {
+            let size = get_platform_info_size(platform, param_name)?;
+            if size == 0 {
+                Ok(ParamValue::NameVersion(Vec::default()))
+            } else {
+                let bytearr_len = size / Size::cl_name_version.get();
+                let filler = cl_name_version {
+                    version: 0,
+                    name: [
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    ],
+                };
+                let mut param_value: Vec<cl_name_version> = vec::from_elem(filler, bytearr_len);
+                let status_code = unsafe {
+                    clGetPlatformInfo(
+                        platform,
+                        param_name,
+                        size,
+                        param_value.as_mut_ptr() as *mut c_void,
+                        ptr::null_mut(),
+                    )
+                };
+                status_update(status_code, ParamValue::NameVersion(param_value))
+            }
+        }
         _ => status_update(666666, ParamValue::default()),
     }
 }
@@ -118,11 +169,53 @@ mod tests {
     // #[ignore]
     fn test_get_platform_info() {
         let all_platforms = get_platform_ids().unwrap();
+        let id = all_platforms[0];
+
+        let name = get_platform_info(id, PlatformInfo::NAME).unwrap();
+        println!("CL_PLATFORM_NAME: {:?}", name);
+        assert_ne!(name.unwrap_string().unwrap(), "");
+
+        let version = get_platform_info(id, PlatformInfo::VERSION).unwrap();
+        println!("CL_PLATFORM_VERSION: {:?}", version);
+        assert_ne!(version.unwrap_string().unwrap(), "");
+
+        let vendor = get_platform_info(id, PlatformInfo::VENDOR).unwrap();
+        println!("CL_PLATFORM_VENDOR: {:?}", vendor);
+        assert_ne!(vendor.unwrap_string().unwrap(), "");
+
+        let profile = get_platform_info(id, PlatformInfo::PROFILE).unwrap();
+        println!("CL_PLATFORM_PROFILE: {:?}", profile);
+        assert_ne!(profile.unwrap_string().unwrap(), "");
+
+        let extensions = get_platform_info(id, PlatformInfo::EXTENSIONS).unwrap();
+        println!("CL_PLATFORM_EXTENSIONS: {:?}", extensions);
+        assert_ne!(extensions.unwrap_string().unwrap(), "");
+    }
+
+    #[test]
+    #[cfg(feature = "cl_2_0")]
+    fn test_get_platform_info_v2() {
+        let all_platforms = get_platform_ids().unwrap();
+        let id = all_platforms[0];
+
+        let extversion = get_platform_info(id, PlatformInfo::HOST_TIMER_RESOLUTION).unwrap();
+        println!("CL_PLATFORM_HOST_TIMER_RESOLUTION: {:?}", extversion);
+        assert_ne!(extversion.unwrap_ulong().unwrap(), 0);
+    }
+
+    #[test]
+    #[cfg(feature = "cl_3_0")]
+    fn test_get_platform_info_v3() {
+        let all_platforms = get_platform_ids().unwrap();
         println!("Number of platforms: {}", all_platforms.len());
         let id = all_platforms[0];
 
-        let name = get_platform_info(id, PlatformInfo::VENDOR).unwrap();
-        println!("CL_PLATFORM_NAME: {:?}", name);
-        assert_ne!(name.unwrap_string().unwrap(), "");
+        let numver = get_platform_info(id, PlatformInfo::NUMERIC_VERSION).unwrap();
+        println!("CL_PLATFORM_NUMERIC_VERSION: {:?}", numver);
+        assert_eq!(numver.unwrap_uint().unwrap(), 0);
+
+        let extversion = get_platform_info(id, PlatformInfo::EXTENSIONS_WITH_VERSION).unwrap();
+        println!("CL_PLATFORM_EXTENSIONS_WITH_VERSION: {:?}", extversion);
+        assert_ne!(extversion.unwrap_name_version().unwrap().len(), 0);
     }
 }

@@ -45,6 +45,8 @@ pub type UtilResult<T> = ::std::result::Result<T, Error>;
 
 pub fn status_update<T>(status_code: cl_int, result: T) -> APIResult<T> {
     if StatusCode::SUCCESS != status_code {
+        #[cfg(feature = "debug_mode")]
+        eprintln!("ERROR Status Code: {}", status_code);
         Err(Error::StatusError(Status::from(status_code)))
     } else {
         Ok(result)
@@ -62,4 +64,8 @@ pub fn bytes_into_string(mut bytes: Vec<u8>) -> UtilResult<String> {
         Ok(x) => Ok(x),
         Err(_) => Err(Error::UtilError(UtilError::BytesIntoString)),
     }
+}
+
+pub fn to_mut_ptr<T>(x: &mut T) -> *mut T {
+    &mut *x
 }

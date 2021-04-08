@@ -119,12 +119,14 @@ pub type cl_mem_properties = cl_properties;
 pub type cl_version = cl_uint;
 // #endif
 
+#[derive(Debug, Clone, PartialEq)]
 #[repr(C)]
 pub struct cl_image_format {
     pub image_channel_order: cl_channel_order,
     pub image_channel_data_type: cl_channel_type,
 }
 
+#[derive(Debug, Clone, PartialEq)]
 #[repr(C)]
 pub struct cl_image_desc {
     pub image_type: cl_mem_object_type,
@@ -136,7 +138,6 @@ pub struct cl_image_desc {
     pub image_slice_pitch: size_t,
     pub num_mip_levels: cl_uint,
     pub mem_samples: cl_uint,
-    #[cfg(feature = "cl_version_2_0")]
     // #ifdef CL_VERSION_2_0
     pub mem_object: cl_mem,
     // #endif
@@ -144,6 +145,7 @@ pub struct cl_image_desc {
 }
 
 // #ifdef CL_VERSION_1_1
+#[derive(Debug, Clone, PartialEq)]
 #[repr(C)]
 pub struct cl_buffer_region {
     pub origin: size_t,
@@ -153,10 +155,7 @@ pub struct cl_buffer_region {
 
 // #ifdef CL_VERSION_3_0
 pub const CL_NAME_VERSION_MAX_NAME_SIZE: usize = 64;
-// typedef struct _cl_name_version {
-//     cl_version              version;
-//     char                    name[CL_NAME_VERSION_MAX_NAME_SIZE];
-// } cl_name_version;
+#[derive(Debug, Clone, PartialEq)]
 #[repr(C)]
 pub struct cl_name_version {
     pub version: cl_version,
