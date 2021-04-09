@@ -3,10 +3,11 @@ name = "opencl-heads"
 version = "0.1.0"
 authors = ["Xenon Lucifer Diablo <code@nmnx.org>"]
 edition = "2018"
-description = "Long Term Support, Pure Rust Implementation, Low Level bindings for OpenCL"
+description = "Actively Maintained with Long Term Support, Pure Rust Implementation, Low Level bindings for OpenCL"
 license = "Apache-2.0"
 homepage = "https://nmnx.org/dev/opencl"
 repository = "https://github.com/diabloxenon/opencl"
+keywords = ["ffi", "api", "opencl", "ocl", "gpu", "gpgpu"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
