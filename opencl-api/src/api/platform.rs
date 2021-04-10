@@ -18,7 +18,7 @@
 #![allow(dead_code, unused_assignments, unused_macros)]
 
 use crate::enums::{ParamValue, Size};
-use crate::errors::Error;
+// use crate::errors::Error;
 use crate::helpers::*;
 use crate::size_getter;
 use crate::structs::PlatformInfo;
@@ -29,11 +29,11 @@ use std::vec;
 
 pub type PlatformsList = Vec<cl_platform_id>;
 
-fn get_platform_count(num_entries: cl_uint) -> Result<cl_uint, Error> {
+fn get_platform_count(num_entries: cl_uint) -> APIResult<cl_uint> {
     let mut platform_count: cl_uint = 0;
     let status_code =
         unsafe { clGetPlatformIDs(num_entries, ptr::null_mut(), &mut platform_count) };
-    status_update(status_code, platform_count)
+    status_update(status_code, "clGetPlatformIDs", platform_count)
 }
 
 /// Returns the list of all platforms available
@@ -49,6 +49,7 @@ fn get_platform_count(num_entries: cl_uint) -> Result<cl_uint, Error> {
 /// ```
 pub fn get_platform_ids() -> APIResult<PlatformsList> {
     let platform_count = get_platform_count(0)?;
+    let fn_name = "clGetPlatformIDs";
     if platform_count == 0 {
         Ok(Vec::default())
     } else {
@@ -57,7 +58,7 @@ pub fn get_platform_ids() -> APIResult<PlatformsList> {
         let status_code = unsafe {
             clGetPlatformIDs(platform_count, all_platforms.as_mut_ptr(), ptr::null_mut())
         };
-        status_update(status_code, all_platforms)
+        status_update(status_code, fn_name, all_platforms)
     }
 }
 
@@ -66,6 +67,7 @@ pub fn get_platform_info(
     param_name: cl_platform_info,
 ) -> APIResult<ParamValue> {
     size_getter!(get_platform_info_size, clGetPlatformInfo);
+    let fn_name = "clGetPlatformInfo";
     match param_name {
         PlatformInfo::PROFILE
         | PlatformInfo::VERSION
@@ -89,6 +91,7 @@ pub fn get_platform_info(
                 };
                 status_update(
                     status_code,
+                    fn_name,
                     ParamValue::String(bytes_into_string(param_value)?),
                 )
             }
@@ -106,7 +109,7 @@ pub fn get_platform_info(
                     ptr::null_mut(),
                 )
             };
-            status_update(status_code, ParamValue::ULong(param_value))
+            status_update(status_code, fn_name, ParamValue::ULong(param_value))
         }
         // >= CL 3.0
         PlatformInfo::NUMERIC_VERSION => {
@@ -121,7 +124,7 @@ pub fn get_platform_info(
                     ptr::null_mut(),
                 )
             };
-            status_update(status_code, ParamValue::UInt(param_value))
+            status_update(status_code, fn_name, ParamValue::UInt(param_value))
         }
         // >= CL 3.0
         PlatformInfo::EXTENSIONS_WITH_VERSION => {
@@ -148,10 +151,10 @@ pub fn get_platform_info(
                         ptr::null_mut(),
                     )
                 };
-                status_update(status_code, ParamValue::NameVersion(param_value))
+                status_update(status_code, fn_name, ParamValue::NameVersion(param_value))
             }
         }
-        _ => status_update(666666, ParamValue::default()),
+        _ => status_update(666666, fn_name, ParamValue::default()),
     }
 }
 

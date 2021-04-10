@@ -103,8 +103,19 @@ impl StatusCode {
  */
 
 #[non_exhaustive]
-pub struct DeviceType;
+pub struct DeviceType(cl_device_type);
 impl DeviceType {
+    pub fn get(self) -> Option<cl_device_type> {
+        match self.0 {
+            Self::DEFAULT
+            | Self::CPU
+            | Self::GPU
+            | Self::ACCELERATOR
+            | Self::CUSTOM
+            | Self::ALL => Some(self.0),
+            _ => None,
+        }
+    }
     /* cl_device_type - cl_bitfield */
     pub const DEFAULT: cl_device_type = CL_DEVICE_TYPE_DEFAULT;
     pub const CPU: cl_device_type = CL_DEVICE_TYPE_CPU;
@@ -116,8 +127,21 @@ impl DeviceType {
 }
 
 #[non_exhaustive]
-pub struct DeviceFPConfig;
+pub struct DeviceFPConfig(cl_device_fp_config);
 impl DeviceFPConfig {
+    pub fn get(self) -> Option<cl_device_fp_config> {
+        match self.0 {
+            Self::DENORM
+            | Self::INF_NAN
+            | Self::ROUND_TO_NEAREST
+            | Self::ROUND_TO_ZERO
+            | Self::ROUND_TO_INF
+            | Self::FMA
+            | Self::SOFT_FLOAT
+            | Self::CORRECTLY_ROUNDED_DIVIDE_SQRT => Some(self.0),
+            _ => None,
+        }
+    }
     /* cl_device_fp_config - cl_bitfield */
     pub const DENORM: cl_device_fp_config = CL_FP_DENORM;
     pub const INF_NAN: cl_device_fp_config = CL_FP_INF_NAN;
@@ -135,16 +159,31 @@ impl DeviceFPConfig {
 }
 
 #[non_exhaustive]
-pub struct DeviceExecCapabilities;
+pub struct DeviceExecCapabilities(cl_device_exec_capabilities);
 impl DeviceExecCapabilities {
+    pub fn get(self) -> Option<cl_device_exec_capabilities> {
+        match self.0 {
+            Self::KERNEL | Self::NATIVE_KERNEL => Some(self.0),
+            _ => None,
+        }
+    }
     /* cl_device_exec_capabilities - cl_bitfield */
     pub const KERNEL: cl_device_exec_capabilities = CL_EXEC_KERNEL;
     pub const NATIVE_KERNEL: cl_device_exec_capabilities = CL_EXEC_NATIVE_KERNEL;
 }
 
 #[non_exhaustive]
-pub struct CommandQueueProperties;
+pub struct CommandQueueProperties(cl_command_queue_properties);
 impl CommandQueueProperties {
+    pub fn get(self) -> Option<cl_command_queue_properties> {
+        match self.0 {
+            Self::OUT_OF_ORDER_EXEC_MODE_ENABLE
+            | Self::PROFILING_ENABLE
+            | Self::ON_DEVICE
+            | Self::ON_DEVICE_DEFAULT => Some(self.0),
+            _ => None,
+        }
+    }
     /* cl_command_queue_properties - cl_bitfield */
     pub const OUT_OF_ORDER_EXEC_MODE_ENABLE: cl_command_queue_properties =
         CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE;
@@ -156,8 +195,19 @@ impl CommandQueueProperties {
 }
 
 #[non_exhaustive]
-pub struct DeviceAffinityDomain;
+pub struct DeviceAffinityDomain(cl_device_affinity_domain);
 impl DeviceAffinityDomain {
+    pub fn get(self) -> Option<cl_device_affinity_domain> {
+        match self.0 {
+            Self::NUMA
+            | Self::L1_CACHE
+            | Self::L2_CACHE
+            | Self::L3_CACHE
+            | Self::L4_CACHE
+            | Self::NEXT_PARTITIONABLE => Some(self.0),
+            _ => None,
+        }
+    }
     // #ifdef CL_VERSION_1_2;
     /* cl_device_affinity_domain - cl_bitfield*/
     pub const NUMA: cl_device_affinity_domain = CL_DEVICE_AFFINITY_DOMAIN_NUMA;
@@ -171,8 +221,17 @@ impl DeviceAffinityDomain {
 }
 
 #[non_exhaustive]
-pub struct DeviceSVMCapabilities;
+pub struct DeviceSVMCapabilities(cl_device_svm_capabilities);
 impl DeviceSVMCapabilities {
+    pub fn get(self) -> Option<cl_device_svm_capabilities> {
+        match self.0 {
+            Self::COARSE_GRAIN_BUFFER
+            | Self::FINE_GRAIN_BUFFER
+            | Self::FINE_GRAIN_SYSTEM
+            | Self::ATOMICS => Some(self.0),
+            _ => None,
+        }
+    }
     // #ifdef CL_VERSION_2_0;
     /* cl_device_svm_capabilities - cl_bitfield */
     pub const COARSE_GRAIN_BUFFER: cl_device_svm_capabilities = CL_DEVICE_SVM_COARSE_GRAIN_BUFFER;
@@ -183,8 +242,25 @@ impl DeviceSVMCapabilities {
 }
 
 #[non_exhaustive]
-pub struct MemFlags;
+pub struct MemFlags(cl_mem_flags);
 impl MemFlags {
+    pub fn get(self) -> Option<cl_mem_flags> {
+        match self.0 {
+            Self::READ_WRITE
+            | Self::WRITE_ONLY
+            | Self::READ_ONLY
+            | Self::USE_HOST_PTR
+            | Self::ALLOC_HOST_PTR
+            | Self::COPY_HOST_PTR
+            | Self::HOST_WRITE_ONLY
+            | Self::HOST_READ_ONLY
+            | Self::HOST_NO_ACCESS
+            | Self::KERNEL_READ_AND_WRITE
+            | Self::SVM_FINE_GRAIN_BUFFER
+            | Self::SVM_ATOMICS => Some(self.0),
+            _ => None,
+        }
+    }
     /* cl_mem_flags and cl_svm_mem_flags - cl_bitfield */
     pub const READ_WRITE: cl_mem_flags = CL_MEM_READ_WRITE;
     pub const WRITE_ONLY: cl_mem_flags = CL_MEM_WRITE_ONLY;
@@ -208,8 +284,14 @@ impl MemFlags {
 // #ifdef CL_VERSION_1_2;
 /* cl_mem_migration_flags - cl_bitfield */
 #[non_exhaustive]
-pub struct MemMigrationFlags;
+pub struct MemMigrationFlags(cl_mem_migration_flags);
 impl MemMigrationFlags {
+    pub fn get(self) -> Option<cl_mem_migration_flags> {
+        match self.0 {
+            Self::OBJECT_CONTENT_UNDEFINED | Self::OBJECT_HOST => Some(self.0),
+            _ => None,
+        }
+    }
     pub const OBJECT_HOST: cl_mem_migration_flags = CL_MIGRATE_MEM_OBJECT_HOST;
     pub const OBJECT_CONTENT_UNDEFINED: cl_mem_migration_flags =
         CL_MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED;
@@ -217,8 +299,14 @@ impl MemMigrationFlags {
 // #endif;
 
 #[non_exhaustive]
-pub struct MapFlags;
+pub struct MapFlags(cl_map_flags);
 impl MapFlags {
+    pub fn get(self) -> Option<cl_map_flags> {
+        match self.0 {
+            Self::READ | Self::WRITE | Self::WRITE_INVALIDATE_REGION => Some(self.0),
+            _ => None,
+        }
+    }
     /* cl_map_flags - cl_bitfield */
     pub const READ: cl_map_flags = CL_MAP_READ;
     pub const WRITE: cl_map_flags = CL_MAP_WRITE;
@@ -228,8 +316,14 @@ impl MapFlags {
 }
 
 #[non_exhaustive]
-pub struct KernelArgTypeQualifier;
+pub struct KernelArgTypeQualifier(cl_kernel_arg_type_qualifier);
 impl KernelArgTypeQualifier {
+    pub fn get(self) -> Option<cl_kernel_arg_type_qualifier> {
+        match self.0 {
+            Self::NONE | Self::CONST | Self::RESTRICT | Self::VOLATILE | Self::PIPE => Some(self.0),
+            _ => None,
+        }
+    }
     // #ifdef CL_VERSION_1_2;
     /* cl_kernel_arg_type_qualifier - cl_bitfield */
     pub const NONE: cl_kernel_arg_type_qualifier = CL_KERNEL_ARG_TYPE_NONE;
@@ -243,8 +337,20 @@ impl KernelArgTypeQualifier {
 }
 
 #[non_exhaustive]
-pub struct DeviceAtomicCapabilities;
+pub struct DeviceAtomicCapabilities(cl_device_atomic_capabilities);
 impl DeviceAtomicCapabilities {
+    pub fn get(self) -> Option<cl_device_atomic_capabilities> {
+        match self.0 {
+            Self::ORDER_RELAXED
+            | Self::ORDER_ACQ_REL
+            | Self::ORDER_SEQ_CST
+            | Self::SCOPE_WORK_ITEM
+            | Self::SCOPE_WORK_GROUP
+            | Self::SCOPE_DEVICE
+            | Self::SCOPE_ALL_DEVICES => Some(self.0),
+            _ => None,
+        }
+    }
     /* cl_device_atomic_capabilities - cl_bitfield */
     // #ifdef CL_VERSION_3_0;
     pub const ORDER_RELAXED: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_ORDER_RELAXED;
@@ -258,8 +364,14 @@ impl DeviceAtomicCapabilities {
 }
 
 #[non_exhaustive]
-pub struct DeviceDeviceEnqueueCapabilities;
+pub struct DeviceDeviceEnqueueCapabilities(cl_device_device_enqueue_capabilities);
 impl DeviceDeviceEnqueueCapabilities {
+    pub fn get(self) -> Option<cl_device_device_enqueue_capabilities> {
+        match self.0 {
+            Self::SUPPORTED | Self::REPLACEABLE_DEFAULT => Some(self.0),
+            _ => None,
+        }
+    }
     /* cl_device_device_enqueue_capabilities - cl_bitfield */
     // #ifdef CL_VERSION_3_0;
     pub const SUPPORTED: cl_device_device_enqueue_capabilities = CL_DEVICE_QUEUE_SUPPORTED;

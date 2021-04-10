@@ -30,8 +30,8 @@ Thanks^Inf to Khronos for creating and maintaining such an awesome project to fo
 
 ## Rain Liu [@rainliu](https://github.com/rainliu/gocl)
 
-Thanks you for gocl which inspired the proper FFIs transition and adaptive model
-design for this project.
+Thanks you for gocl which inspired the proper FFIs transition and adapter model
+based software design for this project.
 
 ```go
 // The MIT License (MIT)
