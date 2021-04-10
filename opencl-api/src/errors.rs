@@ -14,64 +14,80 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 use crate::enums::Status;
 use std::{error, fmt};
 
-#[derive(Debug)]
-pub enum Error {
-    StatusError(Status),
-    APIError(ValidationError),
-    UtilError(UtilError),
+// All Error Traits here
+pub trait ToLibraryError {
+    fn to_error(self) -> OpenCLAPILibraryError;
 }
 
-impl Error {
+// Main Library Error
+#[derive(Debug)]
+pub enum OpenCLAPILibraryError {
+    StatusError(Status),
+    APIError(ValidationError),
+    HelperError(HelperError),
+}
+
+impl OpenCLAPILibraryError {
     pub fn get_status_error(&self) -> Option<&Status> {
         match self {
-            Error::StatusError(x) => Some(x),
+            OpenCLAPILibraryError::StatusError(x) => Some(x),
             _ => None,
         }
     }
     pub fn get_api_error(&self) -> Option<&ValidationError> {
         match self {
-            Error::APIError(x) => Some(x),
+            OpenCLAPILibraryError::APIError(x) => Some(x),
             _ => None,
         }
     }
-    pub fn get_util_error(&self) -> Option<&UtilError> {
+    pub fn get_helper_error(&self) -> Option<&HelperError> {
         match self {
-            Error::UtilError(x) => Some(x),
+            OpenCLAPILibraryError::HelperError(x) => Some(x),
             _ => None,
         }
     }
 }
 
 #[derive(Debug, PartialEq)]
-pub enum UndefinedError {
-    InvalidStatusCode,
+pub enum ValidationError {
+    InvalidStatusCode(&'static str),
+    InvalidBitfield(&'static str),
     InvalidError,
 }
 
-impl error::Error for UndefinedError {}
-impl fmt::Display for UndefinedError {
+impl ToLibraryError for ValidationError {
+    fn to_error(self) -> OpenCLAPILibraryError {
+        OpenCLAPILibraryError::APIError(self)
+    }
+}
+
+impl error::Error for ValidationError {}
+impl fmt::Display for ValidationError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            UndefinedError::InvalidStatusCode => write!(
+            Self::InvalidStatusCode(fn_name) => write!(
                 f,
-                "Undefined Error: {} -> Unconventional status code found in resulting output.",
-                self
+                "Undefined Error: {} ==> Unconventional status code found in function \'{}\' with resulting output.",
+                self, fn_name
             ),
+            Self::InvalidBitfield(fn_name) => write!(f, "Undefined Error: {} ==> Unidentified bitfield configuration found in function \'{}\' with resulting output.", self, fn_name),
             _ => write!(f, "Undefined Error: {}", self),
         }
     }
 }
 
 #[derive(Debug, PartialEq)]
-pub enum ValidationError {}
-
-#[derive(Debug, PartialEq)]
-pub enum UtilError {
-    // BytesIntoString(std::string::FromUtf8Error),
+pub enum HelperError {
     BytesIntoString,
+}
+
+impl ToLibraryError for HelperError {
+    fn to_error(self) -> OpenCLAPILibraryError {
+        OpenCLAPILibraryError::HelperError(self)
+    }
 }

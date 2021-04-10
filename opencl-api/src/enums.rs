@@ -17,7 +17,8 @@
 */
 
 #![allow(dead_code)]
-use crate::errors::UndefinedError;
+use crate::errors::{OpenCLAPILibraryError, ToLibraryError, ValidationError};
+use crate::helpers::StatusCodeResult;
 use crate::structs::StatusCode;
 use opencl_heads::consts::*;
 use opencl_heads::types::*;
@@ -89,11 +90,11 @@ pub enum Status {
     InvalidDeviceQueue,
     InvalidSpecId,
     MaxSizeRestrictionExceeded,
-    Undefined(String),
+    InvalidStatusCode(&'static str),
 }
 
 impl Status {
-    pub fn to_status_code(&self) -> Result<cl_int, UndefinedError> {
+    pub fn to_status_code(&self) -> StatusCodeResult {
         let data = match self {
             Status::Success => StatusCode::SUCCESS,
             Status::DeviceNotFound => StatusCode::DEVICE_NOT_FOUND,
@@ -160,18 +161,15 @@ impl Status {
             Status::InvalidDeviceQueue => StatusCode::INVALID_DEVICE_QUEUE,
             Status::InvalidSpecId => StatusCode::INVALID_SPEC_ID,
             Status::MaxSizeRestrictionExceeded => StatusCode::MAX_SIZE_RESTRICTION_EXCEEDED,
-            Status::Undefined(msg) => {
-                return Err(match msg.to_lowercase().as_str() {
-                    "status code not found" => UndefinedError::InvalidStatusCode,
-                    _ => UndefinedError::InvalidError,
-                })
+            Status::InvalidStatusCode(fn_name) => {
+                return Err(ValidationError::InvalidStatusCode(fn_name))
             }
         };
         Ok(data)
     }
 
     /// Generates Status from Status Code;
-    pub fn from(status_code: cl_int) -> Status {
+    pub fn from(status_code: cl_int, function_name: &'static str) -> Status {
         match status_code {
             StatusCode::SUCCESS => Status::Success,
             StatusCode::DEVICE_NOT_FOUND => Status::DeviceNotFound,
@@ -236,8 +234,14 @@ impl Status {
             StatusCode::INVALID_DEVICE_QUEUE => Status::InvalidDeviceQueue,
             StatusCode::INVALID_SPEC_ID => Status::InvalidSpecId,
             StatusCode::MAX_SIZE_RESTRICTION_EXCEEDED => Status::MaxSizeRestrictionExceeded,
-            _ => Status::Undefined("Status Code Not Found".to_string()),
+            _ => Status::InvalidStatusCode(function_name),
         }
+    }
+}
+
+impl ToLibraryError for Status {
+    fn to_error(self) -> OpenCLAPILibraryError {
+        OpenCLAPILibraryError::StatusError(self)
     }
 }
 
@@ -319,7 +323,8 @@ mod tests {
     #[test]
     fn test_status_code_to_status() {
         let status_code = -69;
-        let status = Status::from(status_code);
+        let fn_name = "test_status_code_to_status";
+        let status = Status::from(status_code, fn_name);
         assert_eq!(Status::InvalidPipeSize, status);
     }
     #[test]
@@ -330,23 +335,16 @@ mod tests {
     }
     #[test]
     fn test_status_from_status_code() {
+        let fn_name = "test_status_from_status_code";
         let status_code = -9999;
-        let status = Status::from(status_code);
-        assert_eq!(
-            status,
-            Status::Undefined("Status Code Not Found".to_string())
-        )
-    }
-    #[test]
-    fn test_undefined_error_invalid_error() {
-        let status = Status::Undefined("Nothing".to_string());
-        let status_code = status.to_status_code().expect_err("FUNDS ARE SAIFU");
-        assert_eq!(status_code, UndefinedError::InvalidError)
+        let status = Status::from(status_code, fn_name);
+        assert_eq!(status, Status::InvalidStatusCode(fn_name))
     }
     #[test]
     fn test_undefined_error_invalid_status_code() {
-        let status = Status::Undefined("Status Code Not Found".to_string());
+        let fn_name = "test_undefined_error_invalid_status_code";
+        let status = Status::InvalidStatusCode(fn_name);
         let status_code = status.to_status_code().expect_err("FUNDS ARE SAIFU");
-        assert_eq!(status_code, UndefinedError::InvalidStatusCode)
+        assert_eq!(status_code, ValidationError::InvalidStatusCode(fn_name))
     }
 }

@@ -21,6 +21,8 @@ use crate::errors::*;
 use crate::structs::StatusCode;
 use opencl_heads::types::*;
 
+/* All macros here */
+
 #[macro_export]
 macro_rules! size_getter {
     ($name:ident, $fn:ident) => {
@@ -35,19 +37,31 @@ macro_rules! size_getter {
                     &mut size as *mut size_t,
                 )
             };
-            status_update(status_code, size)
+            status_update(status_code, "$fn", size)
         };
     };
 }
 
-pub type APIResult<T> = ::std::result::Result<T, Error>;
-pub type UtilResult<T> = ::std::result::Result<T, Error>;
+/* All Types here */
 
-pub fn status_update<T>(status_code: cl_int, result: T) -> APIResult<T> {
+pub type APIResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
+pub type StatusCodeResult = ::std::result::Result<cl_int, ValidationError>;
+pub type HelperResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
+
+/* Helper functions */
+
+pub fn status_update<T>(
+    status_code: cl_int,
+    function_name: &'static str,
+    result: T,
+) -> APIResult<T> {
     if StatusCode::SUCCESS != status_code {
         #[cfg(feature = "debug_mode")]
-        eprintln!("ERROR Status Code: {}", status_code);
-        Err(Error::StatusError(Status::from(status_code)))
+        eprintln!(
+            "ERROR Status Code: {} from function {}",
+            status_code, function_name
+        );
+        Err(Status::from(status_code, function_name).to_error())
     } else {
         Ok(result)
     }
@@ -55,14 +69,14 @@ pub fn status_update<T>(status_code: cl_int, result: T) -> APIResult<T> {
 
 /// Converts a byte Vec into a string, removing the trailing null byte if it
 /// exists.
-pub fn bytes_into_string(mut bytes: Vec<u8>) -> UtilResult<String> {
+pub fn bytes_into_string(mut bytes: Vec<u8>) -> HelperResult<String> {
     if bytes.last() == Some(&0u8) {
         bytes.pop();
     }
     let output = String::from_utf8(bytes).map(|str| String::from(str.trim()));
     match output {
         Ok(x) => Ok(x),
-        Err(_) => Err(Error::UtilError(UtilError::BytesIntoString)),
+        Err(_) => Err(HelperError::BytesIntoString.to_error()),
     }
 }
 
