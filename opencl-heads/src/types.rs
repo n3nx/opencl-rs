@@ -17,8 +17,15 @@
 */
 
 #![allow(non_camel_case_types)]
-use libc::{c_char, c_void, intptr_t, size_t};
+use libc::c_void;
 
+// C-types
+pub type size_t = usize;
+pub type intptr_t = isize;
+pub type c_char = i8;
+pub type c_uchar = u8;
+
+// Mutable Pointers for data types
 pub type cl_platform_id = *mut c_void;
 pub type cl_device_id = *mut c_void;
 pub type cl_context = *mut c_void;
@@ -30,7 +37,7 @@ pub type cl_event = *mut c_void;
 pub type cl_sampler = *mut c_void;
 
 // Primitive Data Types
-pub type cl_char = i8;
+pub type cl_char = c_char;
 pub type cl_uchar = u8;
 pub type cl_short = i16;
 pub type cl_ushort = u16;

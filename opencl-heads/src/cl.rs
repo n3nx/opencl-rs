@@ -18,7 +18,7 @@
 
 #![allow(dead_code)]
 use crate::types::*;
-use libc::{c_char, c_uchar, c_void, size_t};
+use libc::c_void;
 
 #[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]
 #[cfg_attr(target_os = "windows", link(name = "OpenCL"))]
