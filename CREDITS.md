@@ -30,13 +30,42 @@ Thanks^Inf to Khronos for creating and maintaining such an awesome project to fo
 
 ## Rain Liu [@rainliu](https://github.com/rainliu/gocl)
 
-Thanks you for gocl which inspired the proper FFIs transition and adapter model
+Huge thanks to Rain Liu for gocl which inspired the proper FFIs transition and adapter model
 based software design for this project.
 
 ```go
 // The MIT License (MIT)
 
 // Copyright (c) 2014 Rain Liu
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+```
+
+## Cogciprocate [@cogciprocate](https://github.com/cogciprocate/ocl)
+
+Biggest thanks to Cogciprocate developers for taking an initiative on OCL project.
+API styling and its Rust based object designs are inspired solely from this project.
+
+```rust
+// The MIT License (MIT)
+
+// Copyright (c) 2014 Cogciprocate
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
