@@ -18,22 +18,23 @@
 
 // Types
 pub use crate::types::{
-    cl_addressing_mode, cl_bitfield, cl_bool, cl_buffer_create_type, cl_build_status,
-    cl_channel_order, cl_channel_type, cl_char, cl_command_queue, cl_command_queue_info,
-    cl_command_queue_properties, cl_command_type, cl_context, cl_context_info,
-    cl_context_properties, cl_device_affinity_domain, cl_device_atomic_capabilities,
-    cl_device_device_enqueue_capabilities, cl_device_exec_capabilities, cl_device_fp_config,
-    cl_device_id, cl_device_info, cl_device_local_mem_type, cl_device_mem_cache_type,
-    cl_device_partition_property, cl_device_svm_capabilities, cl_device_type, cl_double, cl_event,
-    cl_event_info, cl_filter_mode, cl_float, cl_half, cl_image_info, cl_int, cl_kernel,
-    cl_kernel_arg_access_qualifier, cl_kernel_arg_address_qualifier, cl_kernel_arg_info,
-    cl_kernel_arg_type_qualifier, cl_kernel_exec_info, cl_kernel_info, cl_kernel_sub_group_info,
-    cl_kernel_work_group_info, cl_khronos_vendor_id, cl_long, cl_map_flags, cl_mem, cl_mem_flags,
-    cl_mem_info, cl_mem_migration_flags, cl_mem_object_type, cl_mem_properties, cl_pipe_info,
+    c_char, c_uchar, cl_addressing_mode, cl_bitfield, cl_bool, cl_buffer_create_type,
+    cl_build_status, cl_channel_order, cl_channel_type, cl_char, cl_command_queue,
+    cl_command_queue_info, cl_command_queue_properties, cl_command_type, cl_context,
+    cl_context_info, cl_context_properties, cl_device_affinity_domain,
+    cl_device_atomic_capabilities, cl_device_device_enqueue_capabilities,
+    cl_device_exec_capabilities, cl_device_fp_config, cl_device_id, cl_device_info,
+    cl_device_local_mem_type, cl_device_mem_cache_type, cl_device_partition_property,
+    cl_device_svm_capabilities, cl_device_type, cl_double, cl_event, cl_event_info, cl_filter_mode,
+    cl_float, cl_half, cl_image_info, cl_int, cl_kernel, cl_kernel_arg_access_qualifier,
+    cl_kernel_arg_address_qualifier, cl_kernel_arg_info, cl_kernel_arg_type_qualifier,
+    cl_kernel_exec_info, cl_kernel_info, cl_kernel_sub_group_info, cl_kernel_work_group_info,
+    cl_khronos_vendor_id, cl_long, cl_map_flags, cl_mem, cl_mem_flags, cl_mem_info,
+    cl_mem_migration_flags, cl_mem_object_type, cl_mem_properties, cl_pipe_info,
     cl_pipe_properties, cl_platform_id, cl_platform_info, cl_profiling_info, cl_program,
     cl_program_binary_type, cl_program_build_info, cl_program_info, cl_properties,
     cl_queue_properties, cl_sampler, cl_sampler_info, cl_sampler_properties, cl_short,
-    cl_svm_mem_flags, cl_uchar, cl_uint, cl_ulong, cl_ushort, cl_version,
+    cl_svm_mem_flags, cl_uchar, cl_uint, cl_ulong, cl_ushort, cl_version, intptr_t, size_t,
 };
 
 // Structs

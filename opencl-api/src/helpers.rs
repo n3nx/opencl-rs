@@ -37,7 +37,7 @@ macro_rules! size_getter {
                     &mut size as *mut size_t,
                 )
             };
-            status_update(status_code, "$fn", size)
+            status_update(status_code, stringify!($fn), size)
         };
     };
 }
@@ -47,6 +47,9 @@ macro_rules! size_getter {
 pub type APIResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
 pub type StatusCodeResult = ::std::result::Result<cl_int, ValidationError>;
 pub type HelperResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
+
+pub type DeviceList = Vec<cl_device_id>;
+pub type PlatformList = Vec<cl_platform_id>;
 
 /* Helper functions */
 

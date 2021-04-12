@@ -15,19 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#![allow(dead_code, unused_assignments, unused_macros)]
-
 use crate::enums::{ParamValue, Size};
-// use crate::errors::Error;
 use crate::helpers::*;
 use crate::size_getter;
 use crate::structs::PlatformInfo;
-use libc::{c_void, size_t};
+use libc::c_void;
 use opencl_heads::ffi::*;
 use std::ptr;
 use std::vec;
-
-pub type PlatformsList = Vec<cl_platform_id>;
 
 fn get_platform_count(num_entries: cl_uint) -> APIResult<cl_uint> {
     let mut platform_count: cl_uint = 0;
@@ -47,14 +42,14 @@ fn get_platform_count(num_entries: cl_uint) -> APIResult<cl_uint> {
 ///
 /// let id = get_platform_ids();
 /// ```
-pub fn get_platform_ids() -> APIResult<PlatformsList> {
+pub fn get_platform_ids() -> APIResult<PlatformList> {
     let platform_count = get_platform_count(0)?;
     let fn_name = "clGetPlatformIDs";
     if platform_count == 0 {
         Ok(Vec::default())
     } else {
         let vector_length = platform_count as usize;
-        let mut all_platforms: PlatformsList = vec::from_elem(ptr::null_mut(), vector_length);
+        let mut all_platforms: PlatformList = vec::from_elem(ptr::null_mut(), vector_length);
         let status_code = unsafe {
             clGetPlatformIDs(platform_count, all_platforms.as_mut_ptr(), ptr::null_mut())
         };
@@ -76,7 +71,7 @@ pub fn get_platform_info(
         | PlatformInfo::EXTENSIONS => {
             let size = get_platform_info_size(platform, param_name)?;
             if size == 0 {
-                Ok(ParamValue::String(bytes_into_string(Vec::default())?))
+                Ok(ParamValue::String(String::default()))
             } else {
                 let bytearr_len = size / Size::u8.get();
                 let mut param_value: Vec<u8> = vec::from_elem(0, bytearr_len);
