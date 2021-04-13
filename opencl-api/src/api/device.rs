@@ -1,5 +1,5 @@
 /*
- * platform.rs - Platform API wrappers.
+ * device.rs - Device API wrappers.
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -19,7 +19,7 @@ use crate::enums::{ParamValue, Size};
 use crate::errors::{ToLibraryError, ValidationError};
 use crate::helpers::*;
 use crate::structs::{DeviceInfo, DeviceType};
-use crate::{gen_object_list, size_getter};
+use crate::{gen_object_elem, gen_object_list, size_getter};
 use libc::c_void;
 use opencl_heads::ffi::*;
 use std::ptr;
@@ -85,10 +85,133 @@ pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIR
         | D::IL_VERSION
         | D::LATEST_CONFORMANCE_VERSION_PASSED => {
             let size = get_device_info_size(device, param_name)?;
-            gen_object_list!(get_device_info_string, clGetPlatformInfo, u8);
+            gen_object_list!(get_device_info_string, clGetDeviceInfo, u8);
             let param_value = get_device_info_string(device, param_name, size, 0)?;
             Ok(ParamValue::String(bytes_into_string(param_value)?))
         }
-        _ => status_update(666666, fn_name, ParamValue::default()),
+        D::VENDOR_ID
+        | D::MAX_COMPUTE_UNITS
+        | D::MAX_WORK_ITEM_DIMENSIONS
+        | D::PREFERRED_VECTOR_WIDTH_CHAR
+        | D::PREFERRED_VECTOR_WIDTH_SHORT
+        | D::PREFERRED_VECTOR_WIDTH_INT
+        | D::PREFERRED_VECTOR_WIDTH_LONG
+        | D::PREFERRED_VECTOR_WIDTH_FLOAT
+        | D::PREFERRED_VECTOR_WIDTH_DOUBLE
+        | D::PREFERRED_VECTOR_WIDTH_HALF
+        | D::NATIVE_VECTOR_WIDTH_CHAR
+        | D::NATIVE_VECTOR_WIDTH_SHORT
+        | D::NATIVE_VECTOR_WIDTH_INT
+        | D::NATIVE_VECTOR_WIDTH_LONG
+        | D::NATIVE_VECTOR_WIDTH_FLOAT
+        | D::NATIVE_VECTOR_WIDTH_DOUBLE
+        | D::NATIVE_VECTOR_WIDTH_HALF
+        | D::MAX_CLOCK_FREQUENCY
+        | D::ADDRESS_BITS
+        | D::MAX_READ_IMAGE_ARGS
+        | D::MAX_WRITE_IMAGE_ARGS
+        | D::MAX_READ_WRITE_IMAGE_ARGS
+        | D::MAX_SAMPLERS
+        | D::IMAGE_PITCH_ALIGNMENT
+        | D::IMAGE_BASE_ADDRESS_ALIGNMENT
+        | D::MAX_PIPE_ARGS
+        | D::PIPE_MAX_ACTIVE_RESERVATIONS
+        | D::PIPE_MAX_PACKET_SIZE
+        | D::MEM_BASE_ADDR_ALIGN
+        | D::MIN_DATA_TYPE_ALIGN_SIZE
+        | D::GLOBAL_MEM_CACHELINE_SIZE
+        | D::MAX_CONSTANT_ARGS
+        | D::QUEUE_ON_DEVICE_PREFERRED_SIZE
+        | D::QUEUE_ON_DEVICE_MAX_SIZE
+        | D::MAX_ON_DEVICE_QUEUES
+        | D::MAX_ON_DEVICE_EVENTS
+        | D::PARTITION_MAX_SUB_DEVICES
+        | D::REFERENCE_COUNT
+        | D::PREFERRED_PLATFORM_ATOMIC_ALIGNMENT
+        | D::PREFERRED_GLOBAL_ATOMIC_ALIGNMENT
+        | D::PREFERRED_LOCAL_ATOMIC_ALIGNMENT
+        | D::MAX_NUM_SUB_GROUPS
+        | D::IMAGE_SUPPORT
+        | D::ERROR_CORRECTION_SUPPORT
+        | D::HOST_UNIFIED_MEMORY
+        | D::ENDIAN_LITTLE
+        | D::AVAILABLE
+        | D::COMPILER_AVAILABLE
+        | D::LINKER_AVAILABLE
+        | D::PREFERRED_INTEROP_USER_SYNC
+        | D::SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS
+        | D::NON_UNIFORM_WORK_GROUP_SUPPORT
+        | D::WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT
+        | D::GENERIC_ADDRESS_SPACE_SUPPORT
+        | D::PIPE_SUPPORT
+        | D::NUMERIC_VERSION
+        | D::GLOBAL_MEM_CACHE_TYPE
+        | D::LOCAL_MEM_TYPE => {
+            gen_object_elem!(get_device_info_uint, clGetDeviceInfo, u32);
+            let param_value = get_device_info_uint(device, param_name)?;
+            Ok(ParamValue::UInt(param_value))
+        }
+        D::MAX_MEM_ALLOC_SIZE
+        | D::GLOBAL_MEM_CACHE_SIZE
+        | D::GLOBAL_MEM_SIZE
+        | D::MAX_CONSTANT_BUFFER_SIZE
+        | D::LOCAL_MEM_SIZE
+        | D::TYPE
+        | D::SINGLE_FP_CONFIG
+        | D::DOUBLE_FP_CONFIG
+        | D::EXECUTION_CAPABILITIES
+        // Deprecated | D::QUEUE_PROPERTIES
+        | D::QUEUE_ON_HOST_PROPERTIES
+        | D::QUEUE_ON_DEVICE_PROPERTIES
+        | D::PARTITION_AFFINITY_DOMAIN
+        | D::SVM_CAPABILITIES
+        | D::ATOMIC_MEMORY_CAPABILITIES
+        | D::ATOMIC_FENCE_CAPABILITIES
+        | D::DEVICE_ENQUEUE_CAPABILITIES => {
+            gen_object_elem!(get_device_info_ulong, clGetDeviceInfo, u64);
+            let param_value = get_device_info_ulong(device, param_name)?;
+            Ok(ParamValue::ULong(param_value))
+        }
+        D::ILS_WITH_VERSION | D::BUILT_IN_KERNELS_WITH_VERSION | D::OPENCL_C_ALL_VERSIONS | D::OPENCL_C_FEATURES | D::EXTENSIONS_WITH_VERSION => {
+            let size = get_device_info_size(device, param_name)?;
+            let filler = cl_name_version {
+                version: 0,
+                name: [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                ],
+            };
+            gen_object_list!(
+                get_device_info_name_version,
+                clGetDeviceInfo,
+                cl_name_version
+            );
+            let param_value = get_device_info_name_version(device, param_name, size, filler)?;
+            Ok(ParamValue::NameVersion(param_value))
+        }
+        D::MAX_WORK_GROUP_SIZE | D::IMAGE2D_MAX_WIDTH | D::IMAGE2D_MAX_HEIGHT | D::IMAGE3D_MAX_WIDTH | D::IMAGE3D_MAX_HEIGHT | D::IMAGE3D_MAX_DEPTH | D::IMAGE_MAX_BUFFER_SIZE | D::IMAGE_MAX_ARRAY_SIZE | D::MAX_PARAMETER_SIZE | D::MAX_GLOBAL_VARIABLE_SIZE | D::GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE | D::PROFILING_TIMER_RESOLUTION | D::PRINTF_BUFFER_SIZE | D::PREFERRED_WORK_GROUP_SIZE_MULTIPLE => {
+            gen_object_elem!(get_device_info_usize, clGetDeviceInfo, usize);
+            let param_value = get_device_info_usize(device, param_name)?;
+            Ok(ParamValue::CSize(param_value))
+        }
+        D::PLATFORM | D::PARENT_DEVICE => {
+            gen_object_elem!(get_device_info_ptr, clGetDeviceInfo, isize);
+            let param_value = get_device_info_ptr(device, param_name)?;
+            Ok(ParamValue::CPtr(param_value))
+        }
+        D::PARTITION_PROPERTIES | D::PARTITION_TYPE => {
+            let size = get_device_info_size(device, param_name)?;
+            gen_object_list!(get_device_info_vec_cptr, clGetDeviceInfo, isize);
+            let param_value = get_device_info_vec_cptr(device, param_name, size, 0)?;
+            Ok(ParamValue::ArrCPtr(param_value))   
+        }
+        D::MAX_WORK_ITEM_SIZES => {
+            let size = get_device_info_size(device, param_name)?;
+            gen_object_list!(get_device_info_vec_csize, clGetDeviceInfo, usize);
+            let param_value = get_device_info_vec_csize(device, param_name, size, 0)?;
+            Ok(ParamValue::ArrCSize(param_value))   
+        }
+        _ => status_update(40404, fn_name, ParamValue::default()),
     }
 }

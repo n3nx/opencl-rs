@@ -61,33 +61,30 @@ pub fn get_platform_info(
     platform: cl_platform_id,
     param_name: cl_platform_info,
 ) -> APIResult<ParamValue> {
+    type P = PlatformInfo;
     size_getter!(get_platform_info_size, clGetPlatformInfo);
     let fn_name = "clGetPlatformInfo";
     match param_name {
-        PlatformInfo::PROFILE
-        | PlatformInfo::VERSION
-        | PlatformInfo::VENDOR
-        | PlatformInfo::NAME
-        | PlatformInfo::EXTENSIONS => {
+        P::PROFILE | P::VERSION | P::VENDOR | P::NAME | P::EXTENSIONS => {
             let size = get_platform_info_size(platform, param_name)?;
             gen_object_list!(get_platform_info_string, clGetPlatformInfo, u8);
             let param_value = get_platform_info_string(platform, param_name, size, 0)?;
             Ok(ParamValue::String(bytes_into_string(param_value)?))
         }
         // >= CL 2.1
-        PlatformInfo::HOST_TIMER_RESOLUTION => {
+        P::HOST_TIMER_RESOLUTION => {
             gen_object_elem!(get_platform_info_ulong, clGetPlatformInfo, u64);
             let param_value = get_platform_info_ulong(platform, param_name)?;
             Ok(ParamValue::ULong(param_value))
         }
         // >= CL 3.0
-        PlatformInfo::NUMERIC_VERSION => {
+        P::NUMERIC_VERSION => {
             gen_object_elem!(get_platform_info_uint, clGetPlatformInfo, u32);
             let param_value = get_platform_info_uint(platform, param_name)?;
             Ok(ParamValue::UInt(param_value))
         }
         // >= CL 3.0
-        PlatformInfo::EXTENSIONS_WITH_VERSION => {
+        P::EXTENSIONS_WITH_VERSION => {
             let size = get_platform_info_size(platform, param_name)?;
             let filler = cl_name_version {
                 version: 0,
@@ -105,7 +102,7 @@ pub fn get_platform_info(
             let param_value = get_platform_info_name_version(platform, param_name, size, filler)?;
             Ok(ParamValue::NameVersion(param_value))
         }
-        _ => status_update(666666, fn_name, ParamValue::default()),
+        _ => status_update(40404, fn_name, ParamValue::default()),
     }
 }
 
