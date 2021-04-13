@@ -257,6 +257,8 @@ pub enum Size {
     u64,
     f32,
     f64,
+    usize,
+    isize,
     cl_image_desc,
     cl_image_format,
     cl_buffer_region,
@@ -268,7 +270,12 @@ impl Size {
             Size::i8 | Size::u8 => 1,
             Size::i16 | Size::u16 => 2,
             Size::i32 | Size::u32 | Size::f32 => 4,
-            Size::i64 | Size::u64 | Size::f64 | Size::cl_image_format => 8,
+            Size::i64
+            | Size::u64
+            | Size::f64
+            | Size::usize
+            | Size::isize
+            | Size::cl_image_format => 8,
             Size::cl_buffer_region => 16,
             Size::cl_name_version => 68,
             Size::cl_image_desc => 80,
@@ -281,6 +288,11 @@ pub enum ParamValue {
     String(String),
     UInt(cl_uint),
     ULong(cl_ulong),
+    CSize(size_t),
+    CPtr(intptr_t),
+    ArrCSize(Vec<size_t>),
+    ArrCPtr(Vec<intptr_t>),
+    ArrULong(Vec<cl_ulong>),
     NameVersion(Vec<cl_name_version>),
 }
 
@@ -300,6 +312,18 @@ impl ParamValue {
     pub fn unwrap_ulong(self) -> Option<cl_ulong> {
         match self {
             ParamValue::ULong(dat) => Some(dat),
+            _ => None,
+        }
+    }
+    pub fn unwrap_csize(self) -> Option<size_t> {
+        match self {
+            ParamValue::CSize(dat) => Some(dat),
+            _ => None,
+        }
+    }
+    pub fn unwrap_cptr(self) -> Option<intptr_t> {
+        match self {
+            ParamValue::CPtr(dat) => Some(dat),
             _ => None,
         }
     }
