@@ -18,8 +18,8 @@
 use crate::enums::{ParamValue, Size};
 use crate::errors::{ToLibraryError, ValidationError};
 use crate::helpers::*;
-use crate::size_getter;
-use crate::structs::{DeviceType, DeviceInfo};
+use crate::structs::{DeviceInfo, DeviceType};
+use crate::{gen_object_list, size_getter};
 use libc::c_void;
 use opencl_heads::ffi::*;
 use std::ptr;
@@ -69,14 +69,26 @@ pub fn get_device_ids(platform: cl_platform_id, device_type: DeviceType) -> APIR
     }
 }
 
-// pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIResult<ParamValue> {
-//     type D = DeviceInfo;
-//     let fn_name = "clGetDeviceInfo";
-//     size_getter!(get_device_info_size, clGetDeviceInfo);
-//     match param_name {
-//         D::NAME | D::VENDOR | D::VERSION | D::PROFILE | D::DRIVER_VERSION | D::EXTENSIONS | D::OPENCL_C_VERSION | D::BUILT_IN_KERNELS | D::IL_VERSION | D::LATEST_CONFORMANCE_VERSION_PASSED => {
-//             let size = get_device_info_size(device, param_name)?;
-//             Ok(ParamValue::String(bytes_into_string(Vec::default))?)
-//         }
-//     }
-// }
+pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIResult<ParamValue> {
+    type D = DeviceInfo;
+    let fn_name = "clGetDeviceInfo";
+    size_getter!(get_device_info_size, clGetDeviceInfo);
+    match param_name {
+        D::NAME
+        | D::VENDOR
+        | D::VERSION
+        | D::PROFILE
+        | D::DRIVER_VERSION
+        | D::EXTENSIONS
+        | D::OPENCL_C_VERSION
+        | D::BUILT_IN_KERNELS
+        | D::IL_VERSION
+        | D::LATEST_CONFORMANCE_VERSION_PASSED => {
+            let size = get_device_info_size(device, param_name)?;
+            gen_object_list!(get_device_info_string, clGetPlatformInfo, u8);
+            let param_value = get_device_info_string(device, param_name, size, 0)?;
+            Ok(ParamValue::String(bytes_into_string(param_value)?))
+        }
+        _ => status_update(666666, fn_name, ParamValue::default()),
+    }
+}
