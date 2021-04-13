@@ -26,11 +26,11 @@ use opencl_heads::types::*;
 #[macro_export]
 macro_rules! size_getter {
     ($name:ident, $fn:ident) => {
-        let $name = |obj: *mut libc::c_void, param_name: cl_uint| -> APIResult<size_t> {
+        let $name = |ret_dat_ptr: *mut libc::c_void, param_name: cl_uint| -> APIResult<size_t> {
             let mut size: size_t = 0;
             let status_code = unsafe {
                 $fn(
-                    obj,
+                    ret_dat_ptr,
                     param_name,
                     0,
                     ptr::null_mut(),
@@ -39,6 +39,55 @@ macro_rules! size_getter {
             };
             status_update(status_code, stringify!($fn), size)
         };
+    };
+}
+
+#[macro_export]
+macro_rules! gen_object_list {
+    ($name:ident, $fn:ident, $obj:tt) => {
+        fn $name(
+            ret_dat_ptr: *mut libc::c_void,
+            param_name: cl_uint,
+            size: size_t,
+            filler: $obj,
+        ) -> APIResult<Vec<$obj>> {
+            if size == 0 {
+                Ok(Vec::default())
+            } else {
+                let arr_len = size / Size::$obj.get();
+                let mut param_value: Vec<$obj> = vec::from_elem(filler, arr_len);
+                let status_code = unsafe {
+                    $fn(
+                        ret_dat_ptr,
+                        param_name,
+                        size,
+                        param_value.as_mut_ptr() as *mut c_void,
+                        ptr::null_mut(),
+                    )
+                };
+                status_update(status_code, stringify!($fn), param_value)
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! gen_object_elem {
+    ($name:ident, $fn:ident, $obj:tt) => {
+        fn $name(ret_dat_ptr: *mut libc::c_void, param_name: cl_uint) -> APIResult<$obj> {
+            let size = Size::$obj.get();
+            let mut param_value: $obj = $obj::default();
+            let status_code = unsafe {
+                $fn(
+                    ret_dat_ptr,
+                    param_name,
+                    size,
+                    to_mut_ptr(&mut param_value) as *mut c_void,
+                    ptr::null_mut(),
+                )
+            };
+            status_update(status_code, stringify!($fn), param_value)
+        }
     };
 }
 

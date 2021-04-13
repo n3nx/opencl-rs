@@ -17,8 +17,8 @@
  */
 use crate::enums::{ParamValue, Size};
 use crate::helpers::*;
-use crate::size_getter;
 use crate::structs::PlatformInfo;
+use crate::{gen_object_elem, gen_object_list, size_getter};
 use libc::c_void;
 use opencl_heads::ffi::*;
 use std::ptr;
@@ -70,84 +70,40 @@ pub fn get_platform_info(
         | PlatformInfo::NAME
         | PlatformInfo::EXTENSIONS => {
             let size = get_platform_info_size(platform, param_name)?;
-            if size == 0 {
-                Ok(ParamValue::String(String::default()))
-            } else {
-                let bytearr_len = size / Size::u8.get();
-                let mut param_value: Vec<u8> = vec::from_elem(0, bytearr_len);
-                let status_code = unsafe {
-                    clGetPlatformInfo(
-                        platform,
-                        param_name,
-                        size,
-                        param_value.as_mut_ptr() as *mut c_void,
-                        ptr::null_mut(),
-                    )
-                };
-                status_update(
-                    status_code,
-                    fn_name,
-                    ParamValue::String(bytes_into_string(param_value)?),
-                )
-            }
+            gen_object_list!(get_platform_info_string, clGetPlatformInfo, u8);
+            let param_value = get_platform_info_string(platform, param_name, size, 0)?;
+            Ok(ParamValue::String(bytes_into_string(param_value)?))
         }
         // >= CL 2.1
         PlatformInfo::HOST_TIMER_RESOLUTION => {
-            let size = Size::u64.get();
-            let mut param_value: u64 = 0;
-            let status_code = unsafe {
-                clGetPlatformInfo(
-                    platform,
-                    param_name,
-                    size,
-                    to_mut_ptr(&mut param_value) as *mut c_void,
-                    ptr::null_mut(),
-                )
-            };
-            status_update(status_code, fn_name, ParamValue::ULong(param_value))
+            gen_object_elem!(get_platform_info_ulong, clGetPlatformInfo, u64);
+            let param_value = get_platform_info_ulong(platform, param_name)?;
+            Ok(ParamValue::ULong(param_value))
         }
         // >= CL 3.0
         PlatformInfo::NUMERIC_VERSION => {
-            let size = Size::u32.get();
-            let mut param_value: u32 = 0;
-            let status_code = unsafe {
-                clGetPlatformInfo(
-                    platform,
-                    param_name,
-                    size,
-                    to_mut_ptr(&mut param_value) as *mut c_void,
-                    ptr::null_mut(),
-                )
-            };
-            status_update(status_code, fn_name, ParamValue::UInt(param_value))
+            gen_object_elem!(get_platform_info_uint, clGetPlatformInfo, u32);
+            let param_value = get_platform_info_uint(platform, param_name)?;
+            Ok(ParamValue::UInt(param_value))
         }
         // >= CL 3.0
         PlatformInfo::EXTENSIONS_WITH_VERSION => {
             let size = get_platform_info_size(platform, param_name)?;
-            if size == 0 {
-                Ok(ParamValue::NameVersion(Vec::default()))
-            } else {
-                let bytearr_len = size / Size::cl_name_version.get();
-                let filler = cl_name_version {
-                    version: 0,
-                    name: [
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    ],
-                };
-                let mut param_value: Vec<cl_name_version> = vec::from_elem(filler, bytearr_len);
-                let status_code = unsafe {
-                    clGetPlatformInfo(
-                        platform,
-                        param_name,
-                        size,
-                        param_value.as_mut_ptr() as *mut c_void,
-                        ptr::null_mut(),
-                    )
-                };
-                status_update(status_code, fn_name, ParamValue::NameVersion(param_value))
-            }
+            let filler = cl_name_version {
+                version: 0,
+                name: [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                ],
+            };
+            gen_object_list!(
+                get_platform_info_name_version,
+                clGetPlatformInfo,
+                cl_name_version
+            );
+            let param_value = get_platform_info_name_version(platform, param_name, size, filler)?;
+            Ok(ParamValue::NameVersion(param_value))
         }
         _ => status_update(666666, fn_name, ParamValue::default()),
     }
@@ -188,6 +144,20 @@ mod tests {
         let extensions = get_platform_info(id, PlatformInfo::EXTENSIONS).unwrap();
         println!("CL_PLATFORM_EXTENSIONS: {:?}", extensions);
         assert_ne!(extensions.unwrap_string().unwrap(), "");
+    }
+
+    #[test]
+    #[ignore]
+    fn test_get_platform_info_fail() {
+        let all_platforms = get_platform_ids().unwrap();
+        let id = all_platforms[0];
+        let wrong_id = 666;
+
+        let extensions = get_platform_info(id, wrong_id)
+            .expect_err("Wrong ID entered, check your structs dude!");
+        println!("CL_PLATFORM_INVALID: {:?}", extensions);
+        // Bullshit! I will do this later on.
+        // assert_ne!(extensions, );
     }
 
     #[test]
