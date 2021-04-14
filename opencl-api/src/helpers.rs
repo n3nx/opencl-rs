@@ -21,7 +21,12 @@ use crate::errors::*;
 use crate::structs::StatusCode;
 use opencl_heads::types::*;
 
-/* All macros here */
+/**********************************************************************
+ *
+ *
+ *                      Helper Macros
+ *
+ */
 
 #[macro_export]
 macro_rules! size_getter {
@@ -82,7 +87,7 @@ macro_rules! gen_object_elem {
                     ret_dat_ptr,
                     param_name,
                     size,
-                    to_mut_ptr(&mut param_value) as *mut c_void,
+                    crate::helpers::to_mut_ptr(&mut param_value) as *mut c_void,
                     ptr::null_mut(),
                 )
             };
@@ -91,16 +96,55 @@ macro_rules! gen_object_elem {
     };
 }
 
-/* All Types here */
+#[macro_export]
+macro_rules! gen_add_trait {
+    ($name:ident) => {
+        impl std::ops::Add for $name {
+            type Output = Self;
+            fn add(self, other: Self) -> Self::Output {
+                Self(self.0 + other.0)
+            }
+        }
+    };
+}
+
+/******************************************************************
+ *
+ *
+ *                     Helper Types
+ *
+ */
 
 pub type APIResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
 pub type StatusCodeResult = ::std::result::Result<cl_int, ValidationError>;
 pub type HelperResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
+pub type BitfieldResult<T> = ::std::result::Result<T, ValidationError>;
 
 pub type DeviceList = Vec<cl_device_id>;
 pub type PlatformList = Vec<cl_platform_id>;
 
-/* Helper functions */
+/*******************************************************************
+ *
+ *
+ *                      Helper Traits
+ *
+ */
+
+pub trait GetSetGo
+where
+    Self: std::marker::Sized,
+{
+    fn get(&self) -> cl_bitfield;
+    fn set(&mut self, value: cl_bitfield) -> BitfieldResult<()>;
+    fn new(value: cl_bitfield) -> BitfieldResult<Self>;
+}
+
+/*******************************************************************
+ *
+ *
+ *                      Helper Functions
+ *
+ */
 
 pub fn status_update<T>(
     status_code: cl_int,

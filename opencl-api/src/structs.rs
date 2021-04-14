@@ -17,6 +17,9 @@
 */
 
 #![allow(non_upper_case_globals, dead_code)]
+use crate::errors::ValidationError;
+use crate::gen_add_trait;
+use crate::helpers::{BitfieldResult, GetSetGo};
 use opencl_heads::consts::*;
 use opencl_heads::types::*;
 
@@ -98,24 +101,16 @@ impl StatusCode {
     pub const MAX_SIZE_RESTRICTION_EXCEEDED: cl_int = CL_MAX_SIZE_RESTRICTION_EXCEEDED;
 }
 
-/********************************************************************
- * Bitfields
- */
+/******************************************************************
+ *
+ *                      Bitfields
+ *
+ *
+*/
 
 #[non_exhaustive]
 pub struct DeviceType(cl_device_type);
 impl DeviceType {
-    pub fn get(self) -> Option<cl_device_type> {
-        match self.0 {
-            Self::DEFAULT
-            | Self::CPU
-            | Self::GPU
-            | Self::ACCELERATOR
-            | Self::CUSTOM
-            | Self::ALL => Some(self.0),
-            _ => None,
-        }
-    }
     /* cl_device_type - cl_bitfield */
     pub const DEFAULT: cl_device_type = CL_DEVICE_TYPE_DEFAULT;
     pub const CPU: cl_device_type = CL_DEVICE_TYPE_CPU;
@@ -126,22 +121,38 @@ impl DeviceType {
     pub const ALL: cl_device_type = CL_DEVICE_TYPE_ALL;
 }
 
+gen_add_trait!(DeviceType);
+
+impl GetSetGo for DeviceType {
+    fn new(value: cl_device_type) -> BitfieldResult<Self> {
+        type T = DeviceType;
+        let fn_name = "DeviceType";
+        match value {
+            T::DEFAULT | T::CPU | T::GPU | T::ACCELERATOR | T::CUSTOM | T::ALL => {
+                Ok(DeviceType(value))
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+    fn get(&self) -> cl_device_type {
+        self.0
+    }
+    fn set(&mut self, value: cl_device_type) -> BitfieldResult<()> {
+        type T = DeviceType;
+        let fn_name = "DeviceType";
+        match value {
+            T::DEFAULT | T::CPU | T::GPU | T::ACCELERATOR | T::CUSTOM | T::ALL => {
+                self.0 = value;
+                Ok(())
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+}
+
 #[non_exhaustive]
 pub struct DeviceFPConfig(cl_device_fp_config);
 impl DeviceFPConfig {
-    pub fn get(self) -> Option<cl_device_fp_config> {
-        match self.0 {
-            Self::DENORM
-            | Self::INF_NAN
-            | Self::ROUND_TO_NEAREST
-            | Self::ROUND_TO_ZERO
-            | Self::ROUND_TO_INF
-            | Self::FMA
-            | Self::SOFT_FLOAT
-            | Self::CORRECTLY_ROUNDED_DIVIDE_SQRT => Some(self.0),
-            _ => None,
-        }
-    }
     /* cl_device_fp_config - cl_bitfield */
     pub const DENORM: cl_device_fp_config = CL_FP_DENORM;
     pub const INF_NAN: cl_device_fp_config = CL_FP_INF_NAN;
@@ -158,32 +169,85 @@ impl DeviceFPConfig {
     // #endif;
 }
 
+gen_add_trait!(DeviceFPConfig);
+
+impl GetSetGo for DeviceFPConfig {
+    fn new(value: cl_device_fp_config) -> BitfieldResult<Self> {
+        type T = DeviceFPConfig;
+        let fn_name = "DeviceFPConfig";
+        match value {
+            T::DENORM
+            | T::INF_NAN
+            | T::ROUND_TO_NEAREST
+            | T::ROUND_TO_ZERO
+            | T::ROUND_TO_INF
+            | T::FMA
+            | T::SOFT_FLOAT
+            | T::CORRECTLY_ROUNDED_DIVIDE_SQRT => Ok(DeviceFPConfig(value)),
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+    fn get(&self) -> cl_device_fp_config {
+        self.0
+    }
+    fn set(&mut self, value: cl_device_fp_config) -> BitfieldResult<()> {
+        type T = DeviceFPConfig;
+        let fn_name = "DeviceFPConfig";
+        match value {
+            T::DENORM
+            | T::INF_NAN
+            | T::ROUND_TO_NEAREST
+            | T::ROUND_TO_ZERO
+            | T::ROUND_TO_INF
+            | T::FMA
+            | T::SOFT_FLOAT
+            | T::CORRECTLY_ROUNDED_DIVIDE_SQRT => {
+                self.0 = value;
+                Ok(())
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+}
+
 #[non_exhaustive]
 pub struct DeviceExecCapabilities(cl_device_exec_capabilities);
 impl DeviceExecCapabilities {
-    pub fn get(self) -> Option<cl_device_exec_capabilities> {
-        match self.0 {
-            Self::KERNEL | Self::NATIVE_KERNEL => Some(self.0),
-            _ => None,
-        }
-    }
     /* cl_device_exec_capabilities - cl_bitfield */
     pub const KERNEL: cl_device_exec_capabilities = CL_EXEC_KERNEL;
     pub const NATIVE_KERNEL: cl_device_exec_capabilities = CL_EXEC_NATIVE_KERNEL;
 }
 
+gen_add_trait!(DeviceExecCapabilities);
+
+impl GetSetGo for DeviceExecCapabilities {
+    fn new(value: cl_device_exec_capabilities) -> BitfieldResult<Self> {
+        type T = DeviceExecCapabilities;
+        let fn_name = "DeviceExecCapabilities";
+        match value {
+            T::KERNEL | T::NATIVE_KERNEL => Ok(DeviceExecCapabilities(value)),
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+    fn get(&self) -> cl_device_exec_capabilities {
+        self.0
+    }
+    fn set(&mut self, value: cl_device_exec_capabilities) -> BitfieldResult<()> {
+        type T = DeviceExecCapabilities;
+        let fn_name = "DeviceExecCapabilities";
+        match value {
+            T::KERNEL | T::NATIVE_KERNEL => {
+                self.0 = value;
+                Ok(())
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+}
+
 #[non_exhaustive]
 pub struct CommandQueueProperties(cl_command_queue_properties);
 impl CommandQueueProperties {
-    pub fn get(self) -> Option<cl_command_queue_properties> {
-        match self.0 {
-            Self::OUT_OF_ORDER_EXEC_MODE_ENABLE
-            | Self::PROFILING_ENABLE
-            | Self::ON_DEVICE
-            | Self::ON_DEVICE_DEFAULT => Some(self.0),
-            _ => None,
-        }
-    }
     /* cl_command_queue_properties - cl_bitfield */
     pub const OUT_OF_ORDER_EXEC_MODE_ENABLE: cl_command_queue_properties =
         CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE;
@@ -194,20 +258,42 @@ impl CommandQueueProperties {
     // #endif;
 }
 
+gen_add_trait!(CommandQueueProperties);
+
+impl GetSetGo for CommandQueueProperties {
+    fn new(value: cl_command_queue_properties) -> BitfieldResult<Self> {
+        type T = CommandQueueProperties;
+        let fn_name = "CommandQueueProperties";
+        match value {
+            T::OUT_OF_ORDER_EXEC_MODE_ENABLE
+            | T::PROFILING_ENABLE
+            | T::ON_DEVICE
+            | T::ON_DEVICE_DEFAULT => Ok(CommandQueueProperties(value)),
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+    fn get(&self) -> cl_command_queue_properties {
+        self.0
+    }
+    fn set(&mut self, value: cl_command_queue_properties) -> BitfieldResult<()> {
+        type T = CommandQueueProperties;
+        let fn_name = "CommandQueueProperties";
+        match value {
+            T::OUT_OF_ORDER_EXEC_MODE_ENABLE
+            | T::PROFILING_ENABLE
+            | T::ON_DEVICE
+            | T::ON_DEVICE_DEFAULT => {
+                self.0 = value;
+                Ok(())
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+}
+
 #[non_exhaustive]
 pub struct DeviceAffinityDomain(cl_device_affinity_domain);
 impl DeviceAffinityDomain {
-    pub fn get(self) -> Option<cl_device_affinity_domain> {
-        match self.0 {
-            Self::NUMA
-            | Self::L1_CACHE
-            | Self::L2_CACHE
-            | Self::L3_CACHE
-            | Self::L4_CACHE
-            | Self::NEXT_PARTITIONABLE => Some(self.0),
-            _ => None,
-        }
-    }
     // #ifdef CL_VERSION_1_2;
     /* cl_device_affinity_domain - cl_bitfield*/
     pub const NUMA: cl_device_affinity_domain = CL_DEVICE_AFFINITY_DOMAIN_NUMA;
@@ -220,18 +306,46 @@ impl DeviceAffinityDomain {
     // #endif;
 }
 
+gen_add_trait!(DeviceAffinityDomain);
+
+impl GetSetGo for DeviceAffinityDomain {
+    fn new(value: cl_device_affinity_domain) -> BitfieldResult<Self> {
+        type T = DeviceAffinityDomain;
+        let fn_name = "DeviceAffinityDomain";
+        match value {
+            T::NUMA
+            | T::L1_CACHE
+            | T::L2_CACHE
+            | T::L3_CACHE
+            | T::L4_CACHE
+            | T::NEXT_PARTITIONABLE => Ok(DeviceAffinityDomain(value)),
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+    fn get(&self) -> cl_device_affinity_domain {
+        self.0
+    }
+    fn set(&mut self, value: cl_device_affinity_domain) -> BitfieldResult<()> {
+        type T = DeviceAffinityDomain;
+        let fn_name = "DeviceAffinityDomain";
+        match value {
+            T::NUMA
+            | T::L1_CACHE
+            | T::L2_CACHE
+            | T::L3_CACHE
+            | T::L4_CACHE
+            | T::NEXT_PARTITIONABLE => {
+                self.0 = value;
+                Ok(())
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+}
+
 #[non_exhaustive]
 pub struct DeviceSVMCapabilities(cl_device_svm_capabilities);
 impl DeviceSVMCapabilities {
-    pub fn get(self) -> Option<cl_device_svm_capabilities> {
-        match self.0 {
-            Self::COARSE_GRAIN_BUFFER
-            | Self::FINE_GRAIN_BUFFER
-            | Self::FINE_GRAIN_SYSTEM
-            | Self::ATOMICS => Some(self.0),
-            _ => None,
-        }
-    }
     // #ifdef CL_VERSION_2_0;
     /* cl_device_svm_capabilities - cl_bitfield */
     pub const COARSE_GRAIN_BUFFER: cl_device_svm_capabilities = CL_DEVICE_SVM_COARSE_GRAIN_BUFFER;
@@ -241,26 +355,38 @@ impl DeviceSVMCapabilities {
     // #endif;
 }
 
+gen_add_trait!(DeviceSVMCapabilities);
+
+impl GetSetGo for DeviceSVMCapabilities {
+    fn new(value: cl_device_svm_capabilities) -> BitfieldResult<Self> {
+        type T = DeviceSVMCapabilities;
+        let fn_name = "DeviceSVMCapabilities";
+        match value {
+            T::COARSE_GRAIN_BUFFER | T::FINE_GRAIN_BUFFER | T::FINE_GRAIN_SYSTEM | T::ATOMICS => {
+                Ok(DeviceSVMCapabilities(value))
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+    fn get(&self) -> cl_device_svm_capabilities {
+        self.0
+    }
+    fn set(&mut self, value: cl_device_svm_capabilities) -> BitfieldResult<()> {
+        type T = DeviceSVMCapabilities;
+        let fn_name = "DeviceSVMCapabilities";
+        match value {
+            T::COARSE_GRAIN_BUFFER | T::FINE_GRAIN_BUFFER | T::FINE_GRAIN_SYSTEM | T::ATOMICS => {
+                self.0 = value;
+                Ok(())
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+}
+
 #[non_exhaustive]
 pub struct MemFlags(cl_mem_flags);
 impl MemFlags {
-    pub fn get(self) -> Option<cl_mem_flags> {
-        match self.0 {
-            Self::READ_WRITE
-            | Self::WRITE_ONLY
-            | Self::READ_ONLY
-            | Self::USE_HOST_PTR
-            | Self::ALLOC_HOST_PTR
-            | Self::COPY_HOST_PTR
-            | Self::HOST_WRITE_ONLY
-            | Self::HOST_READ_ONLY
-            | Self::HOST_NO_ACCESS
-            | Self::KERNEL_READ_AND_WRITE
-            | Self::SVM_FINE_GRAIN_BUFFER
-            | Self::SVM_ATOMICS => Some(self.0),
-            _ => None,
-        }
-    }
     /* cl_mem_flags and cl_svm_mem_flags - cl_bitfield */
     pub const READ_WRITE: cl_mem_flags = CL_MEM_READ_WRITE;
     pub const WRITE_ONLY: cl_mem_flags = CL_MEM_WRITE_ONLY;
@@ -281,32 +407,96 @@ impl MemFlags {
     // #endif;
 }
 
+gen_add_trait!(MemFlags);
+
+impl GetSetGo for MemFlags {
+    fn new(value: cl_mem_flags) -> BitfieldResult<Self> {
+        type T = MemFlags;
+        let fn_name = "MemFlags";
+        match value {
+            T::READ_WRITE
+            | T::WRITE_ONLY
+            | T::READ_ONLY
+            | T::USE_HOST_PTR
+            | T::ALLOC_HOST_PTR
+            | T::COPY_HOST_PTR
+            | T::HOST_WRITE_ONLY
+            | T::HOST_READ_ONLY
+            | T::HOST_NO_ACCESS
+            | T::KERNEL_READ_AND_WRITE
+            | T::SVM_FINE_GRAIN_BUFFER
+            | T::SVM_ATOMICS => Ok(MemFlags(value)),
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+    fn get(&self) -> cl_mem_flags {
+        self.0
+    }
+    fn set(&mut self, value: cl_mem_flags) -> BitfieldResult<()> {
+        type T = MemFlags;
+        let fn_name = "MemFlags";
+        match value {
+            T::READ_WRITE
+            | T::WRITE_ONLY
+            | T::READ_ONLY
+            | T::USE_HOST_PTR
+            | T::ALLOC_HOST_PTR
+            | T::COPY_HOST_PTR
+            | T::HOST_WRITE_ONLY
+            | T::HOST_READ_ONLY
+            | T::HOST_NO_ACCESS
+            | T::KERNEL_READ_AND_WRITE
+            | T::SVM_FINE_GRAIN_BUFFER
+            | T::SVM_ATOMICS => {
+                self.0 = value;
+                Ok(())
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+}
+
 // #ifdef CL_VERSION_1_2;
 /* cl_mem_migration_flags - cl_bitfield */
 #[non_exhaustive]
 pub struct MemMigrationFlags(cl_mem_migration_flags);
 impl MemMigrationFlags {
-    pub fn get(self) -> Option<cl_mem_migration_flags> {
-        match self.0 {
-            Self::OBJECT_CONTENT_UNDEFINED | Self::OBJECT_HOST => Some(self.0),
-            _ => None,
-        }
-    }
     pub const OBJECT_HOST: cl_mem_migration_flags = CL_MIGRATE_MEM_OBJECT_HOST;
     pub const OBJECT_CONTENT_UNDEFINED: cl_mem_migration_flags =
         CL_MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED;
 }
 // #endif;
 
+gen_add_trait!(MemMigrationFlags);
+
+impl GetSetGo for MemMigrationFlags {
+    fn new(value: cl_mem_migration_flags) -> BitfieldResult<Self> {
+        type T = MemMigrationFlags;
+        let fn_name = "MemMigrationFlags";
+        match value {
+            T::OBJECT_CONTENT_UNDEFINED | T::OBJECT_HOST => Ok(MemMigrationFlags(value)),
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+    fn get(&self) -> cl_mem_migration_flags {
+        self.0
+    }
+    fn set(&mut self, value: cl_mem_migration_flags) -> BitfieldResult<()> {
+        type T = MemMigrationFlags;
+        let fn_name = "MemMigrationFlags";
+        match value {
+            T::OBJECT_CONTENT_UNDEFINED | T::OBJECT_HOST => {
+                self.0 = value;
+                Ok(())
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+}
+
 #[non_exhaustive]
 pub struct MapFlags(cl_map_flags);
 impl MapFlags {
-    pub fn get(self) -> Option<cl_map_flags> {
-        match self.0 {
-            Self::READ | Self::WRITE | Self::WRITE_INVALIDATE_REGION => Some(self.0),
-            _ => None,
-        }
-    }
     /* cl_map_flags - cl_bitfield */
     pub const READ: cl_map_flags = CL_MAP_READ;
     pub const WRITE: cl_map_flags = CL_MAP_WRITE;
@@ -315,15 +505,36 @@ impl MapFlags {
     // #endif;
 }
 
+gen_add_trait!(MapFlags);
+
+impl GetSetGo for MapFlags {
+    fn new(value: cl_map_flags) -> BitfieldResult<Self> {
+        type T = MapFlags;
+        let fn_name = "MapFlags";
+        match value {
+            T::READ | T::WRITE | T::WRITE_INVALIDATE_REGION => Ok(MapFlags(value)),
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+    fn get(&self) -> cl_map_flags {
+        self.0
+    }
+    fn set(&mut self, value: cl_map_flags) -> BitfieldResult<()> {
+        type T = MapFlags;
+        let fn_name = "MapFlags";
+        match value {
+            T::READ | T::WRITE | T::WRITE_INVALIDATE_REGION => {
+                self.0 = value;
+                Ok(())
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+}
+
 #[non_exhaustive]
 pub struct KernelArgTypeQualifier(cl_kernel_arg_type_qualifier);
 impl KernelArgTypeQualifier {
-    pub fn get(self) -> Option<cl_kernel_arg_type_qualifier> {
-        match self.0 {
-            Self::NONE | Self::CONST | Self::RESTRICT | Self::VOLATILE | Self::PIPE => Some(self.0),
-            _ => None,
-        }
-    }
     // #ifdef CL_VERSION_1_2;
     /* cl_kernel_arg_type_qualifier - cl_bitfield */
     pub const NONE: cl_kernel_arg_type_qualifier = CL_KERNEL_ARG_TYPE_NONE;
@@ -336,21 +547,38 @@ impl KernelArgTypeQualifier {
     // #endif;
 }
 
+gen_add_trait!(KernelArgTypeQualifier);
+
+impl GetSetGo for KernelArgTypeQualifier {
+    fn new(value: cl_kernel_arg_type_qualifier) -> BitfieldResult<Self> {
+        type T = KernelArgTypeQualifier;
+        let fn_name = "KernelArgTypeQualifier";
+        match value {
+            T::NONE | T::CONST | T::RESTRICT | T::VOLATILE | T::PIPE => {
+                Ok(KernelArgTypeQualifier(value))
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+    fn get(&self) -> cl_kernel_arg_type_qualifier {
+        self.0
+    }
+    fn set(&mut self, value: cl_kernel_arg_type_qualifier) -> BitfieldResult<()> {
+        type T = KernelArgTypeQualifier;
+        let fn_name = "KernelArgTypeQualifier";
+        match value {
+            T::NONE | T::CONST | T::RESTRICT | T::VOLATILE | T::PIPE => {
+                self.0 = value;
+                Ok(())
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+}
+
 #[non_exhaustive]
 pub struct DeviceAtomicCapabilities(cl_device_atomic_capabilities);
 impl DeviceAtomicCapabilities {
-    pub fn get(self) -> Option<cl_device_atomic_capabilities> {
-        match self.0 {
-            Self::ORDER_RELAXED
-            | Self::ORDER_ACQ_REL
-            | Self::ORDER_SEQ_CST
-            | Self::SCOPE_WORK_ITEM
-            | Self::SCOPE_WORK_GROUP
-            | Self::SCOPE_DEVICE
-            | Self::SCOPE_ALL_DEVICES => Some(self.0),
-            _ => None,
-        }
-    }
     /* cl_device_atomic_capabilities - cl_bitfield */
     // #ifdef CL_VERSION_3_0;
     pub const ORDER_RELAXED: cl_device_atomic_capabilities = CL_DEVICE_ATOMIC_ORDER_RELAXED;
@@ -363,15 +591,48 @@ impl DeviceAtomicCapabilities {
     // #endif;
 }
 
+gen_add_trait!(DeviceAtomicCapabilities);
+
+impl GetSetGo for DeviceAtomicCapabilities {
+    fn new(value: cl_device_atomic_capabilities) -> BitfieldResult<Self> {
+        type T = DeviceAtomicCapabilities;
+        let fn_name = "DeviceAtomicCapabilities";
+        match value {
+            T::ORDER_RELAXED
+            | T::ORDER_ACQ_REL
+            | T::ORDER_SEQ_CST
+            | T::SCOPE_WORK_ITEM
+            | T::SCOPE_WORK_GROUP
+            | T::SCOPE_DEVICE
+            | T::SCOPE_ALL_DEVICES => Ok(DeviceAtomicCapabilities(value)),
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+    fn get(&self) -> cl_device_atomic_capabilities {
+        self.0
+    }
+    fn set(&mut self, value: cl_device_atomic_capabilities) -> BitfieldResult<()> {
+        type T = DeviceAtomicCapabilities;
+        let fn_name = "DeviceAtomicCapabilities";
+        match value {
+            T::ORDER_RELAXED
+            | T::ORDER_ACQ_REL
+            | T::ORDER_SEQ_CST
+            | T::SCOPE_WORK_ITEM
+            | T::SCOPE_WORK_GROUP
+            | T::SCOPE_DEVICE
+            | T::SCOPE_ALL_DEVICES => {
+                self.0 = value;
+                Ok(())
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+}
+
 #[non_exhaustive]
 pub struct DeviceDeviceEnqueueCapabilities(cl_device_device_enqueue_capabilities);
 impl DeviceDeviceEnqueueCapabilities {
-    pub fn get(self) -> Option<cl_device_device_enqueue_capabilities> {
-        match self.0 {
-            Self::SUPPORTED | Self::REPLACEABLE_DEFAULT => Some(self.0),
-            _ => None,
-        }
-    }
     /* cl_device_device_enqueue_capabilities - cl_bitfield */
     // #ifdef CL_VERSION_3_0;
     pub const SUPPORTED: cl_device_device_enqueue_capabilities = CL_DEVICE_QUEUE_SUPPORTED;
@@ -379,6 +640,39 @@ impl DeviceDeviceEnqueueCapabilities {
         CL_DEVICE_QUEUE_REPLACEABLE_DEFAULT;
     // #endif;
 }
+
+gen_add_trait!(DeviceDeviceEnqueueCapabilities);
+
+impl GetSetGo for DeviceDeviceEnqueueCapabilities {
+    fn new(value: cl_device_device_enqueue_capabilities) -> BitfieldResult<Self> {
+        type T = DeviceDeviceEnqueueCapabilities;
+        let fn_name = "DeviceDeviceEnqueueCapabilities";
+        match value {
+            T::SUPPORTED | T::REPLACEABLE_DEFAULT => Ok(DeviceDeviceEnqueueCapabilities(value)),
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+    fn get(&self) -> cl_device_device_enqueue_capabilities {
+        self.0
+    }
+    fn set(&mut self, value: cl_device_device_enqueue_capabilities) -> BitfieldResult<()> {
+        type T = DeviceDeviceEnqueueCapabilities;
+        let fn_name = "DeviceDeviceEnqueueCapabilities";
+        match value {
+            T::SUPPORTED | T::REPLACEABLE_DEFAULT => {
+                self.0 = value;
+                Ok(())
+            }
+            _ => Err(ValidationError::InvalidBitfield(fn_name)),
+        }
+    }
+}
+
+/*************************************************************
+ *
+ *                     API Parameters
+ *
+ * */
 
 #[non_exhaustive]
 pub struct PlatformInfo;
