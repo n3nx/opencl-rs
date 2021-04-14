@@ -40,14 +40,14 @@ pub use crate::cl::{
 };
 
 // Functions
-#[cfg(feature = "cl_version_1_1")]
+#[cfg(feature = "cl_1_1")]
 pub use crate::cl::{
     clCreateSubBuffer, clCreateUserEvent, clEnqueueCopyBufferRect, clEnqueueReadBufferRect,
     clEnqueueWriteBufferRect, clSetEventCallback, clSetMemObjectDestructorCallback,
     clSetUserEventStatus,
 };
 // Functions
-#[cfg(feature = "cl_version_1_2")]
+#[cfg(feature = "cl_1_2")]
 pub use crate::cl::{
     clCompileProgram, clCreateCommandQueue, clCreateImage, clCreateProgramWithBuiltInKernels,
     clCreateSampler, clCreateSubDevices, clEnqueueBarrierWithWaitList, clEnqueueFillBuffer,
@@ -57,7 +57,7 @@ pub use crate::cl::{
 };
 
 // Functions
-#[cfg(feature = "cl_version_2_0")]
+#[cfg(feature = "cl_2_0")]
 pub use crate::cl::{
     clCreateCommandQueueWithProperties, clCreatePipe, clCreateSamplerWithProperties,
     clEnqueueSVMFree, clEnqueueSVMMap, clEnqueueSVMMemFill, clEnqueueSVMMemcpy, clEnqueueSVMUnmap,
@@ -65,16 +65,16 @@ pub use crate::cl::{
 };
 
 // Functions
-#[cfg(feature = "cl_version_2_1")]
+#[cfg(feature = "cl_2_1")]
 pub use crate::cl::{
     clCloneKernel, clCreateProgramWithIL, clEnqueueSVMMigrateMem, clGetDeviceAndHostTimer,
     clGetHostTimer, clGetKernelSubGroupInfo, clSetDefaultDeviceCommandQueue,
 };
 // Functions
-#[cfg(feature = "cl_version_2_2")]
+#[cfg(feature = "cl_2_2")]
 pub use crate::cl::{clSetProgramReleaseCallback, clSetProgramSpecializationConstant};
 // Functions
-#[cfg(feature = "cl_version_3_0")]
+#[cfg(feature = "cl_3_0")]
 pub use crate::cl::{
     clCreateBufferWithProperties, clCreateImageWithProperties, clSetContextDestructorCallback,
 };

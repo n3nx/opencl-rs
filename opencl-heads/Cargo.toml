@@ -1,28 +1,36 @@
 [package]
 name = "opencl-heads"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Xenon Lucifer Diablo <code@nmnx.org>"]
 edition = "2018"
 description = "Actively Maintained with Long Term Support, Pure Rust Implementation, Low Level bindings for OpenCL"
 license = "Apache-2.0"
 homepage = "https://nmnx.org/dev/opencl"
 repository = "https://github.com/diabloxenon/opencl"
-keywords = ["ffi", "api", "opencl", "ocl", "gpu", "gpgpu"]
+keywords = ["ffi", "api", "opencl", "gpu", "gpgpu"]
+exclude = ["target/*", "bak/*"]
+categories = ["api-bindings", "external-ffi-bindings", "science", "graphics"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
 # Updated listing of OpenCL versions.
-cl_version_1_1 = []
-cl_version_1_2 = []
-cl_version_2_0 = []
-cl_version_2_1 = []
-cl_version_2_2 = []
-cl_version_3_0 = []
+cl_1_1 = []
+cl_1_2 = []
+cl_2_0 = []
+cl_2_1 = []
+cl_2_2 = []
+cl_3_0 = []
 
-default = ["cl_version_3_0", "cl_version_1_2", "cl_version_1_1"]
+# For drop-in replacement of cl-sys.
+opencl_version_1_1 = ["cl_1_1"]
+opencl_version_1_2 = ["cl_1_2"]
+opencl_version_2_0 = ["cl_2_0"]
+opencl_version_2_1 = ["cl_2_1"]
+opencl_version_2_2 = ["cl_2_2"]
 
-all = ["cl_version_3_0", "cl_version_2_2", "cl_version_2_1", "cl_version_2_0", "cl_version_1_2", "cl_version_1_1"]
+default = ["cl_1_2", "cl_1_1"]
+all = ["cl_3_0", "cl_2_2", "cl_2_1", "cl_2_0", "cl_1_2", "cl_1_1"]
 
 [dependencies]
 libc = "0.2.93"
