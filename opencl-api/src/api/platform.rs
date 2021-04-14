@@ -18,18 +18,11 @@
 use crate::enums::{ParamValue, Size};
 use crate::helpers::*;
 use crate::structs::PlatformInfo;
-use crate::{gen_object_elem, gen_object_list, size_getter};
+use crate::{gen_object_list, gen_param_value, get_count, size_getter};
 use libc::c_void;
 use opencl_heads::ffi::*;
 use std::ptr;
 use std::vec;
-
-fn get_platform_count(num_entries: cl_uint) -> APIResult<cl_uint> {
-    let mut platform_count: cl_uint = 0;
-    let status_code =
-        unsafe { clGetPlatformIDs(num_entries, ptr::null_mut(), &mut platform_count) };
-    status_update(status_code, "clGetPlatformIDs", platform_count)
-}
 
 /// Returns the list of all platforms available
 ///
@@ -43,17 +36,19 @@ fn get_platform_count(num_entries: cl_uint) -> APIResult<cl_uint> {
 /// let id = get_platform_ids();
 /// ```
 pub fn get_platform_ids() -> APIResult<PlatformList> {
-    let platform_count = get_platform_count(0)?;
-    let fn_name = "clGetPlatformIDs";
+    // let fn_name = "clGetPlatformIDs";
+    let platform_count = get_count!(clGetPlatformIDs);
+
     if platform_count == 0 {
         Ok(Vec::default())
     } else {
-        let vector_length = platform_count as usize;
-        let mut all_platforms: PlatformList = vec::from_elem(ptr::null_mut(), vector_length);
-        let status_code = unsafe {
-            clGetPlatformIDs(platform_count, all_platforms.as_mut_ptr(), ptr::null_mut())
-        };
-        status_update(status_code, fn_name, all_platforms)
+        gen_object_list!(clGetPlatformIDs, PlatformList, platform_count)
+        // let vector_length = platform_count as usize;
+        // let mut all_platforms: PlatformList = vec::from_elem(ptr::null_mut(), vector_length);
+        // let status_code = unsafe {
+        //     clGetPlatformIDs(platform_count, all_platforms.as_mut_ptr(), ptr::null_mut())
+        // };
+        // status_update(status_code, fn_name, all_platforms)
     }
 }
 
@@ -67,20 +62,19 @@ pub fn get_platform_info(
     match param_name {
         P::PROFILE | P::VERSION | P::VENDOR | P::NAME | P::EXTENSIONS => {
             let size = get_platform_info_size(platform, param_name)?;
-            gen_object_list!(get_platform_info_string, clGetPlatformInfo, u8);
-            let param_value = get_platform_info_string(platform, param_name, size, 0)?;
+            let filler = 0;
+            let param_value =
+                gen_param_value!(clGetPlatformInfo, u8, platform, param_name, size, filler);
             Ok(ParamValue::String(bytes_into_string(param_value)?))
         }
         // >= CL 2.1
         P::HOST_TIMER_RESOLUTION => {
-            gen_object_elem!(get_platform_info_ulong, clGetPlatformInfo, u64);
-            let param_value = get_platform_info_ulong(platform, param_name)?;
+            let param_value = gen_param_value!(clGetPlatformInfo, u64, platform, param_name);
             Ok(ParamValue::ULong(param_value))
         }
         // >= CL 3.0
         P::NUMERIC_VERSION => {
-            gen_object_elem!(get_platform_info_uint, clGetPlatformInfo, u32);
-            let param_value = get_platform_info_uint(platform, param_name)?;
+            let param_value = gen_param_value!(clGetPlatformInfo, u32, platform, param_name);
             Ok(ParamValue::UInt(param_value))
         }
         // >= CL 3.0
@@ -94,12 +88,14 @@ pub fn get_platform_info(
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 ],
             };
-            gen_object_list!(
-                get_platform_info_name_version,
+            let param_value = gen_param_value!(
                 clGetPlatformInfo,
-                cl_name_version
+                cl_name_version,
+                platform,
+                param_name,
+                size,
+                filler
             );
-            let param_value = get_platform_info_name_version(platform, param_name, size, filler)?;
             Ok(ParamValue::NameVersion(param_value))
         }
         _ => status_update(40404, fn_name, ParamValue::default()),
