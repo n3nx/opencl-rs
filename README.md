@@ -13,9 +13,9 @@ By **Long Term Support**, we commit to fix bugs and to maintain proper functiona
 This library is intended to provide these features alongside of traditional ones.
 
 1. Lightweight
-2. Verbose Errors
+2. Superior Error Handling
 3. Bug fixing and Optimizations
-4. Simplicity
+4. Ease of Use and Simplicity
 5. Types and Functions Safety
 
 ## Installation

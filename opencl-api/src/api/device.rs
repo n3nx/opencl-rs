@@ -18,54 +18,41 @@
 use crate::enums::{ParamValue, Size};
 use crate::helpers::{bytes_into_string, status_update, APIResult, DeviceList, GetSetGo};
 use crate::structs::{DeviceInfo, DeviceType};
-use crate::{gen_object_elem, gen_object_list, size_getter};
+use crate::{gen_object_list, gen_param_value, get_count, size_getter};
 use libc::c_void;
-use opencl_heads::ffi::*;
+use opencl_heads::ffi;
+use opencl_heads::ffi::{clCreateSubDevices, clGetDeviceIDs, clGetDeviceInfo};
+use opencl_heads::types::*;
 use std::ptr;
 use std::vec;
 
-fn get_device_count(
-    platform: cl_platform_id,
-    device_type: cl_device_type,
-    num_entries: cl_uint,
-) -> APIResult<cl_uint> {
-    let fn_name = "clGetDeviceIDs";
-    let mut device_count: cl_uint = 0;
-    let status_code = unsafe {
-        clGetDeviceIDs(
-            platform,
-            device_type,
-            num_entries,
-            ptr::null_mut(),
-            &mut device_count,
-        )
-    };
-    status_update(status_code, fn_name, device_count)
-}
-
 pub fn get_device_ids(platform: cl_platform_id, device_type: DeviceType) -> APIResult<DeviceList> {
-    let fn_name = "clGetDeviceIDs";
-    // let device_type = match device_type.get() {
-    //     Some(x) => x,
-    //     None => return Err(ValidationError::InvalidBitfield(fn_name).to_error()),
-    // };
+    // let fn_name = "clGetDeviceIDs";
     let device_type = device_type.get();
-    let device_count = get_device_count(platform, device_type, 0)?;
+    let device_count = get_count!(clGetDeviceIDs, platform, device_type);
+
     if device_count == 0 {
         Ok(Vec::default())
     } else {
-        let vector_length = device_count as usize;
-        let mut all_devices: DeviceList = vec::from_elem(ptr::null_mut(), vector_length);
-        let status_code = unsafe {
-            clGetDeviceIDs(
-                platform,
-                device_type,
-                device_count,
-                all_devices.as_mut_ptr(),
-                ptr::null_mut(),
-            )
-        };
-        status_update(status_code, fn_name, all_devices)
+        gen_object_list!(
+            clGetDeviceIDs,
+            DeviceList,
+            device_count,
+            platform,
+            device_type
+        )
+        // let vector_length = device_count as usize;
+        // let mut all_devices: DeviceList = vec::from_elem(ptr::null_mut(), vector_length);
+        // let status_code = unsafe {
+        //     clGetDeviceIDs(
+        //         platform,
+        //         device_type,
+        //         device_count,
+        //         all_devices.as_mut_ptr(),
+        //         ptr::null_mut(),
+        //     )
+        // };
+        // status_update(status_code, fn_name, all_devices)
     }
 }
 
@@ -85,8 +72,9 @@ pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIR
         | D::IL_VERSION
         | D::LATEST_CONFORMANCE_VERSION_PASSED => {
             let size = get_device_info_size(device, param_name)?;
-            gen_object_list!(get_device_info_string, clGetDeviceInfo, u8);
-            let param_value = get_device_info_string(device, param_name, size, 0)?;
+            let filler = 0;
+            let param_value =
+                gen_param_value!(clGetDeviceInfo, u8, device, param_name, size, filler);
             Ok(ParamValue::String(bytes_into_string(param_value)?))
         }
         D::VENDOR_ID
@@ -147,8 +135,7 @@ pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIR
         | D::NUMERIC_VERSION
         | D::GLOBAL_MEM_CACHE_TYPE
         | D::LOCAL_MEM_TYPE => {
-            gen_object_elem!(get_device_info_uint, clGetDeviceInfo, u32);
-            let param_value = get_device_info_uint(device, param_name)?;
+            let param_value = gen_param_value!(clGetDeviceInfo, u32, device, param_name);
             Ok(ParamValue::UInt(param_value))
         }
         D::MAX_MEM_ALLOC_SIZE
@@ -167,8 +154,7 @@ pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIR
         | D::ATOMIC_MEMORY_CAPABILITIES
         | D::ATOMIC_FENCE_CAPABILITIES
         | D::DEVICE_ENQUEUE_CAPABILITIES => {
-            gen_object_elem!(get_device_info_ulong, clGetDeviceInfo, u64);
-            let param_value = get_device_info_ulong(device, param_name)?;
+            let param_value = gen_param_value!(clGetDeviceInfo, u64, device, param_name);
             Ok(ParamValue::ULong(param_value))
         }
         D::ILS_WITH_VERSION
@@ -185,12 +171,14 @@ pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIR
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 ],
             };
-            gen_object_list!(
-                get_device_info_name_version,
+            let param_value = gen_param_value!(
                 clGetDeviceInfo,
-                cl_name_version
+                cl_name_version,
+                device,
+                param_name,
+                size,
+                filler
             );
-            let param_value = get_device_info_name_version(device, param_name, size, filler)?;
             Ok(ParamValue::NameVersion(param_value))
         }
         D::MAX_WORK_GROUP_SIZE
@@ -207,29 +195,61 @@ pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIR
         | D::PROFILING_TIMER_RESOLUTION
         | D::PRINTF_BUFFER_SIZE
         | D::PREFERRED_WORK_GROUP_SIZE_MULTIPLE => {
-            gen_object_elem!(get_device_info_usize, clGetDeviceInfo, usize);
-            let param_value = get_device_info_usize(device, param_name)?;
+            let param_value = gen_param_value!(clGetDeviceInfo, usize, device, param_name);
             Ok(ParamValue::CSize(param_value))
         }
         D::PLATFORM | D::PARENT_DEVICE => {
-            gen_object_elem!(get_device_info_ptr, clGetDeviceInfo, isize);
-            let param_value = get_device_info_ptr(device, param_name)?;
+            let param_value = gen_param_value!(clGetDeviceInfo, isize, device, param_name);
             Ok(ParamValue::CPtr(param_value))
         }
         D::PARTITION_PROPERTIES | D::PARTITION_TYPE => {
             let size = get_device_info_size(device, param_name)?;
-            gen_object_list!(get_device_info_vec_cptr, clGetDeviceInfo, isize);
-            let param_value = get_device_info_vec_cptr(device, param_name, size, 0)?;
+            let filler = 0;
+            let param_value =
+                gen_param_value!(clGetDeviceInfo, isize, device, param_name, size, filler);
             Ok(ParamValue::ArrCPtr(param_value))
         }
         D::MAX_WORK_ITEM_SIZES => {
             let size = get_device_info_size(device, param_name)?;
-            gen_object_list!(get_device_info_vec_csize, clGetDeviceInfo, usize);
-            let param_value = get_device_info_vec_csize(device, param_name, size, 0)?;
+            let filler = 0;
+            let param_value =
+                gen_param_value!(clGetDeviceInfo, usize, device, param_name, size, filler);
             Ok(ParamValue::ArrCSize(param_value))
         }
         _ => status_update(40404, fn_name, ParamValue::default()),
     }
+}
+
+pub fn get_device_and_host_timer(device: cl_device_id) -> APIResult<(cl_ulong, cl_ulong)> {
+    let fn_name = "clGetDeviceAndHostTimer";
+    let mut device_timestamp = cl_ulong::default();
+    let mut host_timestamp = cl_ulong::default();
+    let status_code =
+        unsafe { ffi::clGetDeviceAndHostTimer(device, &mut device_timestamp, &mut host_timestamp) };
+    status_update(status_code, fn_name, (device_timestamp, host_timestamp))
+}
+
+pub fn get_host_timer(device: cl_device_id) -> APIResult<cl_ulong> {
+    let fn_name = "clGetHostTimer";
+    let mut host_timestamp = cl_ulong::default();
+    let status_code = unsafe { ffi::clGetHostTimer(device, &mut host_timestamp) };
+    status_update(status_code, fn_name, host_timestamp)
+}
+
+pub fn create_sub_devices(
+    in_device: cl_device_id,
+    properties: cl_device_partition_property,
+) -> APIResult<DeviceList> {
+    let properties_ptr = &properties;
+    let device_partition_count = get_count!(clCreateSubDevices, in_device, properties_ptr);
+
+    gen_object_list!(
+        clCreateSubDevices,
+        DeviceList,
+        device_partition_count,
+        in_device,
+        properties_ptr
+    )
 }
 
 /*****************************************************************************
