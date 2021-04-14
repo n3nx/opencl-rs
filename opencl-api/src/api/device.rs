@@ -232,13 +232,11 @@ pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIR
     }
 }
 
-
-
 /*****************************************************************************
- * 
- * 
+ *
+ *
  *                                  Tests
- * 
+ *
  */
 #[cfg(test)]
 mod tests {

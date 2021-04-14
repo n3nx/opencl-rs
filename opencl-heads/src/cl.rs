@@ -61,7 +61,7 @@ extern "system" {
     //                    cl_uint                              num_devices,
     //                    cl_device_id *                       out_devices,
     //                    cl_uint *                            num_devices_ret)  ;
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clCreateSubDevices(
         in_device: cl_device_id,
         properties: *const cl_device_partition_property,
@@ -69,25 +69,25 @@ extern "system" {
         out_devices: *mut cl_device_id,
         num_devices_ret: *mut cl_uint,
     ) -> cl_int;
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clRetainDevice(device: cl_device_id) -> cl_int;
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clReleaseDevice(device: cl_device_id) -> cl_int;
     // #endif
     // #ifdef CL_VERSION_2_1
-    #[cfg(feature = "cl_version_2_1")]
+    #[cfg(feature = "cl_2_1")]
     pub fn clSetDefaultDeviceCommandQueue(
         context: cl_context,
         device: cl_device_id,
         command_queue: cl_command_queue,
     ) -> cl_int;
-    #[cfg(feature = "cl_version_2_1")]
+    #[cfg(feature = "cl_2_1")]
     pub fn clGetDeviceAndHostTimer(
         device: cl_device_id,
         device_timestamp: *mut cl_ulong,
         host_timestamp: *mut cl_ulong,
     ) -> cl_int;
-    #[cfg(feature = "cl_version_2_1")]
+    #[cfg(feature = "cl_2_1")]
     pub fn clGetHostTimer(device: cl_device_id, host_timestamp: *mut cl_ulong) -> cl_int;
     // #endif
     // /* Context APIs */
@@ -135,7 +135,7 @@ extern "system" {
     ) -> cl_int;
 
     // #ifdef CL_VERSION_3_0
-    #[cfg(feature = "cl_version_3_0")]
+    #[cfg(feature = "cl_3_0")]
     pub fn clSetContextDestructorCallback(
         context: cl_context,
         pfn_notify: Option<extern "C" fn(context: cl_context, user_data: *mut c_void)>,
@@ -145,7 +145,7 @@ extern "system" {
 
     // /* Command Queue APIs */
     // #ifdef CL_VERSION_2_0
-    #[cfg(feature = "cl_version_2_0")]
+    #[cfg(feature = "cl_2_0")]
     pub fn clCreateCommandQueueWithProperties(
         context: cl_context,
         device: cl_device_id,
@@ -171,7 +171,7 @@ extern "system" {
         errcode_ret: *mut cl_int,
     ) -> cl_mem;
     // #ifdef CL_VERSION_1_1
-    #[cfg(feature = "cl_version_1_1")]
+    #[cfg(feature = "cl_1_1")]
     pub fn clCreateSubBuffer(
         buffer: cl_mem,
         flags: cl_mem_flags,
@@ -181,7 +181,7 @@ extern "system" {
     ) -> cl_mem;
     // #endif
     // #ifdef CL_VERSION_1_2
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clCreateImage(
         context: cl_context,
         flags: cl_mem_flags,
@@ -192,7 +192,7 @@ extern "system" {
     ) -> cl_mem;
     // #endif
     // #ifdef CL_VERSION_2_0
-    #[cfg(feature = "cl_version_2_0")]
+    #[cfg(feature = "cl_2_0")]
     pub fn clCreatePipe(
         context: cl_context,
         flags: cl_mem_flags,
@@ -203,7 +203,7 @@ extern "system" {
     ) -> cl_mem;
     // #endif
     // #ifdef CL_VERSION_3_0
-    #[cfg(feature = "cl_version_3_0")]
+    #[cfg(feature = "cl_3_0")]
     pub fn clCreateBufferWithProperties(
         context: cl_context,
         properties: *const cl_mem_properties,
@@ -212,7 +212,7 @@ extern "system" {
         host_ptr: *mut c_void,
         errcode_ret: *mut cl_int,
     ) -> cl_mem;
-    #[cfg(feature = "cl_version_3_0")]
+    #[cfg(feature = "cl_3_0")]
     pub fn clCreateImageWithProperties(
         context: cl_context,
         properties: *const cl_mem_properties,
@@ -248,7 +248,7 @@ extern "system" {
         param_value_size_ret: *mut size_t,
     ) -> cl_int;
     // #ifdef CL_VERSION_2_0
-    #[cfg(feature = "cl_version_2_0")]
+    #[cfg(feature = "cl_2_0")]
     pub fn clGetPipeInfo(
         pipe: cl_mem,
         param_name: cl_pipe_info,
@@ -258,7 +258,7 @@ extern "system" {
     ) -> cl_int;
     // #endif
     // #ifdef CL_VERSION_1_1
-    #[cfg(feature = "cl_version_1_1")]
+    #[cfg(feature = "cl_1_1")]
     pub fn clSetMemObjectDestructorCallback(
         memobj: cl_mem,
         pfn_notify: Option<extern "C" fn(memobj: cl_mem, user_data: *mut c_void)>,
@@ -267,19 +267,19 @@ extern "system" {
     // #endif
     // /* SVM Allocation APIs */
     // #ifdef CL_VERSION_2_0
-    #[cfg(feature = "cl_version_2_0")]
+    #[cfg(feature = "cl_2_0")]
     pub fn clSVMAlloc(
         context: cl_context,
         flags: cl_svm_mem_flags,
         size: size_t,
         alignment: cl_uint,
     ) -> *mut c_void;
-    #[cfg(feature = "cl_version_2_0")]
+    #[cfg(feature = "cl_2_0")]
     pub fn clSVMFree(context: cl_context, svm_pointer: *mut c_void);
     // #endif
     // /* Sampler APIs */
     // #ifdef CL_VERSION_2_0
-    #[cfg(feature = "cl_version_2_0")]
+    #[cfg(feature = "cl_2_0")]
     pub fn clCreateSamplerWithProperties(
         context: cl_context,
         sampler_properties: *const cl_sampler_properties,
@@ -313,7 +313,7 @@ extern "system" {
         errcode_ret: *mut cl_int,
     ) -> cl_program;
     // #ifdef CL_VERSION_1_2
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clCreateProgramWithBuiltInKernels(
         context: cl_context,
         num_devices: cl_uint,
@@ -323,7 +323,7 @@ extern "system" {
     ) -> cl_program;
     // #endif
     // #ifdef CL_VERSION_2_1
-    #[cfg(feature = "cl_version_2_1")]
+    #[cfg(feature = "cl_2_1")]
     pub fn clCreateProgramWithIL(
         context: cl_context,
         il: *const c_void,
@@ -342,7 +342,7 @@ extern "system" {
         user_data: *mut c_void,
     ) -> cl_int;
     // #ifdef CL_VERSION_1_2
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clCompileProgram(
         program: cl_program,
         num_devices: cl_uint,
@@ -354,7 +354,7 @@ extern "system" {
         pfn_notify: Option<extern "C" fn(program: cl_program, user_data: *mut c_void)>,
         user_data: *mut c_void,
     ) -> cl_int;
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clLinkProgram(
         context: cl_context,
         num_devices: cl_uint,
@@ -369,13 +369,13 @@ extern "system" {
     // #endif
     // #ifdef CL_VERSION_2_2 DEPRECATED
     /// DEPRECATED
-    #[cfg(feature = "cl_version_2_2")]
+    #[cfg(feature = "cl_2_2")]
     pub fn clSetProgramReleaseCallback(
         program: cl_program,
         pfn_notify: Option<extern "C" fn(cl_program)>,
         user_data: *mut c_void,
     ) -> cl_int;
-    #[cfg(feature = "cl_version_2_2")]
+    #[cfg(feature = "cl_2_2")]
     pub fn clSetProgramSpecializationConstant(
         program: cl_program,
         spec_id: cl_uint,
@@ -384,7 +384,7 @@ extern "system" {
     ) -> cl_int;
     // #endif
     // #ifdef CL_VERSION_1_2
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clUnloadPlatformCompiler(platform: cl_platform_id) -> cl_int;
     // #endif
     pub fn clGetProgramInfo(
@@ -415,7 +415,7 @@ extern "system" {
         num_kernels_ret: *mut cl_uint,
     ) -> cl_int;
     // #ifdef CL_VERSION_2_1
-    #[cfg(feature = "cl_version_2_1")]
+    #[cfg(feature = "cl_2_1")]
     pub fn clCloneKernel(source_kernel: cl_kernel, errcode_ret: *mut cl_int) -> cl_kernel;
     // #endif
     pub fn clRetainKernel(kernel: cl_kernel) -> cl_int;
@@ -446,7 +446,7 @@ extern "system" {
         param_value_size_ret: *mut size_t,
     ) -> cl_int;
     // #ifdef CL_VERSION_1_2
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clGetKernelArgInfo(
         kernel: cl_kernel,
         arg_indx: cl_uint,
@@ -465,7 +465,7 @@ extern "system" {
         param_value_size_ret: *mut size_t,
     ) -> cl_int;
     // #ifdef CL_VERSION_2_1
-    #[cfg(feature = "cl_version_2_1")]
+    #[cfg(feature = "cl_2_1")]
     pub fn clGetKernelSubGroupInfo(
         kernel: cl_kernel,
         device: cl_device_id,
@@ -490,7 +490,7 @@ extern "system" {
     ) -> cl_int;
 
     // #ifdef CL_VERSION_1_1
-    #[cfg(feature = "cl_version_1_1")]
+    #[cfg(feature = "cl_1_1")]
     pub fn clCreateUserEvent(context: cl_context, errcode_ret: *mut cl_int) -> cl_event;
     // #endif
 
@@ -499,10 +499,10 @@ extern "system" {
     pub fn clReleaseEvent(event: cl_event) -> cl_int;
 
     // #ifdef CL_VERSION_1_1
-    #[cfg(feature = "cl_version_1_1")]
+    #[cfg(feature = "cl_1_1")]
     pub fn clSetUserEventStatus(event: cl_event, execution_status: cl_int) -> cl_int;
 
-    #[cfg(feature = "cl_version_1_1")]
+    #[cfg(feature = "cl_1_1")]
     pub fn clSetEventCallback(
         event: cl_event,
         command_exec_callback_type: cl_int,
@@ -542,7 +542,7 @@ extern "system" {
     ) -> cl_int;
 
     // #ifdef CL_VERSION_1_1
-    #[cfg(feature = "cl_version_1_1")]
+    #[cfg(feature = "cl_1_1")]
     pub fn clEnqueueReadBufferRect(
         command_queue: cl_command_queue,
         buffer: cl_mem,
@@ -574,7 +574,7 @@ extern "system" {
     ) -> cl_int;
 
     // #ifdef CL_VERSION_1_1
-    #[cfg(feature = "cl_version_1_1")]
+    #[cfg(feature = "cl_1_1")]
     pub fn clEnqueueWriteBufferRect(
         command_queue: cl_command_queue,
         buffer: cl_mem,
@@ -595,7 +595,7 @@ extern "system" {
     // #endif
 
     // #ifdef CL_VERSION_1_2
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clEnqueueFillBuffer(
         command_queue: cl_command_queue,
         buffer: cl_mem,
@@ -624,7 +624,7 @@ extern "system" {
 
     // #ifdef CL_VERSION_1_1
 
-    #[cfg(feature = "cl_version_1_1")]
+    #[cfg(feature = "cl_1_1")]
     pub fn clEnqueueCopyBufferRect(
         command_queue: cl_command_queue,
         src_buffer: cl_mem,
@@ -673,7 +673,7 @@ extern "system" {
 
     // #ifdef CL_VERSION_1_2
 
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clEnqueueFillImage(
         command_queue: cl_command_queue,
         image: cl_mem,
@@ -762,7 +762,7 @@ extern "system" {
 
     // #ifdef CL_VERSION_1_2
 
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clEnqueueMigrateMemObjects(
         command_queue: cl_command_queue,
         num_mem_objects: cl_uint,
@@ -802,7 +802,7 @@ extern "system" {
 
     // #ifdef CL_VERSION_1_2
 
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clEnqueueMarkerWithWaitList(
         command_queue: cl_command_queue,
         num_events_in_wait_list: cl_uint,
@@ -810,7 +810,7 @@ extern "system" {
         event: *mut cl_event,
     ) -> cl_int;
 
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clEnqueueBarrierWithWaitList(
         command_queue: cl_command_queue,
         num_events_in_wait_list: cl_uint,
@@ -822,7 +822,7 @@ extern "system" {
 
     // #ifdef CL_VERSION_2_0
 
-    #[cfg(feature = "cl_version_2_0")]
+    #[cfg(feature = "cl_2_0")]
     pub fn clEnqueueSVMFree(
         command_queue: cl_command_queue,
         num_svm_pointers: cl_uint,
@@ -841,7 +841,7 @@ extern "system" {
         event: *mut cl_event,
     ) -> cl_int;
 
-    #[cfg(feature = "cl_version_2_0")]
+    #[cfg(feature = "cl_2_0")]
     pub fn clEnqueueSVMMemcpy(
         command_queue: cl_command_queue,
         blocking_copy: cl_bool,
@@ -853,7 +853,7 @@ extern "system" {
         event: *mut cl_event,
     ) -> cl_int;
 
-    #[cfg(feature = "cl_version_2_0")]
+    #[cfg(feature = "cl_2_0")]
     pub fn clEnqueueSVMMemFill(
         command_queue: cl_command_queue,
         svm_ptr: *mut c_void,
@@ -865,7 +865,7 @@ extern "system" {
         event: *mut cl_event,
     ) -> cl_int;
 
-    #[cfg(feature = "cl_version_2_0")]
+    #[cfg(feature = "cl_2_0")]
     pub fn clEnqueueSVMMap(
         command_queue: cl_command_queue,
         blocking_map: cl_bool,
@@ -877,7 +877,7 @@ extern "system" {
         event: *mut cl_event,
     ) -> cl_int;
 
-    #[cfg(feature = "cl_version_2_0")]
+    #[cfg(feature = "cl_2_0")]
     pub fn clEnqueueSVMUnmap(
         command_queue: cl_command_queue,
         svm_ptr: *mut c_void,
@@ -890,7 +890,7 @@ extern "system" {
 
     // #ifdef CL_VERSION_2_1
 
-    #[cfg(feature = "cl_version_2_1")]
+    #[cfg(feature = "cl_2_1")]
     pub fn clEnqueueSVMMigrateMem(
         command_queue: cl_command_queue,
         num_svm_pointers: cl_uint,
@@ -915,7 +915,7 @@ extern "system" {
     //  * check to make sure the address is not NULL, before using or
     //  * calling the returned function address.
     //  */
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clGetExtensionFunctionAddressForPlatform(
         platform: cl_platform_id,
         func_name: *const c_char,
@@ -978,7 +978,7 @@ extern "system" {
     // pub fn clGetExtensionFunctionAddress(func_name: *const c_char) -> *mut c_void;
 
     // /* Deprecated OpenCL 2.0 APIs */
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clCreateCommandQueue(
         context: cl_context,
         device: cl_device_id,
@@ -987,7 +987,7 @@ extern "system" {
     ) -> cl_command_queue;
 
     // extern CL_API_ENTRY CL_API_PREFIX__VERSION_1_2_DEPRECATED cl_sampler CL_API_CALL
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clCreateSampler(
         context: cl_context,
         normalized_coords: cl_bool,
@@ -996,7 +996,7 @@ extern "system" {
         errcode_ret: *mut cl_int,
     ) -> cl_sampler;
 
-    #[cfg(feature = "cl_version_1_2")]
+    #[cfg(feature = "cl_1_2")]
     pub fn clEnqueueTask(
         command_queue: cl_command_queue,
         kernel: cl_kernel,
