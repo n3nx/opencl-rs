@@ -70,12 +70,8 @@ impl error::Error for ValidationError {}
 impl fmt::Display for ValidationError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::InvalidStatusCode(fn_name) => write!(
-                f,
-                "Undefined Error: {} ==> Unconventional status code found in function \'{}\' with resulting output.",
-                self, fn_name
-            ),
-            Self::InvalidBitfield(fn_name) => write!(f, "Undefined Error: {} ==> Unidentified bitfield configuration found in function \'{}\' with resulting output.", self, fn_name),
+            Self::InvalidStatusCode(fn_name) => write!(f, "Validation Error: {} ==> Unconventional status code found in function \'{}\' with resulting output.", self, fn_name),
+            Self::InvalidBitfield(fn_name) => write!(f, "Validation Error: {} ==> Unidentified bitfield configuration used during construction of bitfield \'{}\' with resulting output.", self, fn_name),
             _ => write!(f, "Undefined Error: {}", self),
         }
     }

@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 use crate::enums::{ParamValue, Size};
-use crate::errors::{ToLibraryError, ValidationError};
-use crate::helpers::*;
+use crate::helpers::{bytes_into_string, status_update, APIResult, DeviceList, GetSetGo};
 use crate::structs::{DeviceInfo, DeviceType};
 use crate::{gen_object_elem, gen_object_list, size_getter};
 use libc::c_void;
@@ -46,10 +45,11 @@ fn get_device_count(
 
 pub fn get_device_ids(platform: cl_platform_id, device_type: DeviceType) -> APIResult<DeviceList> {
     let fn_name = "clGetDeviceIDs";
-    let device_type = match device_type.get() {
-        Some(x) => x,
-        None => return Err(ValidationError::InvalidBitfield(fn_name).to_error()),
-    };
+    // let device_type = match device_type.get() {
+    //     Some(x) => x,
+    //     None => return Err(ValidationError::InvalidBitfield(fn_name).to_error()),
+    // };
+    let device_type = device_type.get();
     let device_count = get_device_count(platform, device_type, 0)?;
     if device_count == 0 {
         Ok(Vec::default())
@@ -160,7 +160,6 @@ pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIR
         | D::SINGLE_FP_CONFIG
         | D::DOUBLE_FP_CONFIG
         | D::EXECUTION_CAPABILITIES
-        // Deprecated | D::QUEUE_PROPERTIES
         | D::QUEUE_ON_HOST_PROPERTIES
         | D::QUEUE_ON_DEVICE_PROPERTIES
         | D::PARTITION_AFFINITY_DOMAIN
@@ -172,7 +171,11 @@ pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIR
             let param_value = get_device_info_ulong(device, param_name)?;
             Ok(ParamValue::ULong(param_value))
         }
-        D::ILS_WITH_VERSION | D::BUILT_IN_KERNELS_WITH_VERSION | D::OPENCL_C_ALL_VERSIONS | D::OPENCL_C_FEATURES | D::EXTENSIONS_WITH_VERSION => {
+        D::ILS_WITH_VERSION
+        | D::BUILT_IN_KERNELS_WITH_VERSION
+        | D::OPENCL_C_ALL_VERSIONS
+        | D::OPENCL_C_FEATURES
+        | D::EXTENSIONS_WITH_VERSION => {
             let size = get_device_info_size(device, param_name)?;
             let filler = cl_name_version {
                 version: 0,
@@ -190,7 +193,20 @@ pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIR
             let param_value = get_device_info_name_version(device, param_name, size, filler)?;
             Ok(ParamValue::NameVersion(param_value))
         }
-        D::MAX_WORK_GROUP_SIZE | D::IMAGE2D_MAX_WIDTH | D::IMAGE2D_MAX_HEIGHT | D::IMAGE3D_MAX_WIDTH | D::IMAGE3D_MAX_HEIGHT | D::IMAGE3D_MAX_DEPTH | D::IMAGE_MAX_BUFFER_SIZE | D::IMAGE_MAX_ARRAY_SIZE | D::MAX_PARAMETER_SIZE | D::MAX_GLOBAL_VARIABLE_SIZE | D::GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE | D::PROFILING_TIMER_RESOLUTION | D::PRINTF_BUFFER_SIZE | D::PREFERRED_WORK_GROUP_SIZE_MULTIPLE => {
+        D::MAX_WORK_GROUP_SIZE
+        | D::IMAGE2D_MAX_WIDTH
+        | D::IMAGE2D_MAX_HEIGHT
+        | D::IMAGE3D_MAX_WIDTH
+        | D::IMAGE3D_MAX_HEIGHT
+        | D::IMAGE3D_MAX_DEPTH
+        | D::IMAGE_MAX_BUFFER_SIZE
+        | D::IMAGE_MAX_ARRAY_SIZE
+        | D::MAX_PARAMETER_SIZE
+        | D::MAX_GLOBAL_VARIABLE_SIZE
+        | D::GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE
+        | D::PROFILING_TIMER_RESOLUTION
+        | D::PRINTF_BUFFER_SIZE
+        | D::PREFERRED_WORK_GROUP_SIZE_MULTIPLE => {
             gen_object_elem!(get_device_info_usize, clGetDeviceInfo, usize);
             let param_value = get_device_info_usize(device, param_name)?;
             Ok(ParamValue::CSize(param_value))
@@ -204,14 +220,49 @@ pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIR
             let size = get_device_info_size(device, param_name)?;
             gen_object_list!(get_device_info_vec_cptr, clGetDeviceInfo, isize);
             let param_value = get_device_info_vec_cptr(device, param_name, size, 0)?;
-            Ok(ParamValue::ArrCPtr(param_value))   
+            Ok(ParamValue::ArrCPtr(param_value))
         }
         D::MAX_WORK_ITEM_SIZES => {
             let size = get_device_info_size(device, param_name)?;
             gen_object_list!(get_device_info_vec_csize, clGetDeviceInfo, usize);
             let param_value = get_device_info_vec_csize(device, param_name, size, 0)?;
-            Ok(ParamValue::ArrCSize(param_value))   
+            Ok(ParamValue::ArrCSize(param_value))
         }
         _ => status_update(40404, fn_name, ParamValue::default()),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::api::platform;
+    use crate::structs::PlatformInfo;
+    #[test]
+    fn test_get_device_info() {
+        let all_platforms = platform::get_platform_ids().unwrap();
+        assert_ne!(all_platforms.len(), 0);
+        let id = all_platforms[0];
+
+        let name = platform::get_platform_info(id, PlatformInfo::NAME).unwrap();
+        let platform_name = name.unwrap_string().unwrap();
+        assert_ne!(platform_name, "");
+        println!("CL_PLATFORM_NAME: {}", platform_name);
+
+        let mut device =
+            DeviceType::new(DeviceType::CPU).unwrap() + DeviceType::new(DeviceType::GPU).unwrap();
+
+        device.set(DeviceType::GPU).unwrap();
+        let device_ids = get_device_ids(id, device).unwrap();
+        assert!(0 < device_ids.len());
+        // Choose the first GPU device
+        let device_id = device_ids[0];
+        let vendor_name = get_device_info(device_id, DeviceInfo::VENDOR).unwrap();
+        let vendor_name = vendor_name.unwrap_string().unwrap();
+        println!("CL_DEVICE_VENDOR_NAME: {}", vendor_name);
+        assert_ne!(vendor_name, "");
+        let vendor_id = get_device_info(device_id, DeviceInfo::VENDOR_ID).unwrap();
+        let vendor_id = vendor_id.unwrap_uint().unwrap();
+        println!("CL_DEVICE_VENDOR_ID: {:X}", vendor_id);
+        assert_ne!(vendor_id, 0);
     }
 }
