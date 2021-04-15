@@ -135,7 +135,7 @@ macro_rules! gen_add_trait {
         impl std::ops::Add for $name {
             type Output = Self;
             fn add(self, other: Self) -> Self::Output {
-                Self(self.0 + other.0)
+                Self(self.0 | other.0)
             }
         }
     };
@@ -152,6 +152,10 @@ pub type APIResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
 pub type StatusCodeResult = ::std::result::Result<cl_int, ValidationError>;
 pub type HelperResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
 pub type BitfieldResult<T> = ::std::result::Result<T, ValidationError>;
+
+// pub type Properties = *const intptr_t;
+pub type Properties = Option<Vec<intptr_t>>;
+pub type QueueProperties = Option<Vec<cl_properties>>;
 
 pub type DeviceList = Vec<cl_device_id>;
 pub type PlatformList = Vec<cl_platform_id>;
