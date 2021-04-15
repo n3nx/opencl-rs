@@ -236,12 +236,15 @@ pub fn get_host_timer(device: cl_device_id) -> APIResult<cl_ulong> {
     status_update(status_code, fn_name, host_timestamp)
 }
 
+// TODO: Debug CL_INVALID_VALUE error at get_count
 pub fn create_sub_devices(
     in_device: cl_device_id,
-    properties: cl_device_partition_property,
+    properties: Vec<cl_device_partition_property>,
 ) -> APIResult<DeviceList> {
-    let properties_ptr = &properties;
+    let properties_ptr: *const intptr_t = properties.as_ptr();
     let device_partition_count = get_count!(clCreateSubDevices, in_device, properties_ptr);
+
+    let device_partition_count = device_partition_count * 8;
 
     gen_object_list!(
         clCreateSubDevices,
@@ -250,6 +253,18 @@ pub fn create_sub_devices(
         in_device,
         properties_ptr
     )
+}
+
+pub fn retain_device(device: cl_device_id) -> APIResult<()> {
+    let fn_name = "clRetainDevice";
+    let status_code = unsafe { ffi::clRetainDevice(device) };
+    status_update(status_code, fn_name, ())
+}
+
+pub fn release_device(device: cl_device_id) -> APIResult<()> {
+    let fn_name = "clReleaseDevice";
+    let status_code = unsafe { ffi::clReleaseDevice(device) };
+    status_update(status_code, fn_name, ())
 }
 
 /*****************************************************************************
@@ -262,7 +277,7 @@ pub fn create_sub_devices(
 mod tests {
     use super::*;
     use crate::api::platform;
-    use crate::structs::PlatformInfo;
+    use crate::structs::{DevicePartitionProperty, PlatformInfo};
     #[test]
     fn test_get_device_info() {
         let all_platforms = platform::get_platform_ids().unwrap();
@@ -290,5 +305,42 @@ mod tests {
         let vendor_id = vendor_id.unwrap_uint().unwrap();
         println!("CL_DEVICE_VENDOR_ID: {:X}", vendor_id);
         assert_ne!(vendor_id, 0);
+    }
+
+    #[test]
+    #[ignore]
+    fn test_create_sub_device() {
+        let all_platforms = platform::get_platform_ids().unwrap();
+        assert_ne!(all_platforms.len(), 0);
+        let id = all_platforms[0];
+
+        let name = platform::get_platform_info(id, PlatformInfo::NAME).unwrap();
+        let platform_name = name.unwrap_string().unwrap();
+        assert_ne!(platform_name, "");
+        println!("CL_PLATFORM_NAME: {}", platform_name);
+
+        let mut device =
+            DeviceType::new(DeviceType::CPU).unwrap() + DeviceType::new(DeviceType::GPU).unwrap();
+
+        device.set(DeviceType::GPU).unwrap();
+        let device_ids = get_device_ids(id, device).unwrap();
+        assert!(0 < device_ids.len());
+        // Choose the first GPU device
+        let device_id = device_ids[0];
+
+        let vendor_name =
+            get_device_info(device_id, DeviceInfo::PARTITION_MAX_SUB_DEVICES).unwrap();
+        let max_sub_devices = vendor_name.unwrap_uint().unwrap();
+        println!("CL_DEVICE_COMPUTE_UNITS: {}", max_sub_devices);
+
+        if max_sub_devices > 1 {
+            let sub_cu_count = (max_sub_devices / 4) as isize;
+            let properties = vec![DevicePartitionProperty::EQUALLY, sub_cu_count, 0];
+
+            let sub_device_list = create_sub_devices(device_id, properties);
+            println!("{:?}", sub_device_list.unwrap());
+            // println!("CL_DEVICE_LIST: {:?}", sub_device_list);
+            assert_eq!(0, 1);
+        }
     }
 }

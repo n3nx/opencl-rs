@@ -294,17 +294,17 @@ pub const CL_CONTEXT_NUM_DEVICES: cl_context_info = 0x1083;
 // #endif;
 
 /* cl_context_properties - cl_uint */
-pub const CL_CONTEXT_PLATFORM: cl_uint = 0x1084;
+pub const CL_CONTEXT_PLATFORM: cl_context_properties = 0x1084;
 // #ifdef CL_VERSION_1_2;
-pub const CL_CONTEXT_INTEROP_USER_SYNC: cl_uint = 0x1085;
+pub const CL_CONTEXT_INTEROP_USER_SYNC: cl_context_properties = 0x1085;
 // #endif;
 
 // #ifdef CL_VERSION_1_2;
 /* cl_device_partition_property - cl_uint */
-pub const CL_DEVICE_PARTITION_EQUALLY: cl_uint = 0x1086;
-pub const CL_DEVICE_PARTITION_BY_COUNTS: cl_uint = 0x1087;
-pub const CL_DEVICE_PARTITION_BY_COUNTS_LIST_END: cl_uint = 0x0;
-pub const CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN: cl_uint = 0x1088;
+pub const CL_DEVICE_PARTITION_EQUALLY: cl_device_partition_property = 0x1086;
+pub const CL_DEVICE_PARTITION_BY_COUNTS: cl_device_partition_property = 0x1087;
+pub const CL_DEVICE_PARTITION_BY_COUNTS_LIST_END: cl_device_partition_property = 0x0;
+pub const CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN: cl_device_partition_property = 0x1088;
 // #endif;
 
 // #ifdef CL_VERSION_1_2;
