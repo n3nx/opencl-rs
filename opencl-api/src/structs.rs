@@ -868,9 +868,9 @@ impl ContextInfo {
 pub struct ContextProperties;
 impl ContextProperties {
     /* cl_context_properties - cl_uint */
-    pub const PLATFORM: cl_uint = CL_CONTEXT_PLATFORM;
+    pub const PLATFORM: cl_context_properties = CL_CONTEXT_PLATFORM;
     // #ifdef CL_VERSION_1_2;
-    pub const INTEROP_USER_SYNC: cl_uint = CL_CONTEXT_INTEROP_USER_SYNC;
+    pub const INTEROP_USER_SYNC: cl_context_properties = CL_CONTEXT_INTEROP_USER_SYNC;
     // #endif;
 }
 
@@ -879,10 +879,12 @@ pub struct DevicePartitionProperty;
 impl DevicePartitionProperty {
     // #ifdef CL_VERSION_1_2;
     /* cl_device_partition_property - cl_uint */
-    pub const EQUALLY: cl_uint = CL_DEVICE_PARTITION_EQUALLY;
-    pub const BY_COUNTS: cl_uint = CL_DEVICE_PARTITION_BY_COUNTS;
-    pub const BY_COUNTS_LIST_END: cl_uint = CL_DEVICE_PARTITION_BY_COUNTS_LIST_END;
-    pub const BY_AFFINITY_DOMAIN: cl_uint = CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN;
+    pub const EQUALLY: cl_device_partition_property = CL_DEVICE_PARTITION_EQUALLY;
+    pub const BY_COUNTS: cl_device_partition_property = CL_DEVICE_PARTITION_BY_COUNTS;
+    pub const BY_COUNTS_LIST_END: cl_device_partition_property =
+        CL_DEVICE_PARTITION_BY_COUNTS_LIST_END;
+    pub const BY_AFFINITY_DOMAIN: cl_device_partition_property =
+        CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN;
     // #endif;
 }
 

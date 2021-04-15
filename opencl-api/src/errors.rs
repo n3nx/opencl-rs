@@ -53,6 +53,13 @@ impl OpenCLAPILibraryError {
     }
 }
 
+impl error::Error for OpenCLAPILibraryError {}
+impl fmt::Display for OpenCLAPILibraryError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub enum ValidationError {
     InvalidStatusCode(&'static str),
