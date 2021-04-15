@@ -327,6 +327,24 @@ impl ParamValue {
             _ => None,
         }
     }
+    pub fn unwrap_arr_ulong(self) -> Option<Vec<cl_ulong>> {
+        match self {
+            ParamValue::ArrULong(dat) => Some(dat),
+            _ => None,
+        }
+    }
+    pub fn unwrap_arr_csize(self) -> Option<Vec<size_t>> {
+        match self {
+            ParamValue::ArrCSize(dat) => Some(dat),
+            _ => None,
+        }
+    }
+    pub fn unwrap_arr_cptr(self) -> Option<Vec<intptr_t>> {
+        match self {
+            ParamValue::ArrCPtr(dat) => Some(dat),
+            _ => None,
+        }
+    }
     pub fn unwrap_name_version(self) -> Option<Vec<cl_name_version>> {
         match self {
             ParamValue::NameVersion(dat) => Some(dat),

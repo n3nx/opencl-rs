@@ -1,5 +1,5 @@
 /*
- * device.rs - Device API wrappers.
+ * device.rs - Device API wrappers (Part of OpenCL Platform Layer).
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 use crate::enums::{ParamValue, Size};
-use crate::helpers::{bytes_into_string, status_update, APIResult, DeviceList, GetSetGo};
+use crate::helpers::{
+    bytes_into_string, status_update, APIResult, DeviceList, GetSetGo, Properties,
+};
 use crate::structs::{DeviceInfo, DeviceType};
 use crate::{gen_object_list, gen_param_value, get_count, size_getter};
 use libc::c_void;
@@ -27,7 +29,6 @@ use std::ptr;
 use std::vec;
 
 pub fn get_device_ids(platform: cl_platform_id, device_type: DeviceType) -> APIResult<DeviceList> {
-    // let fn_name = "clGetDeviceIDs";
     let device_type = device_type.get();
     let device_count = get_count!(clGetDeviceIDs, platform, device_type);
 
@@ -41,18 +42,6 @@ pub fn get_device_ids(platform: cl_platform_id, device_type: DeviceType) -> APIR
             platform,
             device_type
         )
-        // let vector_length = device_count as usize;
-        // let mut all_devices: DeviceList = vec::from_elem(ptr::null_mut(), vector_length);
-        // let status_code = unsafe {
-        //     clGetDeviceIDs(
-        //         platform,
-        //         device_type,
-        //         device_count,
-        //         all_devices.as_mut_ptr(),
-        //         ptr::null_mut(),
-        //     )
-        // };
-        // status_update(status_code, fn_name, all_devices)
     }
 }
 
@@ -239,19 +228,20 @@ pub fn get_host_timer(device: cl_device_id) -> APIResult<cl_ulong> {
 // TODO: Debug CL_INVALID_VALUE error at get_count
 pub fn create_sub_devices(
     in_device: cl_device_id,
-    properties: Vec<cl_device_partition_property>,
+    properties: Properties,
 ) -> APIResult<DeviceList> {
-    let properties_ptr: *const intptr_t = properties.as_ptr();
-    let device_partition_count = get_count!(clCreateSubDevices, in_device, properties_ptr);
-
+    let properties = match properties {
+        Some(x) => x.as_ptr(),
+        None => ptr::null(),
+    };
+    let device_partition_count = get_count!(clCreateSubDevices, in_device, properties);
     let device_partition_count = device_partition_count * 8;
-
     gen_object_list!(
         clCreateSubDevices,
         DeviceList,
         device_partition_count,
         in_device,
-        properties_ptr
+        properties
     )
 }
 
@@ -334,8 +324,9 @@ mod tests {
         println!("CL_DEVICE_COMPUTE_UNITS: {}", max_sub_devices);
 
         if max_sub_devices > 1 {
-            let sub_cu_count = (max_sub_devices / 4) as isize;
-            let properties = vec![DevicePartitionProperty::EQUALLY, sub_cu_count, 0];
+            let sub_cu_count = max_sub_devices / 4;
+            // let properties = vec![DevicePartitionProperty::EQUALLY, sub_cu_count, 0];
+            let properties = DevicePartitionProperty.equally(sub_cu_count);
 
             let sub_device_list = create_sub_devices(device_id, properties);
             println!("{:?}", sub_device_list.unwrap());

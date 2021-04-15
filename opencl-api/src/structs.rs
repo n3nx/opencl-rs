@@ -19,7 +19,8 @@
 #![allow(non_upper_case_globals, dead_code)]
 use crate::errors::ValidationError;
 use crate::gen_add_trait;
-use crate::helpers::{BitfieldResult, GetSetGo};
+use crate::helpers::{BitfieldResult, GetSetGo, Properties, QueueProperties};
+// use libc::c_void;
 use opencl_heads::consts::*;
 use opencl_heads::types::*;
 
@@ -868,10 +869,19 @@ impl ContextInfo {
 pub struct ContextProperties;
 impl ContextProperties {
     /* cl_context_properties - cl_uint */
-    pub const PLATFORM: cl_context_properties = CL_CONTEXT_PLATFORM;
+    const PLATFORM: cl_context_properties = CL_CONTEXT_PLATFORM;
     // #ifdef CL_VERSION_1_2;
-    pub const INTEROP_USER_SYNC: cl_context_properties = CL_CONTEXT_INTEROP_USER_SYNC;
+    const INTEROP_USER_SYNC: cl_context_properties = CL_CONTEXT_INTEROP_USER_SYNC;
     // #endif;
+    pub fn platform(&self, platform_id: cl_platform_id) -> Properties {
+        Some(vec![Self::PLATFORM, platform_id as isize, 0])
+    }
+    pub fn interop_user_sync(&self, value: cl_bool) -> Properties {
+        match value {
+            0 | 1 => Some(vec![Self::INTEROP_USER_SYNC, value as isize, 0]),
+            _ => None,
+        }
+    }
 }
 
 #[non_exhaustive]
@@ -879,13 +889,26 @@ pub struct DevicePartitionProperty;
 impl DevicePartitionProperty {
     // #ifdef CL_VERSION_1_2;
     /* cl_device_partition_property - cl_uint */
-    pub const EQUALLY: cl_device_partition_property = CL_DEVICE_PARTITION_EQUALLY;
-    pub const BY_COUNTS: cl_device_partition_property = CL_DEVICE_PARTITION_BY_COUNTS;
-    pub const BY_COUNTS_LIST_END: cl_device_partition_property =
-        CL_DEVICE_PARTITION_BY_COUNTS_LIST_END;
-    pub const BY_AFFINITY_DOMAIN: cl_device_partition_property =
-        CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN;
+    const EQUALLY: cl_device_partition_property = CL_DEVICE_PARTITION_EQUALLY;
+    const BY_COUNTS: cl_device_partition_property = CL_DEVICE_PARTITION_BY_COUNTS;
+    const BY_COUNTS_LIST_END: cl_device_partition_property = CL_DEVICE_PARTITION_BY_COUNTS_LIST_END;
+    const BY_AFFINITY_DOMAIN: cl_device_partition_property = CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN;
     // #endif;
+    pub fn equally(&self, compute_units: cl_uint) -> Properties {
+        Some(vec![Self::EQUALLY, compute_units as isize, 0])
+    }
+    pub fn by_counts(&self, left_cu: cl_uint, right_cu: cl_uint) -> Properties {
+        Some(vec![
+            Self::BY_COUNTS,
+            left_cu as isize,
+            right_cu as isize,
+            Self::BY_COUNTS_LIST_END,
+            0,
+        ])
+    }
+    pub fn by_affinity_domain(&self, domain: DeviceAffinityDomain) -> Properties {
+        Some(vec![Self::BY_AFFINITY_DOMAIN, domain.get() as isize, 0])
+    }
 }
 
 #[non_exhaustive]
@@ -897,14 +920,24 @@ impl CommandQueueInfo {
     pub const REFERENCE_COUNT: cl_command_queue_info = CL_QUEUE_REFERENCE_COUNT;
     pub const PROPERTIES: cl_command_queue_info = CL_QUEUE_PROPERTIES;
     // #ifdef CL_VERSION_2_0;
-    pub const SIZE: cl_command_queue_info = CL_QUEUE_SIZE;
+    const SIZE: cl_command_queue_info = CL_QUEUE_SIZE;
     // #endif;
     // #ifdef CL_VERSION_2_1;
     pub const DEVICE_DEFAULT: cl_command_queue_info = CL_QUEUE_DEVICE_DEFAULT;
     // #endif;
     // #ifdef CL_VERSION_3_0;
-    pub const PROPERTIES_ARRAY: cl_command_queue_info = CL_QUEUE_PROPERTIES_ARRAY;
+    const PROPERTIES_ARRAY: cl_command_queue_info = CL_QUEUE_PROPERTIES_ARRAY;
     // #endif;
+    pub fn properties(&self, queue_prop: CommandQueueProperties) -> QueueProperties {
+        Some(vec![
+            Self::PROPERTIES_ARRAY as cl_properties,
+            queue_prop.get() as cl_properties,
+            0,
+        ])
+    }
+    pub fn size(&self, size: cl_uint) -> QueueProperties {
+        Some(vec![Self::SIZE as cl_properties, size as cl_properties, 0])
+    }
 }
 
 #[non_exhaustive]

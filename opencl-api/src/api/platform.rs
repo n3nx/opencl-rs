@@ -1,5 +1,5 @@
 /*
- * platform.rs - Platform API wrappers.
+ * platform.rs - Platform API wrappers (Part of OpenCL Platform Layer).
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -36,19 +36,12 @@ use std::vec;
 /// let id = get_platform_ids();
 /// ```
 pub fn get_platform_ids() -> APIResult<PlatformList> {
-    // let fn_name = "clGetPlatformIDs";
     let platform_count = get_count!(clGetPlatformIDs);
 
     if platform_count == 0 {
         Ok(Vec::default())
     } else {
         gen_object_list!(clGetPlatformIDs, PlatformList, platform_count)
-        // let vector_length = platform_count as usize;
-        // let mut all_platforms: PlatformList = vec::from_elem(ptr::null_mut(), vector_length);
-        // let status_code = unsafe {
-        //     clGetPlatformIDs(platform_count, all_platforms.as_mut_ptr(), ptr::null_mut())
-        // };
-        // status_update(status_code, fn_name, all_platforms)
     }
 }
 
