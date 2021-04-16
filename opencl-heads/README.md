@@ -1,25 +1,23 @@
-# OpenCL Collections Library
+# OpenCL Heads
 
 ## Description
 
-Library that contains OpenCL APIs, Adapters, FFI headers and related utilities.
+Library that contains OpenCL FFI headers.
 
 This library is intended to support future version of OpenCL while maintaining long term support for Rust.
 
-By **Long Term Support**, we commit to fix bugs and to maintain proper functionality of this library over the years. We also plan to create several milestones for this project to have sustainable development over long period of time.
+By **Long Term Support**, we commit to fix bugs and to _actively maintain_ proper functionality of this library over the years. We also plan to create several milestones for this project to have _sustainable development_ over long period of time.
 
 ## Features
 
 This library is intended to provide these features alongside of traditional ones.
 
-1. Compatible with Latest OpenCL Versions (OpenCL 3.0)
-2. Supports Deprecated APIs for Previous Versions (OpenCL 1.1, 1.2 etc.)
-3. Lightweight Headers and API Objects
-4. Superior Error Handling
-5. Periodic Bug Fix Management
-6. Optimised for High Performance
-7. Ease of Use and Simplicity
-8. Types and Functions Safety
+1. Compatible with latest OpenCL version (3.0)
+2. Lightweight Headers
+3. Periodic Bug Fix Management
+4. Optimizations for High Performance
+5. Ease of Use and Simplicity
+6. Types and Functions Safety
 
 ## Installation
 

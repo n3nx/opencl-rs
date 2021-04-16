@@ -104,7 +104,7 @@ pub fn get_context_info(context: cl_context, param_name: cl_context_info) -> API
 
 pub fn set_context_destructor_callback(
     context: cl_context,
-    pfn_notify: Option<extern "C" fn(context: cl_context, user_data: *mut c_void)>,
+    pfn_notify: extern "C" fn(context: cl_context, user_data: *mut c_void),
     user_data: *mut c_void,
 ) -> APIResult<()> {
     let status_code =
