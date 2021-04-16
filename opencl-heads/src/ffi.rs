@@ -1,5 +1,5 @@
 /*
- * ffi.rs - All OpenCL foreign interfaces (types, constants, functions).
+ * ffi.rs - OpenCL header ABI and FFI native mappings.
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -16,65 +16,4 @@
  * limitations under the License.
 */
 
-// Types associated with functions
-pub use crate::types::*;
-// Constants associated with functions
-pub use crate::consts::*;
-
-// Functions
-pub use crate::cl::{
-    clBuildProgram, clCreateBuffer, clCreateContext, clCreateContextFromType, clCreateKernel,
-    clCreateKernelsInProgram, clCreateProgramWithBinary, clCreateProgramWithSource,
-    clEnqueueCopyBuffer, clEnqueueCopyBufferToImage, clEnqueueCopyImage,
-    clEnqueueCopyImageToBuffer, clEnqueueMapBuffer, clEnqueueMapImage, clEnqueueNDRangeKernel,
-    clEnqueueNativeKernel, clEnqueueReadBuffer, clEnqueueReadImage, clEnqueueUnmapMemObject,
-    clEnqueueWriteBuffer, clEnqueueWriteImage, clFinish, clFlush, clGetCommandQueueInfo,
-    clGetContextInfo, clGetDeviceIDs, clGetDeviceInfo, clGetEventInfo, clGetEventProfilingInfo,
-    clGetImageInfo, clGetKernelInfo, clGetKernelWorkGroupInfo, clGetMemObjectInfo,
-    clGetPlatformIDs, clGetPlatformInfo, clGetProgramBuildInfo, clGetSamplerInfo,
-    clGetSupportedImageFormats, clReleaseCommandQueue, clReleaseContext, clReleaseEvent,
-    clReleaseKernel, clReleaseMemObject, clReleaseProgram, clReleaseSampler, clRetainCommandQueue,
-    clRetainContext, clRetainEvent, clRetainKernel, clRetainMemObject, clRetainProgram,
-    clRetainSampler, clSetKernelArg, clSetKernelArgSVMPointer, clSetKernelExecInfo,
-    clWaitForEvents,
-};
-
-// Functions
-#[cfg(feature = "cl_1_1")]
-pub use crate::cl::{
-    clCreateSubBuffer, clCreateUserEvent, clEnqueueCopyBufferRect, clEnqueueReadBufferRect,
-    clEnqueueWriteBufferRect, clSetEventCallback, clSetMemObjectDestructorCallback,
-    clSetUserEventStatus,
-};
-// Functions
-#[cfg(feature = "cl_1_2")]
-pub use crate::cl::{
-    clCompileProgram, clCreateCommandQueue, clCreateImage, clCreateProgramWithBuiltInKernels,
-    clCreateSampler, clCreateSubDevices, clEnqueueBarrierWithWaitList, clEnqueueFillBuffer,
-    clEnqueueFillImage, clEnqueueMarkerWithWaitList, clEnqueueMigrateMemObjects, clEnqueueTask,
-    clGetExtensionFunctionAddressForPlatform, clGetKernelArgInfo, clLinkProgram, clReleaseDevice,
-    clRetainDevice, clUnloadPlatformCompiler,
-};
-
-// Functions
-#[cfg(feature = "cl_2_0")]
-pub use crate::cl::{
-    clCreateCommandQueueWithProperties, clCreatePipe, clCreateSamplerWithProperties,
-    clEnqueueSVMFree, clEnqueueSVMMap, clEnqueueSVMMemFill, clEnqueueSVMMemcpy, clEnqueueSVMUnmap,
-    clGetPipeInfo, clSVMAlloc, clSVMFree,
-};
-
-// Functions
-#[cfg(feature = "cl_2_1")]
-pub use crate::cl::{
-    clCloneKernel, clCreateProgramWithIL, clEnqueueSVMMigrateMem, clGetDeviceAndHostTimer,
-    clGetHostTimer, clGetKernelSubGroupInfo, clSetDefaultDeviceCommandQueue,
-};
-// Functions
-#[cfg(feature = "cl_2_2")]
-pub use crate::cl::{clSetProgramReleaseCallback, clSetProgramSpecializationConstant};
-// Functions
-#[cfg(feature = "cl_3_0")]
-pub use crate::cl::{
-    clCreateBufferWithProperties, clCreateImageWithProperties, clSetContextDestructorCallback,
-};
+pub use crate::cl::ffi::*;

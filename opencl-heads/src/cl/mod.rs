@@ -1,5 +1,5 @@
 /*
- * types.rs - OpenCL header ABI and FFI native mappings.
+ * cl.mod.rs - OpenCL header ABI bindings. See CREDITS.md for full details.
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -16,4 +16,7 @@
  * limitations under the License.
 */
 
-pub use crate::cl::types::*;
+mod cl;
+pub mod consts;
+pub mod ffi;
+pub mod types;
