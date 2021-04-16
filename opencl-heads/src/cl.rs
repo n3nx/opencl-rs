@@ -138,7 +138,7 @@ extern "system" {
     #[cfg(feature = "cl_3_0")]
     pub fn clSetContextDestructorCallback(
         context: cl_context,
-        pfn_notify: Option<extern "C" fn(context: cl_context, user_data: *mut c_void)>,
+        pfn_notify: extern "C" fn(context: cl_context, user_data: *mut c_void),
         user_data: *mut c_void,
     ) -> cl_int;
     // #endif
