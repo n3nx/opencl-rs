@@ -12,8 +12,8 @@ By **Long Term Support**, we commit to fix bugs and to maintain proper functiona
 
 This library is intended to provide these features alongside of traditional ones.
 
-1. Compatible with Latest OpenCL Versions (OpenCL 3.0)
-2. Supports Deprecated APIs for Previous Versions (OpenCL 1.1, 1.2 etc.)
+1. Compatible with Latest OpenCL Versions (**OpenCL 3.0**)
+2. Supports Compatiblity with Older and Deprecated APIs for Previous Versions (**OpenCL 1.1, 1.2 etc.**)
 3. Lightweight Headers and API Objects
 4. Superior Error Handling
 5. Periodic Bug Fix Management

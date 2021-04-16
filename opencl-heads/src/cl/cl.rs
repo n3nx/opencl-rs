@@ -17,7 +17,7 @@
 */
 
 #![allow(dead_code)]
-use crate::types::*;
+use super::types::*;
 use libc::c_void;
 
 #[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]

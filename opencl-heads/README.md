@@ -14,7 +14,7 @@ By **Long Term Support**, we commit to fix bugs and to _actively maintain_ prope
 
 This library is intended to provide these features alongside of traditional ones.
 
-1. Compatible with latest OpenCL version (3.0)
+1. Compatible with latest OpenCL version (**OpenCL 3.0**)
 2. Lightweight Headers
 3. Periodic Bug Fix Management
 4. Optimizations for High Performance
