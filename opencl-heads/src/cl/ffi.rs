@@ -49,9 +49,9 @@ pub use super::cl::{
 // Functions
 #[cfg(feature = "cl_1_2")]
 pub use super::cl::{
-    clCompileProgram, clCreateCommandQueue, clCreateImage, clCreateProgramWithBuiltInKernels,
-    clCreateSampler, clCreateSubDevices, clEnqueueBarrierWithWaitList, clEnqueueFillBuffer,
-    clEnqueueFillImage, clEnqueueMarkerWithWaitList, clEnqueueMigrateMemObjects, clEnqueueTask,
+    clCompileProgram, clCreateImage, clCreateProgramWithBuiltInKernels, clCreateSubDevices,
+    clEnqueueBarrierWithWaitList, clEnqueueFillBuffer, clEnqueueFillImage,
+    clEnqueueMarkerWithWaitList, clEnqueueMigrateMemObjects,
     clGetExtensionFunctionAddressForPlatform, clGetKernelArgInfo, clLinkProgram, clReleaseDevice,
     clRetainDevice, clUnloadPlatformCompiler,
 };
@@ -78,3 +78,15 @@ pub use super::cl::{clSetProgramReleaseCallback, clSetProgramSpecializationConst
 pub use super::cl::{
     clCreateBufferWithProperties, clCreateImageWithProperties, clSetContextDestructorCallback,
 };
+
+#[cfg(feature = "depr_1_0")]
+pub use super::cl::clSetCommandQueueProperty;
+
+#[cfg(feature = "depr_1_1")]
+pub use super::cl::{
+    clCreateImage2D, clCreateImage3D, clEnqueueBarrier, clEnqueueMarker, clEnqueueWaitForEvents,
+    clGetExtensionFunctionAddress, clUnloadCompiler,
+};
+
+#[cfg(feature = "depr_2_0")]
+pub use super::cl::{clCreateCommandQueue, clCreateSampler, clEnqueueTask};

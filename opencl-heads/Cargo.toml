@@ -1,6 +1,6 @@
 [package]
 name = "opencl-heads"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Xenon Lucifer Diablo <code@nmnx.org>"]
 edition = "2018"
 description = "Actively Maintained with Long Term Support, Pure Rust Implementation, Low Level bindings for OpenCL"
@@ -21,6 +21,10 @@ cl_2_0 = []
 cl_2_1 = []
 cl_2_2 = []
 cl_3_0 = []
+# Deprecated OpenCL versions.
+depr_1_0 = []
+depr_1_1 = []
+depr_2_0 = []
 
 # For drop-in replacement of cl-sys.
 opencl_version_1_1 = ["cl_1_1"]
@@ -30,7 +34,8 @@ opencl_version_2_1 = ["cl_2_1"]
 opencl_version_2_2 = ["cl_2_2"]
 
 default = ["cl_1_2", "cl_1_1"]
-all = ["cl_3_0", "cl_2_2", "cl_2_1", "cl_2_0", "cl_1_2", "cl_1_1"]
+deprecated = ["depr_2_0", "depr_1_1", "depr_1_0"]
+all = ["cl_3_0", "cl_2_2", "cl_2_1", "cl_2_0", "cl_1_2", "cl_1_1", "deprecated"]
 
 [dependencies]
 libc = "0.2.93"

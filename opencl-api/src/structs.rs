@@ -247,6 +247,7 @@ impl GetSetGo for DeviceExecCapabilities {
 }
 
 #[non_exhaustive]
+#[derive(Debug)]
 pub struct CommandQueueProperties(cl_command_queue_properties);
 impl CommandQueueProperties {
     /* cl_command_queue_properties - cl_bitfield */
@@ -920,21 +921,37 @@ impl CommandQueueInfo {
     pub const REFERENCE_COUNT: cl_command_queue_info = CL_QUEUE_REFERENCE_COUNT;
     pub const PROPERTIES: cl_command_queue_info = CL_QUEUE_PROPERTIES;
     // #ifdef CL_VERSION_2_0;
-    const SIZE: cl_command_queue_info = CL_QUEUE_SIZE;
+    #[cfg(feature = "cl_2_0")]
+    pub const SIZE: cl_command_queue_info = CL_QUEUE_SIZE;
     // #endif;
     // #ifdef CL_VERSION_2_1;
+    #[cfg(feature = "cl_2_1")]
     pub const DEVICE_DEFAULT: cl_command_queue_info = CL_QUEUE_DEVICE_DEFAULT;
     // #endif;
     // #ifdef CL_VERSION_3_0;
-    const PROPERTIES_ARRAY: cl_command_queue_info = CL_QUEUE_PROPERTIES_ARRAY;
+    // #[cfg(feature = "cl_3_0")]
+    pub const PROPERTIES_ARRAY: cl_command_queue_info = CL_QUEUE_PROPERTIES_ARRAY;
     // #endif;
-    pub fn properties(&self, queue_prop: CommandQueueProperties) -> QueueProperties {
+    fn properties_tmp(
+        &self,
+        properties: cl_command_queue_info,
+        queue_prop: CommandQueueProperties,
+    ) -> QueueProperties {
         Some(vec![
-            Self::PROPERTIES_ARRAY as cl_properties,
+            properties as cl_properties,
             queue_prop.get() as cl_properties,
             0,
         ])
     }
+    #[cfg(feature = "cl_1_2")]
+    pub fn properties(&self, queue_prop: CommandQueueProperties) -> QueueProperties {
+        self.properties_tmp(Self::PROPERTIES, queue_prop)
+    }
+    #[cfg(feature = "cl_3_0")]
+    pub fn properties(&self, queue_prop: CommandQueueProperties) -> QueueProperties {
+        self.properties_tmp(Self::PROPERTIES_ARRAY, queue_prop)
+    }
+    #[cfg(feature = "cl_2_0")]
     pub fn size(&self, size: cl_uint) -> QueueProperties {
         Some(vec![Self::SIZE as cl_properties, size as cl_properties, 0])
     }

@@ -1,5 +1,5 @@
 /*
- * consts.rs - OpenCL header ABI and FFI native mappings.
+ * ffi.rs - OpenCL header ABI bindings. See CREDITS.md for full details.
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -16,5 +16,7 @@
  * limitations under the License.
 */
 
-pub use crate::cl::consts::*;
-pub use crate::cl_ext::consts::*;
+// Types associated with functions
+pub use super::types::*;
+// Constants associated with functions
+pub use super::consts::*;

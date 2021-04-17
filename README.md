@@ -6,7 +6,7 @@ Library that contains OpenCL APIs, Adapters, FFI headers and related utilities.
 
 This library is intended to support future version of OpenCL while maintaining long term support for Rust.
 
-By **Long Term Support**, we commit to fix bugs and to maintain proper functionality of this library over the years. We also plan to create several milestones for this project to have sustainable development over long period of time.
+By **Long Term Support**, we commit to fix bugs and to _actively maintain_ proper functionality of this library over the years. We also plan to create several milestones for this project to have _sustainable development_ over long period of time.
 
 ## Features
 

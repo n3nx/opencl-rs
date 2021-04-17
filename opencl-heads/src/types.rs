@@ -17,3 +17,4 @@
 */
 
 pub use crate::cl::types::*;
+pub use crate::cl_ext::types::*;

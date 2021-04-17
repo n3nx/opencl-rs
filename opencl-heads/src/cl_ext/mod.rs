@@ -1,5 +1,5 @@
 /*
- * consts.rs - OpenCL header ABI and FFI native mappings.
+ * cl_ext.mod.rs - OpenCL header ABI bindings. See CREDITS.md for full details.
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -16,5 +16,7 @@
  * limitations under the License.
 */
 
-pub use crate::cl::consts::*;
-pub use crate::cl_ext::consts::*;
+mod cl_ext;
+pub mod consts;
+pub mod ffi;
+pub mod types;
