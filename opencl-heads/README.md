@@ -1,5 +1,7 @@
 # OpenCL Heads
 
+[![opencl-heads](https://docs.rs/opencl-heads/badge.svg)](https://docs.rs/opencl-heads)
+
 **NOTE:** This project is currently under heavy development, we advise you to use the version 0.3.x onwards for your project dependencies. Thank you for your support!
 
 ## Description

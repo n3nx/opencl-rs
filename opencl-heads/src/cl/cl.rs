@@ -902,19 +902,14 @@ extern "system" {
         event: *mut cl_event,
     ) -> cl_int;
     // #endif
-
-    /***************************************************************************************************
-     * Deprecated section ahead
-     */
     // #ifdef CL_VERSION_1_2
-    //CHECKPOINT
-    // /* Extension function access
-    //  *
-    //  * Returns the extension function address for the given function name,
-    //  * or NULL if a valid function can not be found.  The client must
-    //  * check to make sure the address is not NULL, before using or
-    //  * calling the returned function address.
-    //  */
+    /* Extension function access
+     *
+     * Returns the extension function address for the given function name,
+     * or NULL if a valid function can not be found.  The client must
+     * check to make sure the address is not NULL, before using or
+     * calling the returned function address.
+     */
     #[cfg(feature = "cl_1_2")]
     pub fn clGetExtensionFunctionAddressForPlatform(
         platform: cl_platform_id,
@@ -923,6 +918,9 @@ extern "system" {
 
     // #endif
 
+    /***************************************************************************************************
+     * Deprecated section ahead
+     */
     // #ifdef CL_USE_DEPRECATED_OPENCL_1_0_APIS
     /*
      *  WARNING:
@@ -934,51 +932,61 @@ extern "system" {
      *  Software developers previously relying on this API are instructed to set the command queue
      *  properties when creating the queue, instead.
      */
-    //     extern CL_API_ENTRY cl_int CL_API_CALL
-    //     clSetCommandQueueProperty(cl_command_queue              command_queue,
-    //                               cl_command_queue_properties   properties,
-    //                               cl_bool                       enable,
-    //                               cl_command_queue_properties * old_properties) CL_API_SUFFIX__VERSION_1_0_DEPRECATED;
+    #[cfg(feature = "depr_1_0")]
+    pub fn clSetCommandQueueProperty(
+        command_queue: cl_command_queue,
+        properties: cl_command_queue_properties,
+        enable: cl_bool,
+        old_properties: *mut cl_command_queue_properties,
+    ) -> cl_int;
     // #endif /* CL_USE_DEPRECATED_OPENCL_1_0_APIS */
     // /* Deprecated OpenCL 1.1 APIs */
-    // extern CL_API_ENTRY CL_API_PREFIX__VERSION_1_1_DEPRECATED cl_mem CL_API_CALL
-    // clCreateImage2D(cl_context              context,
-    //                 cl_mem_flags            flags,
-    //                 const cl_image_format * image_format,
-    //                 size_t                  image_width,
-    //                 size_t                  image_height,
-    //                 size_t                  image_row_pitch,
-    //                 void *                  host_ptr,
-    //                 cl_int *                errcode_ret) CL_API_SUFFIX__VERSION_1_1_DEPRECATED;
+    #[cfg(feature = "depr_1_1")]
+    pub fn clCreateImage2D(
+        context: cl_context,
+        flags: cl_mem_flags,
+        image_format: *const cl_image_format,
+        image_width: size_t,
+        image_height: size_t,
+        image_row_pitch: size_t,
+        host_ptr: *mut c_void,
+        errcode_ret: *mut cl_int,
+    ) -> cl_mem;
 
-    // extern CL_API_ENTRY CL_API_PREFIX__VERSION_1_1_DEPRECATED cl_mem CL_API_CALL
-    // clCreateImage3D(cl_context              context,
-    //                 cl_mem_flags            flags,
-    //                 const cl_image_format * image_format,
-    //                 size_t                  image_width,
-    //                 size_t                  image_height,
-    //                 size_t                  image_depth,
-    //                 size_t                  image_row_pitch,
-    //                 size_t                  image_slice_pitch,
-    //                 void *                  host_ptr,
-    //                 cl_int *                errcode_ret) CL_API_SUFFIX__VERSION_1_1_DEPRECATED;
+    #[cfg(feature = "depr_1_1")]
+    pub fn clCreateImage3D(
+        context: cl_context,
+        image_format: *const cl_image_format,
+        image_width: size_t,
+        image_height: size_t,
+        image_depth: size_t,
+        image_row_pitch: size_t,
+        image_slice_pitch: size_t,
+        host_ptr: *mut c_void,
+        errcode_ret: *mut cl_int,
+    ) -> cl_mem;
 
-    // pub fn clEnqueueMarker(command_queue: cl_command_queue, event: *mut cl_event) -> cl_int;
+    #[cfg(feature = "depr_1_1")]
+    pub fn clEnqueueMarker(command_queue: cl_command_queue, event: *mut cl_event) -> cl_int;
 
-    // pub fn clEnqueueWaitForEvents(
-    //     command_queue: cl_command_queue,
-    //     num_events: cl_uint,
-    //     event_list: *const cl_event,
-    // ) -> cl_int;
+    #[cfg(feature = "depr_1_1")]
+    pub fn clEnqueueWaitForEvents(
+        command_queue: cl_command_queue,
+        num_events: cl_uint,
+        event_list: *const cl_event,
+    ) -> cl_int;
 
-    // pub fn clEnqueueBarrier(command_queue: cl_command_queue) -> cl_int;
+    #[cfg(feature = "depr_1_1")]
+    pub fn clEnqueueBarrier(command_queue: cl_command_queue) -> cl_int;
 
-    // pub fn clUnloadCompiler() -> cl_int;
+    #[cfg(feature = "depr_1_1")]
+    pub fn clUnloadCompiler() -> cl_int;
 
-    // pub fn clGetExtensionFunctionAddress(func_name: *const c_char) -> *mut c_void;
+    #[cfg(feature = "depr_1_1")]
+    pub fn clGetExtensionFunctionAddress(func_name: *const c_char) -> *mut c_void;
 
     // /* Deprecated OpenCL 2.0 APIs */
-    #[cfg(feature = "cl_1_2")]
+    #[cfg(feature = "depr_2_0")]
     pub fn clCreateCommandQueue(
         context: cl_context,
         device: cl_device_id,
@@ -986,8 +994,7 @@ extern "system" {
         errcode_ret: *mut cl_int,
     ) -> cl_command_queue;
 
-    // extern CL_API_ENTRY CL_API_PREFIX__VERSION_1_2_DEPRECATED cl_sampler CL_API_CALL
-    #[cfg(feature = "cl_1_2")]
+    #[cfg(feature = "depr_2_0")]
     pub fn clCreateSampler(
         context: cl_context,
         normalized_coords: cl_bool,
@@ -996,7 +1003,7 @@ extern "system" {
         errcode_ret: *mut cl_int,
     ) -> cl_sampler;
 
-    #[cfg(feature = "cl_1_2")]
+    #[cfg(feature = "depr_2_0")]
     pub fn clEnqueueTask(
         command_queue: cl_command_queue,
         kernel: cl_kernel,

@@ -17,6 +17,7 @@
 */
 
 mod cl;
+mod cl_ext;
 pub mod consts;
 pub mod ffi;
 pub mod types;
