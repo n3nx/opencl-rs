@@ -19,7 +19,7 @@
 #![allow(non_upper_case_globals, dead_code)]
 use crate::errors::ValidationError;
 use crate::gen_add_trait;
-use crate::helpers::{BitfieldResult, GetSetGo, Properties, QueueProperties};
+use crate::helpers::{BitfieldResult, GetSetGo, LongProperties, Properties};
 // use libc::c_void;
 use opencl_heads::consts::*;
 use opencl_heads::types::*;
@@ -387,6 +387,7 @@ impl GetSetGo for DeviceSVMCapabilities {
 }
 
 #[non_exhaustive]
+#[derive(Clone)]
 pub struct MemFlags(cl_mem_flags);
 impl MemFlags {
     /* cl_mem_flags and cl_svm_mem_flags - cl_bitfield */
@@ -875,7 +876,11 @@ impl ContextProperties {
     const INTEROP_USER_SYNC: cl_context_properties = CL_CONTEXT_INTEROP_USER_SYNC;
     // #endif;
     pub fn platform(&self, platform_id: cl_platform_id) -> Properties {
-        Some(vec![Self::PLATFORM, platform_id as isize, 0])
+        let intptr_platform_id = platform_id as isize;
+        match intptr_platform_id {
+            0 => None,
+            _ => Some(vec![Self::PLATFORM, intptr_platform_id, 0]),
+        }
     }
     pub fn interop_user_sync(&self, value: cl_bool) -> Properties {
         match value {
@@ -936,7 +941,7 @@ impl CommandQueueInfo {
         &self,
         properties: cl_command_queue_info,
         queue_prop: CommandQueueProperties,
-    ) -> QueueProperties {
+    ) -> LongProperties {
         Some(vec![
             properties as cl_properties,
             queue_prop.get() as cl_properties,
@@ -944,15 +949,15 @@ impl CommandQueueInfo {
         ])
     }
     #[cfg(feature = "cl_1_2")]
-    pub fn properties(&self, queue_prop: CommandQueueProperties) -> QueueProperties {
+    pub fn properties(&self, queue_prop: CommandQueueProperties) -> LongProperties {
         self.properties_tmp(Self::PROPERTIES, queue_prop)
     }
     #[cfg(feature = "cl_3_0")]
-    pub fn properties(&self, queue_prop: CommandQueueProperties) -> QueueProperties {
+    pub fn properties(&self, queue_prop: CommandQueueProperties) -> LongProperties {
         self.properties_tmp(Self::PROPERTIES_ARRAY, queue_prop)
     }
     #[cfg(feature = "cl_2_0")]
-    pub fn size(&self, size: cl_uint) -> QueueProperties {
+    pub fn size(&self, size: cl_uint) -> LongProperties {
         Some(vec![Self::SIZE as cl_properties, size as cl_properties, 0])
     }
 }

@@ -19,7 +19,7 @@
 
 // use crate::enums::Status;
 use crate::enums::{ParamValue, Size};
-use crate::helpers::{status_update, APIResult, GetSetGo, QueueProperties};
+use crate::helpers::{status_update, APIResult, GetSetGo, LongProperties};
 use crate::structs::{CommandQueueInfo, CommandQueueProperties, StatusCode};
 use crate::{gen_param_value, size_getter};
 use libc::c_void;
@@ -45,7 +45,7 @@ pub fn create_command_queue(
 pub fn create_command_queue_with_properties(
     context: cl_context,
     device: cl_device_id,
-    properties: &QueueProperties,
+    properties: &LongProperties,
 ) -> APIResult<cl_command_queue> {
     let mut status_code: cl_int = StatusCode::INVALID_COMMAND_QUEUE;
     // let properties: *const cl_queue_properties = &properties.get();
