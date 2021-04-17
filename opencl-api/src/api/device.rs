@@ -154,11 +154,7 @@ pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIR
             let size = get_device_info_size(device, param_name)?;
             let filler = cl_name_version {
                 version: 0,
-                name: [
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                ],
+                name: [0; 64],
             };
             let param_value = gen_param_value!(
                 clGetDeviceInfo,

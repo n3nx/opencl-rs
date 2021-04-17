@@ -15,11 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-
+#![allow(dead_code)]
 use crate::enums::Status;
 use crate::errors::*;
 use crate::structs::StatusCode;
 use opencl_heads::types::*;
+use std::ptr;
 
 /**********************************************************************
  *
@@ -144,21 +145,62 @@ macro_rules! gen_add_trait {
 /******************************************************************
  *
  *
- *                     Helper Types
+ *              Helper Types, Aliases and Structs
  *
  */
+
+// Aliases
+pub type WrapPtr<T> = WrappedPointer<T>;
+pub type WrapMutPtr<T> = WrappedMutablePointer<T>;
 
 pub type APIResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
 pub type StatusCodeResult = ::std::result::Result<cl_int, ValidationError>;
 pub type HelperResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
 pub type BitfieldResult<T> = ::std::result::Result<T, ValidationError>;
 
-// pub type Properties = *const intptr_t;
 pub type Properties = Option<Vec<intptr_t>>;
-pub type QueueProperties = Option<Vec<cl_properties>>;
+pub type LongProperties = Option<Vec<cl_properties>>;
 
 pub type DeviceList = Vec<cl_device_id>;
 pub type PlatformList = Vec<cl_platform_id>;
+
+// Structs
+
+pub struct WrappedPointer<T>(*const T);
+impl<T> WrappedPointer<T> {
+    pub fn from<U>(x: &U) -> Self {
+        // AVOIDED: This method uses heap allocation to gain non mutable pointer over data
+        // Box::into_raw(Box::new(x)) as *const c_void
+        Self(ptr::NonNull::from(x).as_ptr() as *const T)
+    }
+    pub fn from_owned<U>(x: U) -> Self {
+        Self::from(&x)
+    }
+    pub fn null() -> Self {
+        Self(ptr::null())
+    }
+    pub fn unwrap(&self) -> *const T {
+        self.0
+    }
+}
+
+pub struct WrappedMutablePointer<T>(*mut T);
+impl<T> WrappedMutablePointer<T> {
+    pub fn from<U>(x: &mut U) -> Self {
+        // AVOIDED: This method uses heap allocation to gain non mutable pointer over data
+        // Box::into_raw(Box::new(x)) as *const c_void
+        Self(ptr::NonNull::from(x).as_ptr() as *mut T)
+    }
+    pub fn from_owned<U>(mut x: U) -> Self {
+        Self::from(&mut x)
+    }
+    pub fn null() -> Self {
+        Self(ptr::null_mut())
+    }
+    pub fn unwrap(&self) -> *mut T {
+        self.0
+    }
+}
 
 /*******************************************************************
  *

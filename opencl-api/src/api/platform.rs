@@ -75,11 +75,7 @@ pub fn get_platform_info(
             let size = get_platform_info_size(platform, param_name)?;
             let filler = cl_name_version {
                 version: 0,
-                name: [
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                ],
+                name: [0; 64],
             };
             let param_value = gen_param_value!(
                 clGetPlatformInfo,
