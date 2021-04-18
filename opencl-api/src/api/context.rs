@@ -95,7 +95,10 @@ pub fn release_context(context: ContextPtr) -> APIResult<()> {
     status_update(status_code, "clReleaseContext", ())
 }
 
-pub fn get_context_info(context: &ContextPtr, param_name: cl_context_info) -> APIResult<ParamValue> {
+pub fn get_context_info(
+    context: &ContextPtr,
+    param_name: cl_context_info,
+) -> APIResult<ParamValue> {
     type C = ContextInfo;
     let context = context.unwrap();
     size_getter!(get_context_info_size, clGetContextInfo);
@@ -106,9 +109,7 @@ pub fn get_context_info(context: &ContextPtr, param_name: cl_context_info) -> AP
         }
         C::DEVICES | C::PROPERTIES => {
             let size = get_context_info_size(context, param_name)?;
-            let filler = 0;
-            let param_value =
-                gen_param_value!(clGetContextInfo, isize, context, param_name, size, filler);
+            let param_value = gen_param_value!(clGetContextInfo, isize, context, param_name, size);
             Ok(ParamValue::ArrCPtr(param_value))
         }
         _ => status_update(40404, "clGetContextInfo", ParamValue::default()),
@@ -160,12 +161,8 @@ mod tests {
         // let properties = vec![ContextProperties::PLATFORM, platform_id as isize, 0];
         let properties = ContextProperties.platform(&platform_id);
         let default_device = DeviceType::new(DeviceType::DEFAULT).unwrap();
-        let context = create_context_from_type(
-            &properties,
-            default_device,
-            None,
-            WrapMutPtr::null(),
-        );
+        let context =
+            create_context_from_type(&properties, default_device, None, WrapMutPtr::null());
         let context = context.unwrap();
         eprintln!("CL_CONTEXT_PTR: {:?}", context);
         assert_ne!(context.unwrap(), ptr::null_mut());

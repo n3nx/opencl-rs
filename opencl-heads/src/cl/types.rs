@@ -18,6 +18,7 @@
 
 #![allow(non_camel_case_types)]
 use libc::c_void;
+use std::default::Default;
 
 // C-types
 pub type size_t = usize;
@@ -132,6 +133,14 @@ pub struct cl_image_format {
     pub image_channel_order: cl_channel_order,
     pub image_channel_data_type: cl_channel_type,
 }
+impl Default for cl_image_format {
+    fn default() -> Self {
+        Self {
+            image_channel_order: 0,
+            image_channel_data_type: 0,
+        }
+    }
+}
 
 #[derive(Debug, Clone, PartialEq)]
 #[repr(C)]
@@ -146,9 +155,28 @@ pub struct cl_image_desc {
     pub num_mip_levels: cl_uint,
     pub mem_samples: cl_uint,
     // #ifdef CL_VERSION_2_0
+    #[cfg(feature = "cl_2_0")]
     pub mem_object: cl_mem,
     // #endif
+    #[cfg(feature = "cl_1_2")]
     pub buffer: cl_mem,
+}
+impl Default for cl_image_desc {
+    fn default() -> Self {
+        Self {
+            image_type: 0,
+            image_width: 0,
+            image_height: 0,
+            image_depth: 0,
+            image_array_size: 0,
+            image_row_pitch: 0,
+            image_slice_pitch: 0,
+            num_mip_levels: 0,
+            mem_samples: 0,
+            mem_object: std::ptr::null_mut(),
+            buffer: std::ptr::null_mut(),
+        }
+    }
 }
 
 // #ifdef CL_VERSION_1_1
@@ -159,6 +187,11 @@ pub struct cl_buffer_region {
     pub size: size_t,
 }
 // #endif
+impl Default for cl_buffer_region {
+    fn default() -> Self {
+        Self { origin: 0, size: 0 }
+    }
+}
 
 // #ifdef CL_VERSION_3_0
 pub const CL_NAME_VERSION_MAX_NAME_SIZE: usize = 64;
@@ -169,3 +202,11 @@ pub struct cl_name_version {
     pub name: [c_char; CL_NAME_VERSION_MAX_NAME_SIZE],
 }
 // #endif
+impl Default for cl_name_version {
+    fn default() -> Self {
+        Self {
+            version: 0,
+            name: [0; 64],
+        }
+    }
+}

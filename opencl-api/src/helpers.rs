@@ -44,6 +44,13 @@ macro_rules! get_count {
         let status_code = unsafe { $fn($param_1, $param_2, 0, ptr::null_mut(), &mut count) };
         status_update(status_code, stringify!($fn), count)?
     }};
+    //3 parameters
+    ($fn: ident, $param_1: ident, $param_2: ident, $param_3: ident) => {{
+        let mut count = cl_uint::default();
+        let status_code =
+            unsafe { $fn($param_1, $param_2, $param_3, 0, ptr::null_mut(), &mut count) };
+        status_update(status_code, stringify!($fn), count)?
+    }};
 }
 
 #[macro_export]
@@ -68,12 +75,12 @@ macro_rules! size_getter {
 #[macro_export]
 macro_rules! gen_param_value {
     // return vector object
-    ($fn:ident, $typ:tt, $ptr: ident, $param_name: ident, $size: ident, $filler: ident) => {{
+    ($fn:ident, $typ:tt, $ptr: ident, $param_name: ident, $size: ident) => {{
         if $size == 0 {
             Vec::default()
         } else {
             let arr_len = $size / Size::$typ.get();
-            let mut param_value: Vec<$typ> = vec::from_elem($filler, arr_len);
+            let mut param_value: Vec<$typ> = vec::from_elem($typ::default(), arr_len);
             let status_code = unsafe {
                 $fn(
                     $ptr,
@@ -129,6 +136,23 @@ macro_rules! gen_object_list {
         };
         status_update(status_code, stringify!($fn), all_objects)
     }};
+
+    // 3 parameters (Non Null)
+    ($fn:ident, $typ:tt, $count: ident, $param_1: ident, $param_2: ident, $param_3: ident) => {{
+        let arr_len = $count as usize;
+        let mut all_objects: Vec<$typ> = std::vec::from_elem($typ::default(), arr_len);
+        let status_code = unsafe {
+            $fn(
+                $param_1,
+                $param_2,
+                $param_3,
+                $count,
+                all_objects.as_mut_ptr() as *mut $typ,
+                ptr::null_mut(),
+            )
+        };
+        status_update(status_code, stringify!($fn), all_objects)
+    }};
 }
 
 #[macro_export]
@@ -175,6 +199,7 @@ pub type SamplerPtr = NullMutPtr;
 
 pub type PlatformList = Vec<cl_platform_id>;
 pub type DeviceList = Vec<cl_device_id>;
+pub type MemFormatList = Vec<cl_image_format>;
 
 // Structs
 #[derive(PartialEq, Debug)]

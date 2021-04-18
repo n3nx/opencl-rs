@@ -1,6 +1,6 @@
 [package]
 name = "opencl-heads"
-version = "0.1.3"
+version = "0.2.0"
 authors = ["Xenon Lucifer Diablo <code@nmnx.org>"]
 edition = "2018"
 description = "Actively Maintained with Long Term Support, Pure Rust Implementation, Low Level bindings for OpenCL"
