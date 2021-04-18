@@ -142,9 +142,10 @@ impl Default for cl_image_format {
     }
 }
 
+#[cfg(feature = "cl_1_1")]
 #[derive(Debug, Clone, PartialEq)]
 #[repr(C)]
-pub struct cl_image_desc {
+pub struct cl_image_desc_v1 {
     pub image_type: cl_mem_object_type,
     pub image_width: size_t,
     pub image_height: size_t,
@@ -154,14 +155,41 @@ pub struct cl_image_desc {
     pub image_slice_pitch: size_t,
     pub num_mip_levels: cl_uint,
     pub mem_samples: cl_uint,
-    // #ifdef CL_VERSION_2_0
-    #[cfg(feature = "cl_2_0")]
-    pub mem_object: cl_mem,
-    // #endif
-    #[cfg(feature = "cl_1_2")]
     pub buffer: cl_mem,
 }
-impl Default for cl_image_desc {
+impl Default for cl_image_desc_v1 {
+    fn default() -> Self {
+        Self {
+            image_type: 0,
+            image_width: 0,
+            image_height: 0,
+            image_depth: 0,
+            image_array_size: 0,
+            image_row_pitch: 0,
+            image_slice_pitch: 0,
+            num_mip_levels: 0,
+            mem_samples: 0,
+            buffer: std::ptr::null_mut(),
+        }
+    }
+}
+
+#[cfg(feature = "cl_2_0")]
+#[derive(Debug, Clone, PartialEq)]
+#[repr(C)]
+pub struct cl_image_desc_v2 {
+    pub image_type: cl_mem_object_type,
+    pub image_width: size_t,
+    pub image_height: size_t,
+    pub image_depth: size_t,
+    pub image_array_size: size_t,
+    pub image_row_pitch: size_t,
+    pub image_slice_pitch: size_t,
+    pub num_mip_levels: cl_uint,
+    pub mem_samples: cl_uint,
+    pub mem_object: cl_mem,
+}
+impl Default for cl_image_desc_v2 {
     fn default() -> Self {
         Self {
             image_type: 0,
@@ -174,10 +202,11 @@ impl Default for cl_image_desc {
             num_mip_levels: 0,
             mem_samples: 0,
             mem_object: std::ptr::null_mut(),
-            buffer: std::ptr::null_mut(),
         }
     }
 }
+
+type cl_image_desc = cl_image_desc_v2;
 
 // #ifdef CL_VERSION_1_1
 #[derive(Debug, Clone, PartialEq)]
