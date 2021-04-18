@@ -19,7 +19,7 @@
 #![allow(non_upper_case_globals, dead_code)]
 use crate::errors::ValidationError;
 use crate::gen_add_trait;
-use crate::helpers::{BitfieldResult, GetSetGo, LongProperties, Properties};
+use crate::helpers::{BitfieldResult, GetSetGo, LongProperties, PlatformPtr, Properties};
 // use libc::c_void;
 use opencl_heads::consts::*;
 use opencl_heads::types::*;
@@ -875,8 +875,8 @@ impl ContextProperties {
     // #ifdef CL_VERSION_1_2;
     const INTEROP_USER_SYNC: cl_context_properties = CL_CONTEXT_INTEROP_USER_SYNC;
     // #endif;
-    pub fn platform(&self, platform_id: cl_platform_id) -> Properties {
-        let intptr_platform_id = platform_id as isize;
+    pub fn platform(&self, platform_id: &PlatformPtr) -> Properties {
+        let intptr_platform_id = platform_id.unwrap() as intptr_t;
         match intptr_platform_id {
             0 => None,
             _ => Some(vec![Self::PLATFORM, intptr_platform_id, 0]),

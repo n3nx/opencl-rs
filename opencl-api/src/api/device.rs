@@ -17,7 +17,8 @@
  */
 use crate::enums::{ParamValue, Size};
 use crate::helpers::{
-    bytes_into_string, status_update, APIResult, DeviceList, GetSetGo, Properties,
+    bytes_into_string, status_update, APIResult, DeviceList, DevicePtr, GetSetGo, PlatformPtr,
+    Properties,
 };
 use crate::structs::{DeviceInfo, DeviceType};
 use crate::{gen_object_list, gen_param_value, get_count, size_getter};
@@ -28,8 +29,9 @@ use opencl_heads::types::*;
 use std::ptr;
 use std::vec;
 
-pub fn get_device_ids(platform: cl_platform_id, device_type: DeviceType) -> APIResult<DeviceList> {
+pub fn get_device_ids(platform: &PlatformPtr, device_type: DeviceType) -> APIResult<DeviceList> {
     let device_type = device_type.get();
+    let platform = platform.unwrap();
     let device_count = get_count!(clGetDeviceIDs, platform, device_type);
 
     if device_count == 0 {
@@ -45,9 +47,10 @@ pub fn get_device_ids(platform: cl_platform_id, device_type: DeviceType) -> APIR
     }
 }
 
-pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIResult<ParamValue> {
+pub fn get_device_info(device: &DevicePtr, param_name: cl_device_info) -> APIResult<ParamValue> {
     type D = DeviceInfo;
     let fn_name = "clGetDeviceInfo";
+    let device = device.unwrap();
     size_getter!(get_device_info_size, clGetDeviceInfo);
     match param_name {
         D::NAME
@@ -205,27 +208,26 @@ pub fn get_device_info(device: cl_device_id, param_name: cl_device_info) -> APIR
     }
 }
 
-pub fn get_device_and_host_timer(device: cl_device_id) -> APIResult<(cl_ulong, cl_ulong)> {
+pub fn get_device_and_host_timer(device: &DevicePtr) -> APIResult<(cl_ulong, cl_ulong)> {
     let fn_name = "clGetDeviceAndHostTimer";
     let mut device_timestamp = cl_ulong::default();
     let mut host_timestamp = cl_ulong::default();
-    let status_code =
-        unsafe { ffi::clGetDeviceAndHostTimer(device, &mut device_timestamp, &mut host_timestamp) };
+    let status_code = unsafe {
+        ffi::clGetDeviceAndHostTimer(device.unwrap(), &mut device_timestamp, &mut host_timestamp)
+    };
     status_update(status_code, fn_name, (device_timestamp, host_timestamp))
 }
 
-pub fn get_host_timer(device: cl_device_id) -> APIResult<cl_ulong> {
+pub fn get_host_timer(device: &DevicePtr) -> APIResult<cl_ulong> {
     let fn_name = "clGetHostTimer";
     let mut host_timestamp = cl_ulong::default();
-    let status_code = unsafe { ffi::clGetHostTimer(device, &mut host_timestamp) };
+    let status_code = unsafe { ffi::clGetHostTimer(device.unwrap(), &mut host_timestamp) };
     status_update(status_code, fn_name, host_timestamp)
 }
 
 // TODO: Debug CL_INVALID_VALUE error at get_count
-pub fn create_sub_devices(
-    in_device: cl_device_id,
-    properties: Properties,
-) -> APIResult<DeviceList> {
+pub fn create_sub_devices(in_device: &DevicePtr, properties: Properties) -> APIResult<DeviceList> {
+    let in_device = in_device.unwrap();
     let properties = match properties {
         Some(x) => x.as_ptr(),
         None => ptr::null(),
@@ -241,15 +243,15 @@ pub fn create_sub_devices(
     )
 }
 
-pub fn retain_device(device: cl_device_id) -> APIResult<()> {
+pub fn retain_device(device: &DevicePtr) -> APIResult<()> {
     let fn_name = "clRetainDevice";
-    let status_code = unsafe { ffi::clRetainDevice(device) };
+    let status_code = unsafe { ffi::clRetainDevice(device.unwrap()) };
     status_update(status_code, fn_name, ())
 }
 
-pub fn release_device(device: cl_device_id) -> APIResult<()> {
+pub fn release_device(device: DevicePtr) -> APIResult<()> {
     let fn_name = "clReleaseDevice";
-    let status_code = unsafe { ffi::clReleaseDevice(device) };
+    let status_code = unsafe { ffi::clReleaseDevice(device.unwrap()) };
     status_update(status_code, fn_name, ())
 }
 
@@ -263,14 +265,16 @@ pub fn release_device(device: cl_device_id) -> APIResult<()> {
 mod tests {
     use super::*;
     use crate::api::platform;
+    use crate::helpers::PlatformPtr;
     use crate::structs::{DevicePartitionProperty, PlatformInfo};
     #[test]
     fn test_get_device_info() {
         let all_platforms = platform::get_platform_ids().unwrap();
         assert_ne!(all_platforms.len(), 0);
-        let id = all_platforms[0];
+        // let id = all_platforms[0];
+        let id = PlatformPtr::from_ptr(all_platforms[0], "main_fn").unwrap();
 
-        let name = platform::get_platform_info(id, PlatformInfo::NAME).unwrap();
+        let name = platform::get_platform_info(&id, PlatformInfo::NAME).unwrap();
         let platform_name = name.unwrap_string().unwrap();
         assert_ne!(platform_name, "");
         println!("CL_PLATFORM_NAME: {}", platform_name);
@@ -279,15 +283,15 @@ mod tests {
             DeviceType::new(DeviceType::CPU).unwrap() + DeviceType::new(DeviceType::GPU).unwrap();
 
         device.set(DeviceType::GPU).unwrap();
-        let device_ids = get_device_ids(id, device).unwrap();
+        let device_ids = get_device_ids(&id, device).unwrap();
         assert!(0 < device_ids.len());
         // Choose the first GPU device
-        let device_id = device_ids[0];
-        let vendor_name = get_device_info(device_id, DeviceInfo::VENDOR).unwrap();
+        let device_id = DevicePtr::from_ptr(device_ids[0], "test_fn").unwrap();
+        let vendor_name = get_device_info(&device_id, DeviceInfo::VENDOR).unwrap();
         let vendor_name = vendor_name.unwrap_string().unwrap();
         println!("CL_DEVICE_VENDOR_NAME: {}", vendor_name);
         assert_ne!(vendor_name, "");
-        let vendor_id = get_device_info(device_id, DeviceInfo::VENDOR_ID).unwrap();
+        let vendor_id = get_device_info(&device_id, DeviceInfo::VENDOR_ID).unwrap();
         let vendor_id = vendor_id.unwrap_uint().unwrap();
         println!("CL_DEVICE_VENDOR_ID: {:X}", vendor_id);
         assert_ne!(vendor_id, 0);
@@ -298,9 +302,9 @@ mod tests {
     fn test_create_sub_device() {
         let all_platforms = platform::get_platform_ids().unwrap();
         assert_ne!(all_platforms.len(), 0);
-        let id = all_platforms[0];
+        let id = PlatformPtr::from_ptr(all_platforms[0], "main_fn").unwrap();
 
-        let name = platform::get_platform_info(id, PlatformInfo::NAME).unwrap();
+        let name = platform::get_platform_info(&id, PlatformInfo::NAME).unwrap();
         let platform_name = name.unwrap_string().unwrap();
         assert_ne!(platform_name, "");
         println!("CL_PLATFORM_NAME: {}", platform_name);
@@ -309,13 +313,13 @@ mod tests {
             DeviceType::new(DeviceType::CPU).unwrap() + DeviceType::new(DeviceType::GPU).unwrap();
 
         device.set(DeviceType::GPU).unwrap();
-        let device_ids = get_device_ids(id, device).unwrap();
+        let device_ids = get_device_ids(&id, device).unwrap();
         assert!(0 < device_ids.len());
         // Choose the first GPU device
-        let device_id = device_ids[0];
-
+        // let device_id = device_ids[0];
+        let device_id = DevicePtr::from_ptr(device_ids[0], "test_fn").unwrap();
         let vendor_name =
-            get_device_info(device_id, DeviceInfo::PARTITION_MAX_SUB_DEVICES).unwrap();
+            get_device_info(&device_id, DeviceInfo::PARTITION_MAX_SUB_DEVICES).unwrap();
         let max_sub_devices = vendor_name.unwrap_uint().unwrap();
         println!("CL_DEVICE_COMPUTE_UNITS: {}", max_sub_devices);
 
@@ -324,7 +328,7 @@ mod tests {
             // let properties = vec![DevicePartitionProperty::EQUALLY, sub_cu_count, 0];
             let properties = DevicePartitionProperty.equally(sub_cu_count);
 
-            let sub_device_list = create_sub_devices(device_id, properties);
+            let sub_device_list = create_sub_devices(&device_id, properties);
             println!("{:?}", sub_device_list.unwrap());
             // println!("CL_DEVICE_LIST: {:?}", sub_device_list);
             assert_eq!(0, 1);

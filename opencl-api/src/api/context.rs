@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 use crate::enums::{ParamValue, Size};
-use crate::helpers::{status_update, APIResult, GetSetGo, Properties};
+use crate::helpers::{
+    status_update, APIResult, ContextPtr, DeviceList, GetSetGo, Properties, WrappedMutablePointer,
+};
 use crate::structs::{ContextInfo, DeviceType};
 use crate::{gen_param_value, size_getter};
 use libc::c_void;
@@ -28,10 +30,11 @@ use std::vec;
 
 pub fn create_context(
     properties: &Properties,
-    devices: Vec<cl_device_id>,
+    devices: DeviceList,
     pfn_notify: Option<extern "C" fn(*const c_char, *const c_void, size_t, *mut c_void)>,
-    user_data: *mut c_void,
-) -> APIResult<cl_context> {
+    user_data: WrappedMutablePointer<c_void>,
+) -> APIResult<ContextPtr> {
+    let fn_name = "clCreateContext";
     let mut status_code = 0;
     let properties = match properties {
         Some(x) => x.as_ptr(),
@@ -43,19 +46,24 @@ pub fn create_context(
             devices.len() as cl_uint,
             devices.as_ptr(),
             pfn_notify,
-            user_data,
+            user_data.unwrap(),
             &mut status_code,
         )
     };
-    status_update(status_code, "clCreateContext", context)
+    status_update(
+        status_code,
+        fn_name,
+        ContextPtr::from_ptr(context, fn_name)?,
+    )
 }
 
 pub fn create_context_from_type(
     properties: &Properties,
     device_type: DeviceType,
     pfn_notify: Option<extern "C" fn(*const c_char, *const c_void, size_t, *mut c_void)>,
-    user_data: *mut c_void,
-) -> APIResult<cl_context> {
+    user_data: WrappedMutablePointer<c_void>,
+) -> APIResult<ContextPtr> {
+    let fn_name = "clCreateContextFromType";
     let mut status_code = 0;
     let properties = match properties {
         Some(x) => x.as_ptr(),
@@ -66,25 +74,30 @@ pub fn create_context_from_type(
             properties,
             device_type.get(),
             pfn_notify,
-            user_data,
+            user_data.unwrap(),
             &mut status_code,
         )
     };
-    status_update(status_code, "clCreateContextFromType", context)
+    status_update(
+        status_code,
+        fn_name,
+        ContextPtr::from_ptr(context, fn_name)?,
+    )
 }
 
-pub fn retain_context(context: cl_context) -> APIResult<()> {
-    let status_code = unsafe { ffi::clRetainContext(context) };
+pub fn retain_context(context: &ContextPtr) -> APIResult<()> {
+    let status_code = unsafe { ffi::clRetainContext(context.unwrap()) };
     status_update(status_code, "clRetainContext", ())
 }
 
-pub fn release_context(context: cl_context) -> APIResult<()> {
-    let status_code = unsafe { ffi::clReleaseContext(context) };
+pub fn release_context(context: ContextPtr) -> APIResult<()> {
+    let status_code = unsafe { ffi::clReleaseContext(context.unwrap()) };
     status_update(status_code, "clReleaseContext", ())
 }
 
-pub fn get_context_info(context: cl_context, param_name: cl_context_info) -> APIResult<ParamValue> {
+pub fn get_context_info(context: &ContextPtr, param_name: cl_context_info) -> APIResult<ParamValue> {
     type C = ContextInfo;
+    let context = context.unwrap();
     size_getter!(get_context_info_size, clGetContextInfo);
     match param_name {
         C::REFERENCE_COUNT | C::NUM_DEVICES => {
@@ -103,12 +116,13 @@ pub fn get_context_info(context: cl_context, param_name: cl_context_info) -> API
 }
 
 pub fn set_context_destructor_callback(
-    context: cl_context,
+    context: &ContextPtr,
     pfn_notify: extern "C" fn(context: cl_context, user_data: *mut c_void),
-    user_data: *mut c_void,
+    user_data: WrappedMutablePointer<c_void>,
 ) -> APIResult<()> {
-    let status_code =
-        unsafe { ffi::clSetContextDestructorCallback(context, pfn_notify, user_data) };
+    let status_code = unsafe {
+        ffi::clSetContextDestructorCallback(context.unwrap(), pfn_notify, user_data.unwrap())
+    };
     status_update(status_code, "clSetContextDestructorCallback", ())
 }
 
@@ -117,78 +131,97 @@ mod tests {
     use super::*;
     use crate::api::device::get_device_ids;
     use crate::api::platform::get_platform_ids;
+    use crate::helpers::{PlatformPtr, WrapMutPtr};
     use crate::structs::{ContextProperties, DeviceType};
 
     #[test]
     fn test_create_context() {
         let platform_ids = get_platform_ids().unwrap();
         // Choose the first platform
-        let platform_id = platform_ids[0];
+        // let platform_id = platform_ids[0];
+        let platform_id = PlatformPtr::from_ptr(platform_ids[0], "test_fn").unwrap();
 
         let device_ids =
-            get_device_ids(platform_id, DeviceType::new(DeviceType::DEFAULT).unwrap()).unwrap();
+            get_device_ids(&platform_id, DeviceType::new(DeviceType::DEFAULT).unwrap()).unwrap();
         assert!(0 < device_ids.len());
 
-        let context = create_context(&None, device_ids, None, ptr::null_mut());
+        let context = create_context(&None, device_ids, None, WrapMutPtr::null());
         let context = context.unwrap();
         eprintln!("CL_CONTEXT_PTR: {:?}", context);
-        assert_ne!(context, ptr::null_mut());
+        assert_ne!(context.unwrap(), ptr::null_mut());
         release_context(context).unwrap();
     }
     #[test]
     fn test_create_context_from_type() {
         let platform_ids = get_platform_ids().unwrap();
         // Choose the first platform
-        let platform_id = platform_ids[0];
+        // let platform_id = platform_ids[0];
+        let platform_id = PlatformPtr::from_ptr(platform_ids[0], "test_fn").unwrap();
         // let properties = vec![ContextProperties::PLATFORM, platform_id as isize, 0];
-        let properties = ContextProperties.platform(platform_id);
+        let properties = ContextProperties.platform(&platform_id);
         let default_device = DeviceType::new(DeviceType::DEFAULT).unwrap();
-        let context = create_context_from_type(&properties, default_device, None, ptr::null_mut());
+        let context = create_context_from_type(
+            &properties,
+            default_device,
+            None,
+            WrapMutPtr::null(),
+        );
         let context = context.unwrap();
         eprintln!("CL_CONTEXT_PTR: {:?}", context);
-        assert_ne!(context, ptr::null_mut());
+        assert_ne!(context.unwrap(), ptr::null_mut());
         release_context(context).unwrap();
     }
     #[test]
     fn test_get_context_info_1() {
         let platform_ids = get_platform_ids().unwrap();
         // Choose the first platform
-        let platform_id = platform_ids[0];
-
+        // let platform_id = platform_ids[0];
+        let platform_id = PlatformPtr::from_ptr(platform_ids[0], "test_fn").unwrap();
         // let properties = vec![ContextProperties::PLATFORM, platform_id as isize, 0];
-        let properties = ContextProperties.platform(platform_id);
+        let properties = ContextProperties.platform(&platform_id);
         let default_device = DeviceType::new(DeviceType::DEFAULT).unwrap();
-        let context = create_context_from_type(&properties, default_device, None, ptr::null_mut());
+        let context = create_context_from_type(
+            &properties,
+            default_device,
+            None,
+            WrappedMutablePointer::null(),
+        );
         let context = context.unwrap();
         eprintln!("CL_CONTEXT_PTR: {:?}", context);
-        assert_ne!(context, ptr::null_mut());
-        let device = get_context_info(context, ContextInfo::DEVICES);
+        assert_ne!(context.unwrap(), ptr::null_mut());
+        let device = get_context_info(&context, ContextInfo::DEVICES);
         eprintln!("CL_CONTEXT_DEVICE: {:?}", device);
         assert_ne!(device.unwrap().unwrap_arr_cptr().unwrap()[0], 0);
 
-        let properties = get_context_info(context, ContextInfo::PROPERTIES);
+        let properties = get_context_info(&context, ContextInfo::PROPERTIES);
         eprintln!("CL_CONTEXT_PROPERTIES: {:?}", properties);
         let re_platform_id = properties.unwrap().unwrap_arr_cptr().unwrap()[1];
-        assert_eq!(re_platform_id, platform_id as isize);
+        assert_eq!(re_platform_id, platform_id.unwrap() as isize);
         release_context(context).unwrap();
     }
     #[test]
     fn test_get_context_info_2() {
         let platform_ids = get_platform_ids().unwrap();
         // Choose the first platform
-        let platform_id = platform_ids[0];
+        // let platform_id = platform_ids[0];
+        let platform_id = PlatformPtr::from_ptr(platform_ids[0], "test_fn").unwrap();
 
         // let properties = vec![ContextProperties::PLATFORM, platform_id as isize, 0];
-        let properties = ContextProperties.platform(platform_id);
+        let properties = ContextProperties.platform(&platform_id);
         let default_device = DeviceType::new(DeviceType::DEFAULT).unwrap();
-        let context = create_context_from_type(&properties, default_device, None, ptr::null_mut());
+        let context = create_context_from_type(
+            &properties,
+            default_device,
+            None,
+            WrappedMutablePointer::null(),
+        );
         let context = context.unwrap();
         eprintln!("CL_CONTEXT_PTR: {:?}", context);
-        assert_ne!(context, ptr::null_mut());
-        let device_count = get_context_info(context, ContextInfo::NUM_DEVICES);
+        assert_ne!(context.unwrap(), ptr::null_mut());
+        let device_count = get_context_info(&context, ContextInfo::NUM_DEVICES);
         eprintln!("CL_CONTEXT_DEVICE_COUNT: {:?}", device_count);
         assert_ne!(device_count.unwrap().unwrap_uint().unwrap(), 0);
-        let ref_count = get_context_info(context, ContextInfo::REFERENCE_COUNT);
+        let ref_count = get_context_info(&context, ContextInfo::REFERENCE_COUNT);
         eprintln!("CL_CONTEXT_REFERENCE_COUNT: {:?}", ref_count);
         assert_ne!(ref_count.unwrap().unwrap_uint().unwrap(), 0);
 

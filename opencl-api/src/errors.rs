@@ -87,6 +87,7 @@ impl fmt::Display for ValidationError {
 #[derive(Debug, PartialEq)]
 pub enum HelperError {
     BytesIntoString,
+    NullPointerException(&'static str),
 }
 
 impl ToLibraryError for HelperError {

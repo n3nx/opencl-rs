@@ -19,6 +19,7 @@
 use crate::enums::Status;
 use crate::errors::*;
 use crate::structs::StatusCode;
+use libc::c_void;
 use opencl_heads::types::*;
 use std::ptr;
 
@@ -152,6 +153,7 @@ macro_rules! gen_add_trait {
 // Aliases
 pub type WrapPtr<T> = WrappedPointer<T>;
 pub type WrapMutPtr<T> = WrappedMutablePointer<T>;
+pub type NullMutPtr = WrappedMutablePointer<c_void>;
 
 pub type APIResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
 pub type StatusCodeResult = ::std::result::Result<cl_int, ValidationError>;
@@ -161,11 +163,21 @@ pub type BitfieldResult<T> = ::std::result::Result<T, ValidationError>;
 pub type Properties = Option<Vec<intptr_t>>;
 pub type LongProperties = Option<Vec<cl_properties>>;
 
-pub type DeviceList = Vec<cl_device_id>;
+pub type PlatformPtr = NullMutPtr;
+pub type DevicePtr = NullMutPtr;
+pub type ContextPtr = NullMutPtr;
+pub type QueuePtr = NullMutPtr;
+pub type MemPtr = NullMutPtr;
+pub type ProgramPtr = NullMutPtr;
+pub type KernelPtr = NullMutPtr;
+pub type EventPtr = NullMutPtr;
+pub type SamplerPtr = NullMutPtr;
+
 pub type PlatformList = Vec<cl_platform_id>;
+pub type DeviceList = Vec<cl_device_id>;
 
 // Structs
-
+#[derive(PartialEq, Debug)]
 pub struct WrappedPointer<T>(*const T);
 impl<T> WrappedPointer<T> {
     pub fn from<U>(x: &U) -> Self {
@@ -176,6 +188,10 @@ impl<T> WrappedPointer<T> {
     pub fn from_owned<U>(x: U) -> Self {
         Self::from(&x)
     }
+    /// Generally considered unsafe to run
+    pub unsafe fn from_raw(x: intptr_t) -> Self {
+        Self(x as *const T)
+    }
     pub fn null() -> Self {
         Self(ptr::null())
     }
@@ -184,6 +200,7 @@ impl<T> WrappedPointer<T> {
     }
 }
 
+#[derive(PartialEq, Debug)]
 pub struct WrappedMutablePointer<T>(*mut T);
 impl<T> WrappedMutablePointer<T> {
     pub fn from<U>(x: &mut U) -> Self {
@@ -193,6 +210,16 @@ impl<T> WrappedMutablePointer<T> {
     }
     pub fn from_owned<U>(mut x: U) -> Self {
         Self::from(&mut x)
+    }
+    /// Generally considered unsafe to run
+    pub unsafe fn from_raw(x: intptr_t) -> Self {
+        Self(x as *mut T)
+    }
+    pub fn from_ptr(x: *mut T, fn_name: &'static str) -> HelperResult<Self> {
+        match ptr::NonNull::new(x) {
+            Some(dat) => Ok(Self(dat.as_ptr())),
+            None => Err(HelperError::NullPointerException(fn_name).to_error()),
+        }
     }
     pub fn null() -> Self {
         Self(ptr::null_mut())

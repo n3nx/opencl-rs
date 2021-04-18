@@ -19,7 +19,9 @@
 
 // use crate::enums::Status;
 use crate::enums::{ParamValue, Size};
-use crate::helpers::{status_update, APIResult, GetSetGo, LongProperties};
+use crate::helpers::{
+    status_update, APIResult, ContextPtr, DevicePtr, GetSetGo, LongProperties, QueuePtr,
+};
 use crate::structs::{CommandQueueInfo, CommandQueueProperties, StatusCode};
 use crate::{gen_param_value, size_getter};
 use libc::c_void;
@@ -31,58 +33,83 @@ use std::vec;
 
 // #[cfg(feature = "depr_2_0")]
 pub fn create_command_queue(
-    context: cl_context,
-    device: cl_device_id,
+    context: &ContextPtr,
+    device: &DevicePtr,
     properties: &CommandQueueProperties,
-) -> APIResult<cl_command_queue> {
+) -> APIResult<QueuePtr> {
+    let fn_name = "clCreateCommandQueue";
     let mut status_code: cl_int = StatusCode::INVALID_COMMAND_QUEUE;
-    let properties = properties.get();
-    let queue_ptr =
-        unsafe { ffi::clCreateCommandQueue(context, device, properties, &mut status_code) };
-    status_update(status_code, "clCreateCommandQueue", queue_ptr)
+    let queue_ptr = unsafe {
+        ffi::clCreateCommandQueue(
+            context.unwrap(),
+            device.unwrap(),
+            properties.get(),
+            &mut status_code,
+        )
+    };
+    status_update(
+        status_code,
+        fn_name,
+        QueuePtr::from_ptr(queue_ptr, fn_name)?,
+    )
 }
 
 pub fn create_command_queue_with_properties(
-    context: cl_context,
-    device: cl_device_id,
+    context: &ContextPtr,
+    device: &DevicePtr,
     properties: &LongProperties,
-) -> APIResult<cl_command_queue> {
+) -> APIResult<QueuePtr> {
+    let fn_name = "clCreateCommandQueueWithProperties";
     let mut status_code: cl_int = StatusCode::INVALID_COMMAND_QUEUE;
-    // let properties: *const cl_queue_properties = &properties.get();
     let properties = match properties {
         Some(x) => x.as_ptr(),
         None => ptr::null(),
     };
     let queue_ptr = unsafe {
-        ffi::clCreateCommandQueueWithProperties(context, device, properties, &mut status_code)
+        ffi::clCreateCommandQueueWithProperties(
+            context.unwrap(),
+            device.unwrap(),
+            properties,
+            &mut status_code,
+        )
     };
-    status_update(status_code, "clCreateCommandQueueWithProperties", queue_ptr)
+    status_update(
+        status_code,
+        fn_name,
+        QueuePtr::from_ptr(queue_ptr, fn_name)?,
+    )
 }
 
 pub fn set_default_device_command_queue(
-    context: cl_context,
-    device: cl_device_id,
-    command_queue: cl_command_queue,
+    context: &ContextPtr,
+    device: &DevicePtr,
+    command_queue: &QueuePtr,
 ) -> APIResult<()> {
-    let status_code =
-        unsafe { ffi::clSetDefaultDeviceCommandQueue(context, device, command_queue) };
+    let status_code = unsafe {
+        ffi::clSetDefaultDeviceCommandQueue(
+            context.unwrap(),
+            device.unwrap(),
+            command_queue.unwrap(),
+        )
+    };
     status_update(status_code, "clSetDefaultDeviceCommandQueue", ())
 }
 
-pub fn retain_command_queue(command_queue: cl_command_queue) -> APIResult<()> {
-    let status_code = unsafe { ffi::clRetainCommandQueue(command_queue) };
+pub fn retain_command_queue(command_queue: &QueuePtr) -> APIResult<()> {
+    let status_code = unsafe { ffi::clRetainCommandQueue(command_queue.unwrap()) };
     status_update(status_code, "clRetainCommandQueue", ())
 }
 
-pub fn release_command_queue(command_queue: cl_command_queue) -> APIResult<()> {
-    let status_code = unsafe { ffi::clReleaseCommandQueue(command_queue) };
+pub fn release_command_queue(command_queue: QueuePtr) -> APIResult<()> {
+    let status_code = unsafe { ffi::clReleaseCommandQueue(command_queue.unwrap()) };
     status_update(status_code, "clReleaseCommandQueue", ())
 }
 
 pub fn get_command_queue_info(
-    command_queue: cl_command_queue,
+    command_queue: &QueuePtr,
     param_name: cl_command_queue_info,
 ) -> APIResult<ParamValue> {
+    let command_queue = command_queue.unwrap();
     size_getter!(get_command_queue_info_size, clGetCommandQueueInfo);
     match param_name {
         CommandQueueInfo::CONTEXT | CommandQueueInfo::DEVICE | CommandQueueInfo::DEVICE_DEFAULT => {
@@ -120,23 +147,23 @@ pub fn get_command_queue_info(
 
 #[cfg(feature = "depr_1_0")]
 pub fn set_command_queue_property(
-    command_queue: cl_command_queue,
-    properties: CommandQueueProperties,
+    command_queue: &QueuePtr,
+    properties: &CommandQueueProperties,
     enable: cl_bool,
 ) -> APIResult<()> {
     let status_code = unsafe {
-        ffi::clSetCommandQueueProperty(command_queue, properties, enable, ptr::null_mut())
+        ffi::clSetCommandQueueProperty(command_queue.unwrap(), properties, enable, ptr::null_mut())
     };
     status_update(status_code, "clSetCommandQueueProperty", ())
 }
 
-pub fn flush(command_queue: cl_command_queue) -> APIResult<()> {
-    let status_code = unsafe { ffi::clFlush(command_queue) };
+pub fn flush(command_queue: &QueuePtr) -> APIResult<()> {
+    let status_code = unsafe { ffi::clFlush(command_queue.unwrap()) };
     status_update(status_code, "clFlush", ())
 }
 
-pub fn finish(command_queue: cl_command_queue) -> APIResult<()> {
-    let status_code = unsafe { ffi::clFinish(command_queue) };
+pub fn finish(command_queue: &QueuePtr) -> APIResult<()> {
+    let status_code = unsafe { ffi::clFinish(command_queue.unwrap()) };
     status_update(status_code, "clFinish", ())
 }
 
@@ -146,9 +173,8 @@ mod tests {
     use crate::api::context::{create_context, release_context};
     use crate::api::device::get_device_ids;
     use crate::api::platform::get_platform_ids;
-    use crate::helpers::GetSetGo;
+    use crate::helpers::{DevicePtr, GetSetGo, PlatformPtr, WrapMutPtr};
     use crate::structs::{CommandQueueInfo, CommandQueueProperties, ContextProperties, DeviceType};
-    use std::ptr;
 
     #[test]
     // #[ignore]
@@ -156,26 +182,28 @@ mod tests {
         let platform_ids = get_platform_ids().unwrap();
 
         // Choose the first platform
-        let platform_id = platform_ids[0];
+        // let platform_id = platform_ids[0];
+        let platform_id = PlatformPtr::from_ptr(platform_ids[0], "test_fn").unwrap();
 
         let device_ids =
-            get_device_ids(platform_id, DeviceType::new(DeviceType::DEFAULT).unwrap()).unwrap();
+            get_device_ids(&platform_id, DeviceType::new(DeviceType::DEFAULT).unwrap()).unwrap();
         assert!(0 < device_ids.len());
 
         // eprintln!("{:?}", device_ids);
 
-        let device_id = device_ids[0];
+        // let device_id = device_ids[0];
+        let device_id = DevicePtr::from_ptr(device_ids[0], "test_fn").unwrap();
 
-        let properties = ContextProperties.platform(platform_id);
+        let properties = ContextProperties.platform(&platform_id);
 
-        let context = create_context(&properties, device_ids, None, ptr::null_mut());
+        let context = create_context(&properties, device_ids, None, WrapMutPtr::null());
         let context = context.unwrap();
 
         // Queue v1
         let properties = CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE)
             .unwrap()
             + CommandQueueProperties::new(CommandQueueProperties::ON_DEVICE_DEFAULT).unwrap();
-        let queue = create_command_queue(context, device_id, &properties).unwrap();
+        let queue = create_command_queue(&context, &device_id, &properties).unwrap();
 
         release_command_queue(queue).unwrap();
 
@@ -185,7 +213,7 @@ mod tests {
                 + CommandQueueProperties::new(CommandQueueProperties::ON_DEVICE_DEFAULT).unwrap(),
         );
         eprintln!("{:?}", properties);
-        let queue = create_command_queue_with_properties(context, device_id, &None).unwrap();
+        let queue = create_command_queue_with_properties(&context, &device_id, &None).unwrap();
 
         release_command_queue(queue).unwrap();
 
@@ -198,26 +226,28 @@ mod tests {
         let platform_ids = get_platform_ids().unwrap();
 
         // Choose the first platform
-        let platform_id = platform_ids[0];
+        // let platform_id = platform_ids[0];
+        let platform_id = PlatformPtr::from_ptr(platform_ids[0], "test_fn").unwrap();
 
         let device_ids =
-            get_device_ids(platform_id, DeviceType::new(DeviceType::DEFAULT).unwrap()).unwrap();
+            get_device_ids(&platform_id, DeviceType::new(DeviceType::DEFAULT).unwrap()).unwrap();
         assert!(0 < device_ids.len());
 
-        let device_id = device_ids[0];
+        // let device_id = device_ids[0];
+        let device_id = DevicePtr::from_ptr(device_ids[0], "test_fn").unwrap();
 
-        let properties = ContextProperties.platform(platform_id);
+        let properties = ContextProperties.platform(&platform_id);
 
-        let context = create_context(&properties, device_ids, None, ptr::null_mut());
+        let context = create_context(&properties, device_ids, None, WrapMutPtr::null());
         let context = context.unwrap();
 
         // Queue v1
         let properties = CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE)
             .unwrap()
             + CommandQueueProperties::new(CommandQueueProperties::ON_DEVICE).unwrap();
-        let queue = create_command_queue(context, device_id, &properties).unwrap();
+        let queue = create_command_queue(&context, &device_id, &properties).unwrap();
         // Get command queue info v1
-        let command_info = get_command_queue_info(queue, CommandQueueInfo::PROPERTIES).unwrap();
+        let command_info = get_command_queue_info(&queue, CommandQueueInfo::PROPERTIES).unwrap();
         assert_eq!(properties.get(), command_info.unwrap_ulong().unwrap());
 
         release_command_queue(queue).unwrap();
@@ -228,9 +258,9 @@ mod tests {
                 + CommandQueueProperties::new(CommandQueueProperties::ON_DEVICE).unwrap(),
         );
         eprintln!("{:?}", properties);
-        let queue = create_command_queue_with_properties(context, device_id, &properties).unwrap();
+        let queue = create_command_queue_with_properties(&context, &device_id, &properties).unwrap();
 
-        let command_info = get_command_queue_info(queue, CommandQueueInfo::PROPERTIES).unwrap();
+        let command_info = get_command_queue_info(&queue, CommandQueueInfo::PROPERTIES).unwrap();
         assert_eq!(properties.unwrap()[1], command_info.unwrap_ulong().unwrap());
 
         release_command_queue(queue).unwrap();
