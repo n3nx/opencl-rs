@@ -18,7 +18,7 @@
 
 #![allow(dead_code)]
 use crate::errors::{OpenCLAPILibraryError, ToLibraryError, ValidationError};
-use crate::helpers::StatusCodeResult;
+use crate::helpers::{StatusCodeResult, WrappedMutablePointer, WrappedPointer};
 use crate::structs::StatusCode;
 use opencl_heads::consts::*;
 use opencl_heads::types::*;
@@ -321,9 +321,15 @@ impl ParamValue {
             _ => None,
         }
     }
-    pub fn unwrap_cptr(self) -> Option<intptr_t> {
+    pub fn unwrap_cptr<T>(self) -> Option<WrappedPointer<T>> {
         match self {
-            ParamValue::CPtr(dat) => Some(dat),
+            ParamValue::CPtr(dat) => Some(unsafe { WrappedPointer::from_raw(dat) }),
+            _ => None,
+        }
+    }
+    pub fn unwrap_mut_cptr<T>(self) -> Option<WrappedMutablePointer<T>> {
+        match self {
+            ParamValue::CPtr(dat) => Some(unsafe { WrappedMutablePointer::from_raw(dat) }),
             _ => None,
         }
     }

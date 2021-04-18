@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 use crate::enums::{ParamValue, Size};
-use crate::helpers::*;
+use crate::helpers::{bytes_into_string, status_update, APIResult, PlatformList, PlatformPtr};
 use crate::structs::PlatformInfo;
 use crate::{gen_object_list, gen_param_value, get_count, size_getter};
 use libc::c_void;
@@ -46,10 +46,11 @@ pub fn get_platform_ids() -> APIResult<PlatformList> {
 }
 
 pub fn get_platform_info(
-    platform: cl_platform_id,
+    platform: &PlatformPtr,
     param_name: cl_platform_info,
 ) -> APIResult<ParamValue> {
     type P = PlatformInfo;
+    let platform = platform.unwrap();
     size_getter!(get_platform_info_size, clGetPlatformInfo);
     let fn_name = "clGetPlatformInfo";
     match param_name {
@@ -105,25 +106,25 @@ mod tests {
     // #[ignore]
     fn test_get_platform_info() {
         let all_platforms = get_platform_ids().unwrap();
-        let id = all_platforms[0];
+        let id = PlatformPtr::from_ptr(all_platforms[0], "main_fn").unwrap();
 
-        let name = get_platform_info(id, PlatformInfo::NAME).unwrap();
+        let name = get_platform_info(&id, PlatformInfo::NAME).unwrap();
         println!("CL_PLATFORM_NAME: {:?}", name);
         assert_ne!(name.unwrap_string().unwrap(), "");
 
-        let version = get_platform_info(id, PlatformInfo::VERSION).unwrap();
+        let version = get_platform_info(&id, PlatformInfo::VERSION).unwrap();
         println!("CL_PLATFORM_VERSION: {:?}", version);
         assert_ne!(version.unwrap_string().unwrap(), "");
 
-        let vendor = get_platform_info(id, PlatformInfo::VENDOR).unwrap();
+        let vendor = get_platform_info(&id, PlatformInfo::VENDOR).unwrap();
         println!("CL_PLATFORM_VENDOR: {:?}", vendor);
         assert_ne!(vendor.unwrap_string().unwrap(), "");
 
-        let profile = get_platform_info(id, PlatformInfo::PROFILE).unwrap();
+        let profile = get_platform_info(&id, PlatformInfo::PROFILE).unwrap();
         println!("CL_PLATFORM_PROFILE: {:?}", profile);
         assert_ne!(profile.unwrap_string().unwrap(), "");
 
-        let extensions = get_platform_info(id, PlatformInfo::EXTENSIONS).unwrap();
+        let extensions = get_platform_info(&id, PlatformInfo::EXTENSIONS).unwrap();
         println!("CL_PLATFORM_EXTENSIONS: {:?}", extensions);
         assert_ne!(extensions.unwrap_string().unwrap(), "");
     }
@@ -132,10 +133,11 @@ mod tests {
     #[ignore]
     fn test_get_platform_info_fail() {
         let all_platforms = get_platform_ids().unwrap();
-        let id = all_platforms[0];
+        // let id = all_platforms[0];
+        let id = PlatformPtr::from_ptr(all_platforms[0], "main_fn").unwrap();
         let wrong_id = 666;
 
-        let extensions = get_platform_info(id, wrong_id)
+        let extensions = get_platform_info(&id, wrong_id)
             .expect_err("Wrong ID entered, check your structs dude!");
         println!("CL_PLATFORM_INVALID: {:?}", extensions);
         // Bullshit! I will do this later on.
@@ -146,9 +148,10 @@ mod tests {
     #[cfg(feature = "cl_2_0")]
     fn test_get_platform_info_v2() {
         let all_platforms = get_platform_ids().unwrap();
-        let id = all_platforms[0];
+        // let id = all_platforms[0];
+        let id = PlatformPtr::from_ptr(all_platforms[0], "main_fn").unwrap();
 
-        let extversion = get_platform_info(id, PlatformInfo::HOST_TIMER_RESOLUTION).unwrap();
+        let extversion = get_platform_info(&id, PlatformInfo::HOST_TIMER_RESOLUTION).unwrap();
         println!("CL_PLATFORM_HOST_TIMER_RESOLUTION: {:?}", extversion);
         assert_ne!(extversion.unwrap_ulong().unwrap(), 0);
     }
