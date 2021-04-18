@@ -397,7 +397,8 @@ mod tests {
             CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE).unwrap()
                 + CommandQueueProperties::new(CommandQueueProperties::ON_DEVICE).unwrap(),
         );
-        let queue = create_command_queue_with_properties(&context, &device_id, &properties).unwrap();
+        let queue =
+            create_command_queue_with_properties(&context, &device_id, &properties).unwrap();
 
         // Start buffer test
         let flags = MemFlags::new(MemFlags::READ_WRITE).unwrap();

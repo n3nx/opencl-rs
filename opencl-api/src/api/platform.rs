@@ -56,9 +56,7 @@ pub fn get_platform_info(
     match param_name {
         P::PROFILE | P::VERSION | P::VENDOR | P::NAME | P::EXTENSIONS => {
             let size = get_platform_info_size(platform, param_name)?;
-            let filler = 0;
-            let param_value =
-                gen_param_value!(clGetPlatformInfo, u8, platform, param_name, size, filler);
+            let param_value = gen_param_value!(clGetPlatformInfo, u8, platform, param_name, size);
             Ok(ParamValue::String(bytes_into_string(param_value)?))
         }
         // >= CL 2.1
@@ -74,17 +72,12 @@ pub fn get_platform_info(
         // >= CL 3.0
         P::EXTENSIONS_WITH_VERSION => {
             let size = get_platform_info_size(platform, param_name)?;
-            let filler = cl_name_version {
-                version: 0,
-                name: [0; 64],
-            };
             let param_value = gen_param_value!(
                 clGetPlatformInfo,
                 cl_name_version,
                 platform,
                 param_name,
-                size,
-                filler
+                size
             );
             Ok(ParamValue::NameVersion(param_value))
         }

@@ -64,9 +64,7 @@ pub fn get_device_info(device: &DevicePtr, param_name: cl_device_info) -> APIRes
         | D::IL_VERSION
         | D::LATEST_CONFORMANCE_VERSION_PASSED => {
             let size = get_device_info_size(device, param_name)?;
-            let filler = 0;
-            let param_value =
-                gen_param_value!(clGetDeviceInfo, u8, device, param_name, size, filler);
+            let param_value = gen_param_value!(clGetDeviceInfo, u8, device, param_name, size);
             Ok(ParamValue::String(bytes_into_string(param_value)?))
         }
         D::VENDOR_ID
@@ -155,18 +153,8 @@ pub fn get_device_info(device: &DevicePtr, param_name: cl_device_info) -> APIRes
         | D::OPENCL_C_FEATURES
         | D::EXTENSIONS_WITH_VERSION => {
             let size = get_device_info_size(device, param_name)?;
-            let filler = cl_name_version {
-                version: 0,
-                name: [0; 64],
-            };
-            let param_value = gen_param_value!(
-                clGetDeviceInfo,
-                cl_name_version,
-                device,
-                param_name,
-                size,
-                filler
-            );
+            let param_value =
+                gen_param_value!(clGetDeviceInfo, cl_name_version, device, param_name, size);
             Ok(ParamValue::NameVersion(param_value))
         }
         D::MAX_WORK_GROUP_SIZE
@@ -192,16 +180,12 @@ pub fn get_device_info(device: &DevicePtr, param_name: cl_device_info) -> APIRes
         }
         D::PARTITION_PROPERTIES | D::PARTITION_TYPE => {
             let size = get_device_info_size(device, param_name)?;
-            let filler = 0;
-            let param_value =
-                gen_param_value!(clGetDeviceInfo, isize, device, param_name, size, filler);
+            let param_value = gen_param_value!(clGetDeviceInfo, isize, device, param_name, size);
             Ok(ParamValue::ArrCPtr(param_value))
         }
         D::MAX_WORK_ITEM_SIZES => {
             let size = get_device_info_size(device, param_name)?;
-            let filler = 0;
-            let param_value =
-                gen_param_value!(clGetDeviceInfo, usize, device, param_name, size, filler);
+            let param_value = gen_param_value!(clGetDeviceInfo, usize, device, param_name, size);
             Ok(ParamValue::ArrCSize(param_value))
         }
         _ => status_update(40404, fn_name, ParamValue::default()),

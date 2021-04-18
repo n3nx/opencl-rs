@@ -12,5 +12,5 @@ keywords = ["ffi", "api", "opencl", "gpu", "gpgpu"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-opencl-heads = { version = "0.1.0", path = "../opencl-heads" }
+opencl-heads = { version = "0.2.0", path = "../opencl-heads" }
 opencl-api = { version = "0.1.0", path = "../opencl-api" }

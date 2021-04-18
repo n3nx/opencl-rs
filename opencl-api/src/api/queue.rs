@@ -130,15 +130,8 @@ pub fn get_command_queue_info(
         // #[cfg(feature = "cl_3_0")]
         CommandQueueInfo::PROPERTIES_ARRAY => {
             let size = get_command_queue_info_size(command_queue, param_name)?;
-            let filler = 0;
-            let param_value = gen_param_value!(
-                clGetCommandQueueInfo,
-                u64,
-                command_queue,
-                param_name,
-                size,
-                filler
-            );
+            let param_value =
+                gen_param_value!(clGetCommandQueueInfo, u64, command_queue, param_name, size);
             Ok(ParamValue::ArrULong(param_value))
         }
         _ => status_update(40404, "clGetContextInfo", ParamValue::default()),
@@ -258,7 +251,8 @@ mod tests {
                 + CommandQueueProperties::new(CommandQueueProperties::ON_DEVICE).unwrap(),
         );
         eprintln!("{:?}", properties);
-        let queue = create_command_queue_with_properties(&context, &device_id, &properties).unwrap();
+        let queue =
+            create_command_queue_with_properties(&context, &device_id, &properties).unwrap();
 
         let command_info = get_command_queue_info(&queue, CommandQueueInfo::PROPERTIES).unwrap();
         assert_eq!(properties.unwrap()[1], command_info.unwrap_ulong().unwrap());

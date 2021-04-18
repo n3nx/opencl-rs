@@ -18,5 +18,6 @@
 pub mod buffer;
 pub mod context;
 pub mod device;
+pub mod image;
 pub mod platform;
 pub mod queue;
