@@ -29,7 +29,6 @@ use opencl_heads::ffi;
 use opencl_heads::ffi::clGetCommandQueueInfo;
 use opencl_heads::types::*;
 use std::ptr;
-use std::vec;
 
 // #[cfg(feature = "depr_2_0")]
 pub fn create_command_queue(

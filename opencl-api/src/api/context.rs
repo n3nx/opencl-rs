@@ -26,7 +26,6 @@ use opencl_heads::ffi;
 use opencl_heads::ffi::clGetContextInfo;
 use opencl_heads::types::*;
 use std::ptr;
-use std::vec;
 
 pub fn create_context(
     properties: &Properties,

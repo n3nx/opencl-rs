@@ -294,6 +294,7 @@ pub enum ParamValue {
     ArrCPtr(Vec<intptr_t>),
     ArrULong(Vec<cl_ulong>),
     NameVersion(Vec<cl_name_version>),
+    ImageFormat(Vec<cl_image_format>),
 }
 
 impl ParamValue {

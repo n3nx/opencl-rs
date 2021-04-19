@@ -80,7 +80,7 @@ macro_rules! gen_param_value {
             Vec::default()
         } else {
             let arr_len = $size / Size::$typ.get();
-            let mut param_value: Vec<$typ> = vec::from_elem($typ::default(), arr_len);
+            let mut param_value: Vec<$typ> = std::vec::from_elem($typ::default(), arr_len);
             let status_code = unsafe {
                 $fn(
                     $ptr,

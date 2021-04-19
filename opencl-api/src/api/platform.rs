@@ -22,7 +22,6 @@ use crate::{gen_object_list, gen_param_value, get_count, size_getter};
 use libc::c_void;
 use opencl_heads::ffi::*;
 use std::ptr;
-use std::vec;
 
 /// Returns the list of all platforms available
 ///
