@@ -956,6 +956,7 @@ extern "system" {
     #[cfg(feature = "depr_1_1")]
     pub fn clCreateImage3D(
         context: cl_context,
+        flags: cl_mem_flags,
         image_format: *const cl_image_format,
         image_width: size_t,
         image_height: size_t,

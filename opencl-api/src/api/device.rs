@@ -27,7 +27,6 @@ use opencl_heads::ffi;
 use opencl_heads::ffi::{clCreateSubDevices, clGetDeviceIDs, clGetDeviceInfo};
 use opencl_heads::types::*;
 use std::ptr;
-use std::vec;
 
 pub fn get_device_ids(platform: &PlatformPtr, device_type: DeviceType) -> APIResult<DeviceList> {
     let device_type = device_type.get();

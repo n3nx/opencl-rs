@@ -1,5 +1,5 @@
 /*
- * buffer.rs - Buffer API wrappers (Part of OpenCL Runtime Layer).
+ * image.rs - Image API wrappers (Part of OpenCL Runtime Layer).
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -25,11 +25,11 @@ use crate::helpers::{
     status_update, APIResult, ContextPtr, EventPtr, GetSetGo, MemFormatList, MemPtr, QueuePtr,
     WrappedMutablePointer, WrappedPointer,
 };
-use crate::structs::{MemFlags, StatusCode};
+use crate::structs::{ImageInfo, MapFlags, MemFlags, StatusCode};
 use crate::{gen_object_list, gen_param_value, get_count, size_getter};
 use libc::c_void;
 use opencl_heads::ffi;
-use opencl_heads::ffi::clGetSupportedImageFormats;
+use opencl_heads::ffi::{clGetImageInfo, clGetSupportedImageFormats};
 use opencl_heads::types::*;
 use std::ptr;
 
@@ -121,6 +121,7 @@ pub fn create_image_3d(
     let mem_ptr = unsafe {
         ffi::clCreateImage3D(
             context.unwrap(),
+            flags.get(),
             image_format.unwrap(),
             image_width,
             image_height,
@@ -352,4 +353,77 @@ pub fn enqueue_copy_buffer_to_image(
         fn_name,
         EventPtr::from_ptr(event_ptr, fn_name)?,
     )
+}
+
+pub fn enqueue_map_image(
+    command_queue: &QueuePtr,
+    image: &MemPtr,
+    blocking_map: cl_bool,
+    map_flags: MapFlags,
+    origin: WrappedPointer<size_t>,
+    region: WrappedPointer<size_t>,
+    image_row_pitch: WrappedMutablePointer<size_t>,
+    image_slice_pitch: WrappedMutablePointer<size_t>,
+    num_events_in_wait_list: cl_uint,
+    event_wait_list: WrappedPointer<cl_event>,
+    mapped_region: &mut cl_mem,
+) -> APIResult<EventPtr> {
+    let fn_name = "clEnqueueMapImage";
+    let mut status_code = StatusCode::INVALID_VALUE;
+    let mut event_ptr = ptr::null_mut();
+    *mapped_region = unsafe {
+        ffi::clEnqueueMapImage(
+            command_queue.unwrap(),
+            image.unwrap(),
+            blocking_map,
+            map_flags.get(),
+            origin.unwrap(),
+            region.unwrap(),
+            image_row_pitch.unwrap(),
+            image_slice_pitch.unwrap(),
+            num_events_in_wait_list,
+            event_wait_list.unwrap(),
+            &mut event_ptr,
+            &mut status_code,
+        )
+    };
+    status_update(
+        status_code,
+        fn_name,
+        EventPtr::from_ptr(event_ptr, fn_name)?,
+    )
+}
+
+pub fn get_image_info(image: &MemPtr, param_name: cl_image_info) -> APIResult<ParamValue> {
+    let image = image.unwrap();
+    size_getter!(get_image_info_size, clGetImageInfo);
+    match param_name {
+        ImageInfo::ELEMENT_SIZE
+        | ImageInfo::ROW_PITCH
+        | ImageInfo::SLICE_PITCH
+        | ImageInfo::WIDTH
+        | ImageInfo::HEIGHT
+        | ImageInfo::DEPTH
+        | ImageInfo::ARRAY_SIZE => {
+            let param_value = gen_param_value!(clGetImageInfo, usize, image, param_name);
+            Ok(ParamValue::CSize(param_value))
+        }
+        // missing before 1.2 and depr by 2.0
+        ImageInfo::BUFFER => {
+            let param_value = gen_param_value!(clGetImageInfo, isize, image, param_name);
+            Ok(ParamValue::CPtr(param_value))
+        }
+        ImageInfo::NUM_MIP_LEVELS | ImageInfo::NUM_SAMPLES => {
+            let param_value = gen_param_value!(clGetImageInfo, u32, image, param_name);
+            Ok(ParamValue::UInt(param_value))
+        }
+        ImageInfo::FORMAT => {
+            let size = get_image_info_size(image, param_name)?;
+            let param_value =
+                gen_param_value!(clGetImageInfo, cl_image_format, image, param_name, size);
+            Ok(ParamValue::ImageFormat(param_value))
+        }
+
+        _ => status_update(40404, "clGetImageInfo", ParamValue::default()),
+    }
 }
