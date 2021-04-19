@@ -196,6 +196,7 @@ pub type ProgramPtr = NullMutPtr;
 pub type KernelPtr = NullMutPtr;
 pub type EventPtr = NullMutPtr;
 pub type SamplerPtr = NullMutPtr;
+pub type SVMPtr = NullMutPtr;
 
 pub type PlatformList = Vec<cl_platform_id>;
 pub type DeviceList = Vec<cl_device_id>;
