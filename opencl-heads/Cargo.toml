@@ -35,6 +35,9 @@ opencl_version_2_2 = ["cl_2_2"]
 
 default = ["cl_1_2", "cl_1_1"]
 deprecated = ["depr_2_0", "depr_1_1", "depr_1_0"]
+1x = ["cl_1_2", "cl_1_1", "depr_2_0"]
+2x = ["cl_2_0", "cl_2_1", "cl_2_2"]
+3x = ["cl_3_0"]
 all = ["cl_3_0", "cl_2_2", "cl_2_1", "cl_2_0", "cl_1_2", "cl_1_1", "deprecated"]
 
 [dependencies]
