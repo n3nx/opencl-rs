@@ -423,7 +423,6 @@ pub fn get_image_info(image: &MemPtr, param_name: cl_image_info) -> APIResult<Pa
                 gen_param_value!(clGetImageInfo, cl_image_format, image, param_name, size);
             Ok(ParamValue::ImageFormat(param_value))
         }
-
         _ => status_update(40404, "clGetImageInfo", ParamValue::default()),
     }
 }
