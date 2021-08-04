@@ -126,6 +126,15 @@ pub fn set_context_destructor_callback(
     status_update(status_code, "clSetContextDestructorCallback", ())
 }
 
+/************************/
+/* /\ /\ /\ /\ /\ /\ /\ */
+/*|__|__|__|__|__|__|__|*/
+/*|  |  |  |  |  |  |  |*/
+/*|  |  Unit Tests  |  |*/
+/*|__|__|__|__|__|__|__|*/
+/*|__|__|__|__|__|__|__|*/
+/************************/
+
 #[cfg(test)]
 mod tests {
     use super::*;

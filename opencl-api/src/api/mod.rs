@@ -23,3 +23,4 @@ pub mod memory;
 pub mod pipe;
 pub mod platform;
 pub mod queue;
+pub mod sampler;

@@ -140,6 +140,9 @@ pub fn get_mem_object_info(memobj: MemPtr, param_name: cl_mem_info) -> APIResult
     }
 }
 
+/***********************/
+/*Shared Virtual Memory*/
+/***********************/
 pub fn svm_alloc(
     context: &ContextPtr,
     flags: &MemFlags,
@@ -339,3 +342,5 @@ pub fn enqueue_svm_migrate_mem(
         EventPtr::from_ptr(event_ptr, fn_name)?,
     )
 }
+
+// TODO: Add unit tests for this file.

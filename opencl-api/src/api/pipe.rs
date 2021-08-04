@@ -74,3 +74,5 @@ pub fn get_pipe_info(pipe: &MemPtr, param_name: cl_pipe_info) -> APIResult<Param
         _ => status_update(40404, "clGetPipeInfo", ParamValue::default()),
     }
 }
+
+// TODO: Add unit tests for this file.

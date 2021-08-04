@@ -1105,6 +1105,9 @@ impl AddressingMode {
     // #ifdef CL_VERSION_1_1;
     pub const MIRRORED_REPEAT: cl_addressing_mode = CL_ADDRESS_MIRRORED_REPEAT;
     // #endif;
+    pub fn get_property(&self, addressing_mode: cl_addressing_mode) -> Option<Vec<cl_uint>> {
+        Some(vec![SamplerInfo::ADDRESSING_MODE, addressing_mode, 0])
+    }
 }
 
 #[non_exhaustive]
@@ -1113,6 +1116,9 @@ impl FilterMode {
     /* cl_filter_mode - cl_uint */
     pub const NEAREST: cl_filter_mode = CL_FILTER_NEAREST;
     pub const LINEAR: cl_filter_mode = CL_FILTER_LINEAR;
+    pub fn get_property(&self, filter_mode: cl_filter_mode) -> Option<Vec<cl_uint>> {
+        Some(vec![SamplerInfo::FILTER_MODE, filter_mode, 0])
+    }
 }
 
 #[non_exhaustive]

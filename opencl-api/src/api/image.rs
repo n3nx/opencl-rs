@@ -426,3 +426,5 @@ pub fn get_image_info(image: &MemPtr, param_name: cl_image_info) -> APIResult<Pa
         _ => status_update(40404, "clGetImageInfo", ParamValue::default()),
     }
 }
+
+// TODO: Add unit tests for this file.
