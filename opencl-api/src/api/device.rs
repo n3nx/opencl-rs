@@ -200,7 +200,26 @@ pub fn get_device_and_host_timer(device: &DevicePtr) -> APIResult<(cl_ulong, cl_
     };
     status_update(status_code, fn_name, (device_timestamp, host_timestamp))
 }
-
+/// `clGetHostTimer` returns the current value of the host clock as seen by device.
+/// This value is in the same timebase as the host_timestamp returned from `clGetDeviceAndHostTimer`.
+/// The implementation will return with as low a latency as possible to allow a correlation
+/// with a subsequent application sampled time. The host timestamp and device timestamp returned
+/// by this function and `clGetDeviceAndHostTimer` each have an implementation defined timebase.
+/// The timestamps will always be in their respective timebases regardless of which query function
+/// is used. The timestamp returned from `clGetEventProfilingInfo` for an event on a device and a
+/// device timestamp queried from the same device will always be in the same timebase.
+///
+/// `clGetHostTimer` will return CL_SUCCESS with a time value in host_timestamp if provided. Otherwise, it returns one of the following errors:
+///
+/// - CL_INVALID_DEVICE if device is not a valid device.
+///
+/// - CL_INVALID_OPERATION if the platform associated with device does not support device and host timer synchronization.
+///
+/// - CL_INVALID_VALUE if host_timestamp is NULL.
+///
+/// - CL_OUT_OF_RESOURCES if there is a failure to allocate resources required by the OpenCL implementation on the device.
+///
+/// - CL_OUT_OF_HOST_MEMORY if there is a failure to allocate resources required by the OpenCL implementation on the host.
 pub fn get_host_timer(device: &DevicePtr) -> APIResult<cl_ulong> {
     let fn_name = "clGetHostTimer";
     let mut host_timestamp = cl_ulong::default();
@@ -208,6 +227,7 @@ pub fn get_host_timer(device: &DevicePtr) -> APIResult<cl_ulong> {
     status_update(status_code, fn_name, host_timestamp)
 }
 
+/// Partitioning a device
 // TODO: Debug CL_INVALID_VALUE error at get_count
 pub fn create_sub_devices(in_device: &DevicePtr, properties: Properties) -> APIResult<DeviceList> {
     let in_device = in_device.unwrap();
@@ -238,12 +258,15 @@ pub fn release_device(device: DevicePtr) -> APIResult<()> {
     status_update(status_code, fn_name, ())
 }
 
-/*****************************************************************************
- *
- *
- *                                  Tests
- *
- */
+/************************/
+/* /\ /\ /\ /\ /\ /\ /\ */
+/*|__|__|__|__|__|__|__|*/
+/*|  |  |  |  |  |  |  |*/
+/*|  |  Unit Tests  |  |*/
+/*|__|__|__|__|__|__|__|*/
+/*|__|__|__|__|__|__|__|*/
+/************************/
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -280,6 +303,7 @@ mod tests {
         assert_ne!(vendor_id, 0);
     }
 
+    // TODO: Mention the issue is currently unfixable
     #[test]
     #[ignore]
     fn test_create_sub_device() {

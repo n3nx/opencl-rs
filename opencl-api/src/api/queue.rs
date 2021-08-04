@@ -159,6 +159,15 @@ pub fn finish(command_queue: &QueuePtr) -> APIResult<()> {
     status_update(status_code, "clFinish", ())
 }
 
+/************************/
+/* /\ /\ /\ /\ /\ /\ /\ */
+/*|__|__|__|__|__|__|__|*/
+/*|  |  |  |  |  |  |  |*/
+/*|  |  Unit Tests  |  |*/
+/*|__|__|__|__|__|__|__|*/
+/*|__|__|__|__|__|__|__|*/
+/************************/
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -175,6 +184,7 @@ mod tests {
 
         // Choose the first platform
         // let platform_id = platform_ids[0];
+        //TODO: Add auto-detection of platforms
         let platform_id = PlatformPtr::from_ptr(platform_ids[0], "test_fn").unwrap();
 
         let device_ids =
@@ -184,6 +194,7 @@ mod tests {
         // eprintln!("{:?}", device_ids);
 
         // let device_id = device_ids[0];
+        //TODO: Add auto-detection of devices
         let device_id = DevicePtr::from_ptr(device_ids[0], "test_fn").unwrap();
 
         let properties = ContextProperties.platform(&platform_id);
@@ -219,6 +230,7 @@ mod tests {
 
         // Choose the first platform
         // let platform_id = platform_ids[0];
+        //TODO: Add auto-detection of platforms
         let platform_id = PlatformPtr::from_ptr(platform_ids[0], "test_fn").unwrap();
 
         let device_ids =

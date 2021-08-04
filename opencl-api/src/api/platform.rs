@@ -15,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+//! The platform layer allows the host program to discover OpenCL devices
+//! and their capabilities and to create contexts.
+//!
 use crate::enums::{ParamValue, Size};
 use crate::helpers::{bytes_into_string, status_update, APIResult, PlatformList, PlatformPtr};
 use crate::structs::PlatformInfo;
@@ -84,6 +87,15 @@ pub fn get_platform_info(
     }
 }
 
+/************************/
+/* /\ /\ /\ /\ /\ /\ /\ */
+/*|__|__|__|__|__|__|__|*/
+/*|  |  |  |  |  |  |  |*/
+/*|  |  Unit Tests  |  |*/
+/*|__|__|__|__|__|__|__|*/
+/*|__|__|__|__|__|__|__|*/
+/************************/
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -141,6 +153,7 @@ mod tests {
     fn test_get_platform_info_v2() {
         let all_platforms = get_platform_ids().unwrap();
         // let id = all_platforms[0];
+        //TODO: Add auto-detection of platforms
         let id = PlatformPtr::from_ptr(all_platforms[0], "main_fn").unwrap();
 
         let extversion = get_platform_info(&id, PlatformInfo::HOST_TIMER_RESOLUTION).unwrap();

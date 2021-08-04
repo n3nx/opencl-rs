@@ -110,7 +110,10 @@ pub fn create_sub_buffer(
     }
 }
 
-// Readingm, writing and copying buffer objects.
+/******************************/
+/*Reading, Writing and Copying*/
+/*       Buffer Objects       */
+/******************************/
 pub fn enqueue_read_buffer(
     command_queue: &QueuePtr,
     buffer: &MemPtr,
@@ -364,6 +367,15 @@ pub fn enqueue_map_buffer(
     };
     status_update(status_code, fn_name, EventPtr::from_ptr(event, fn_name)?)
 }
+
+/************************/
+/* /\ /\ /\ /\ /\ /\ /\ */
+/*|__|__|__|__|__|__|__|*/
+/*|  |  |  |  |  |  |  |*/
+/*|  |  Unit Tests  |  |*/
+/*|__|__|__|__|__|__|__|*/
+/*|__|__|__|__|__|__|__|*/
+/************************/
 
 #[cfg(test)]
 mod tests {
