@@ -1,10 +1,10 @@
 [package]
 name = "clinfo"
 version = "0.0.1"
-authors = ["Xenon Lucifer Diablo <code@nmnx.org>"]
+authors = ["Xenon Lucifer Diablo <code@nmnx.org>", "Naman Bishnoi <nmn@n3n.org"]
 edition = "2018"
 description = "OpenCL Property Enumerator purely written in Rust"
-license = "Apache-2.0"
+license = "MIT OR Apache-2.0"
 homepage = "https://nmnx.org/dev/opencl"
 repository = "https://github.com/diabloxenon/opencl"
 keywords = ["cli", "api", "opencl", "gpu", "gpgpu"]

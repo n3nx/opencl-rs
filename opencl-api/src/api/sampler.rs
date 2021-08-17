@@ -23,11 +23,8 @@
 //! inside a kernel.
 //!
 use crate::enums::{ParamValue, Size};
-use crate::helpers::{
-    status_update, APIResult, ContextPtr, GetSetGo, MemPtr, Properties, QueuePtr, SVMPtr,
-    SamplerPtr, WrappedMutablePointer, WrappedPointer,
-};
-use crate::structs::{AddressingMode, FilterMode, SamplerInfo, StatusCode};
+use crate::helpers::{status_update, APIResult, ContextPtr, SamplerPtr};
+use crate::structs::{SamplerInfo, StatusCode};
 use crate::{gen_param_value, size_getter};
 use libc::c_void;
 use opencl_heads::ffi;
@@ -142,8 +139,8 @@ mod tests {
     use crate::api::context::{create_context, release_context};
     use crate::api::device::get_device_ids;
     use crate::api::platform::get_platform_ids;
-    use crate::helpers::{PlatformPtr, WrapMutPtr};
-    use crate::structs::{ContextInfo, ContextProperties, DeviceType};
+    use crate::helpers::{GetSetGo, PlatformPtr, WrapMutPtr};
+    use crate::structs::{AddressingMode, DeviceType, FilterMode};
 
     #[test]
     fn test_create_sampler() {
@@ -219,7 +216,7 @@ mod tests {
         match sampler_addressing_mode {
             Ok(_) => assert!(true),
             Err(_) => assert!(false),
-        };        
+        };
         // Filter mode
         let sampler_filter_mode = get_sampler_info(&sampler, SamplerInfo::FILTER_MODE);
         eprintln!("{:?}", sampler_filter_mode);
