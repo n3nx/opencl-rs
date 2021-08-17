@@ -1,5 +1,5 @@
 <!-- Project Metadata -->
-<!-- project_tags: opencl, gpgpu, rust -->
+<!-- project_tags: api, opencl, gpu, gpgpu, rust -->
 <!-- project_featured: true -->
 
 # ⚙️ opencl-rs
