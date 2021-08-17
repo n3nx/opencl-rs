@@ -1,10 +1,10 @@
-custom: ['https://paypal.me/diabloxenon', 'https://nmnx.org/donate']
-patreon: nmnx
-ko_fi: diabloxenon # Replace with a single Ko-fi username
-github: # Replace with up to 4 GitHub Sponsors-enabled usernames e.g., [user1, user2]
+custom: ['https://n3n.org/sponsorship', 'https://paypal.me/ncrypto']
+patreon: n3n
+ko_fi: n3n # Replace with a single Ko-fi username
+github: [diabloxenon] # Replace with up to 4 GitHub Sponsors-enabled usernames e.g., [user1, user2]
+liberapay: n3n # Replace with a single Liberapay username
 open_collective: # Replace with OpenCollective username
 tidelift: # Replace with a single Tidelift platform-name/package-name e.g., npm/babel
 community_bridge: # Replace with a single Community Bridge project-name e.g., cloud-foundry
-liberapay: # Replace with a single Liberapay username
-issuehunt: # Replace with a single IssueHunt username
+issuehunt:  # Replace with a single IssueHunt username
 otechie: # Replace with a single Otechie username
