@@ -5,40 +5,72 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.0] - 2021-11-18
 
-## [0.1.1] - 2019-09-03
+[0.1.0]: ../../../releases/tag/v0.1.0
 
-### Added
+### Bug Fixes
 
-- New features go here in a bullet list
+- *opencl-api:* Fix api bindings from ffis and start project clinfo ([4cd80f3](4cd80f3b88be604c52670147256785943c6bbb7a))
+- *opencl-api:* Fix optional in pfn_notify with few more changes ([9f1d353](9f1d353ddceba8144882a70a121678f2ee93b998))
+- *opencl-heads:* Support mem_object for now, add buffer later ([9b899d9](9b899d9b2b0d112e9222b6b05b8bc35352d44050))
+- *opencl-rs:* Update repo links and n3nx project meta tags ([f699d68](f699d685c15485440ad1c2f47f2fb002f454abe8))
 
-### Changed
+### Build Tools
 
-- Changes to existing functionality go here in a bullet list
+- *helpers:* Add build tools and progress api development further ([30cdcd2](30cdcd27cc3fc41315a949aa8eb5ae188ca07155))
 
-### Deprecated
+### Documentation
 
-- Mark features soon-to-be removed in a bullet list
+- *opencl-rs:* Add readme.md and update search keywords in cargo.toml ([d03bb68](d03bb68cbac0deb11ce1f92884edb4c9deb8e51e))
+- *opencl-rs:* Add discord links, badge color in readme.md ([c3e2948](c3e2948ecd0ea878fe059a40b0bf7e24b66391d3))
 
-### Removed
+### Extra Tasks
 
-- Features that have been removed in a bullet list
+- *opencl-heads:* Add opencl header dependencies ([e35e2b4](e35e2b4498f0b822beca9bcc10dd4b2912612172))
 
-### Fixed
+### Features
 
-- Bug fixes in a bullet list
+- *cliff:* Add N3N cliff config file for changelog generation ([28abcbe](28abcbefd5b40fa262c829762ab938447e129182))
+- *memory:* Create memory module with its apis ([f8dcc26](f8dcc26af540e7971f2d73c68ebea06312f1bc79))
+- *opencl-api:* Add enums to match constants and respective datatypes ([e3a8561](e3a8561a9380fe6e85bd8d7ae85b9f9a807a637b))
+- *opencl-api:* Add status enums with necessary traits ([a43206d](a43206dd715d691e35e0d66677fcc3509abcb1dd))
+- *opencl-api:* Add platform info api with reorder of few helpers ([843ae23](843ae237a6392ec0134220d195f4379b47a8792e))
+- *opencl-api:* Create APIs for command queues ([64d1439](64d14396e6c6d7f16f2a6a8840dc5079b087db96))
+- *opencl-api:* Add device.rs file with including its APIs ([9ae600a](9ae600aa516d8547c009e522a58fcbdce794ad5e))
+- *opencl-api:* Add `clGetDeviceInfo` interface with more datatypes ([3dde3f1](3dde3f114a21540439bee5192ffb117f7557af95))
+- *opencl-api:* Add more apis in device, update struct for device types ([38cf143](38cf1434ed432102bc02c5aed139cbf8bf57e049))
+- *opencl-api:* Add apis in context, update queue api, few minor fixes ([d242d4b](d242d4bc7df49af6dee3db119e6c1726bf9209f0))
+- *opencl-api:* Add buffer apis and add wrapped pointers support ([586e37c](586e37cb634579488cf733dfb61e1585d46c5111))
+- *opencl-api:* Add image module with its apis ([13f1e6e](13f1e6e92eaa798bf148a44e5a15de9c9a86388d))
+- *opencl-api:* Add image apis and fix few bugs along the way ([f706446](f706446835ca0238b02ce7d4c2af10daaa653b50))
+- *opencl-api:* Add pipe module with apis ([b418a35](b418a354f290cb36630722b11f9b28b6abb51c0d))
+- *opencl-api:* Add sampler apis with descriptive comments ([ee67483](ee67483f12f9294d1a4d3b8e42e78b042b692458))
+- *opencl-heads:* Map core typedefs and constants from headers ([8f9b71f](8f9b71fa7aa81d1702ef59fcb708be5c25145533))
+- *opencl-heads:* Map api functions from headers ([f2986a9](f2986a978aca78f901ee2014db3f287c9c12b85b))
 
-### Security
+### Improvements
 
-- Changes/fixes related to security vulnerabilities in a bullet list
+- *opencl-api:* Optimize struct types to represent bitfields ([8a42643](8a42643e69205de2a45aaa4b7f1c37d84c7c0753))
+- *opencl-api:* Improve error handling and reordering of bitfields ([5a28b32](5a28b32924fa282e04c2b1326307baeb9aba845a))
+- *opencl-api:* Ffi type independency from libc ([eab263c](eab263cf517ce445d9be77282cd768a253cebb70))
+- *opencl-api:* Add support for macronized objects function generators ([633dda3](633dda3a56fef402baa644999cac08181c67b2b5))
+- *opencl-api:* Apply adding operation for bitfields with more changes ([9e3137b](9e3137b8f22146275c2bff2add639403d437544a))
+- *opencl-api:* Macronize counting objects and object list generator ([673c259](673c2592892e69625717b05ddc81bc78e4f218a5))
+- *opencl-api:* Create structures to wrap pointers for security ([138632e](138632eab27fee095bfc82c97dba76315062e9a7))
+- *opencl-heads:* Update cl_image_desc structure to separate versions ([715c71c](715c71ce553b9076589c7c69dc1eb913e723234c))
 
-## [0.1.0] - 2019-09-02
+### Refactoring Updates
 
-### Added
+- *helpers:* Update helper functions to map directory ([47250a5](47250a596b5ca34fc652c9dabeb0fe1720344af5))
+- *opencl-api:* Update error handling to support function names ([dbfd9bf](dbfd9bf56172c18e7bdd1214117ce83dfe73b10d))
+- *opencl-heads:* Refactor constants to match their respective types ([6c53eb8](6c53eb882266b52326610ba1fd8591c259c62cdb))
+- *opencl-heads:* Add and refactor constants to their types ([40f76d8](40f76d840e7e0ff703ae8b395b7efcb48b461940))
+- *opencl-heads:* Move ffi to separate module, add platforms support ([f555d7d](f555d7d7dceca81a75c143222eb9d2c814b6f091))
+- *opencl-heads:* Create section for cl ffi bindings to remain compatible ([178fc8d](178fc8d99673eef8cdf1d2a4a043050e6981934a))
 
-- Initial add of the thing
+### Styling
 
-[unreleased]: https://github.com/n3nx/$REPO_NAME/compare/0.1.1...HEAD
-[0.1.1]: https://github.com/n3nx/$REPO_NAME/compare/0.1.0...0.1.1
-[0.1.0]: https://github.com/n3nx/$REPO_NAME/releases/tag/0.1.0
+- *api:* Format api image, memory and pipe files and add docker tests ([8d57ea5](8d57ea561677e27f032152ac56318425da3a8121))
+
+<!-- CHANGELOG SPLIT MARKER -->
