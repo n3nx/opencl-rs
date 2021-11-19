@@ -180,7 +180,7 @@ mod tests {
         let platform_id = PlatformPtr::from_ptr(platform_ids[0], "test_fn").unwrap();
 
         let device_ids =
-            get_device_ids(&platform_id, DeviceType::new(DeviceType::GPU).unwrap()).unwrap();
+            get_device_ids(&platform_id, DeviceType::new(DeviceType::DEFAULT).unwrap()).unwrap();
         assert!(0 < device_ids.len());
 
         let context = create_context(&None, device_ids, None, WrapMutPtr::null());
