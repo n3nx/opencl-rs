@@ -90,7 +90,7 @@ pub enum Status {
     InvalidDeviceQueue,
     InvalidSpecId,
     MaxSizeRestrictionExceeded,
-    InvalidStatusCode(&'static str),
+    InvalidStatusCode { code: i32, func: &'static str },
 }
 
 impl Status {
@@ -161,8 +161,14 @@ impl Status {
             Status::InvalidDeviceQueue => StatusCode::INVALID_DEVICE_QUEUE,
             Status::InvalidSpecId => StatusCode::INVALID_SPEC_ID,
             Status::MaxSizeRestrictionExceeded => StatusCode::MAX_SIZE_RESTRICTION_EXCEEDED,
-            Status::InvalidStatusCode(fn_name) => {
-                return Err(ValidationError::InvalidStatusCode(fn_name))
+            Status::InvalidStatusCode {
+                code: x,
+                func: fn_name,
+            } => {
+                return Err(ValidationError::InvalidStatusCode {
+                    code: *x,
+                    func: fn_name,
+                });
             }
         };
         Ok(data)
@@ -234,7 +240,10 @@ impl Status {
             StatusCode::INVALID_DEVICE_QUEUE => Status::InvalidDeviceQueue,
             StatusCode::INVALID_SPEC_ID => Status::InvalidSpecId,
             StatusCode::MAX_SIZE_RESTRICTION_EXCEEDED => Status::MaxSizeRestrictionExceeded,
-            _ => Status::InvalidStatusCode(function_name),
+            x => Status::InvalidStatusCode {
+                code: x,
+                func: function_name,
+            },
         }
     }
 }
@@ -387,13 +396,28 @@ mod tests {
         let fn_name = "test_status_from_status_code";
         let status_code = -9999;
         let status = Status::from(status_code, fn_name);
-        assert_eq!(status, Status::InvalidStatusCode(fn_name))
+        assert_eq!(
+            status,
+            Status::InvalidStatusCode {
+                code: status_code,
+                func: fn_name
+            }
+        )
     }
     #[test]
     fn test_undefined_error_invalid_status_code() {
         let fn_name = "test_undefined_error_invalid_status_code";
-        let status = Status::InvalidStatusCode(fn_name);
+        let status = Status::InvalidStatusCode {
+            code: 80085,
+            func: fn_name,
+        };
         let status_code = status.to_status_code().expect_err("FUNDS ARE SAIFU");
-        assert_eq!(status_code, ValidationError::InvalidStatusCode(fn_name))
+        assert_eq!(
+            status_code,
+            ValidationError::InvalidStatusCode {
+                code: 80085,
+                func: fn_name
+            }
+        );
     }
 }

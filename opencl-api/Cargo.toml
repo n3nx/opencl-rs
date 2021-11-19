@@ -30,3 +30,4 @@ all = ["cl_1_2", "cl_2_0", "cl_2_1", "cl_2_2", "cl_3_0"]
 [dependencies]
 opencl-heads = { version = "0.2.0", path = "../opencl-heads", features = ["all"] }
 libc = "0.2.93"
+thiserror = "^1.0"

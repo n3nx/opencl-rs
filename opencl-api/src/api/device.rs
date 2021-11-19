@@ -333,8 +333,8 @@ mod tests {
 
             let sub_device_list = match create_sub_devices(&device_id, &properties) {
                 Ok(x) => x,
-                Err(_) => {
-                    // eprintln!("{}", x);
+                Err(x) => {
+                    eprintln!("{}", x);
                     Vec::new()
                 }
             };

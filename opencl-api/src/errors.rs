@@ -17,7 +17,7 @@
  */
 
 use crate::enums::Status;
-use std::{error, fmt};
+use thiserror::Error;
 
 // All Error Traits here
 pub trait ToLibraryError {
@@ -25,46 +25,24 @@ pub trait ToLibraryError {
 }
 
 // Main Library Error
-#[derive(Debug)]
+#[derive(Error, Debug)]
 pub enum OpenCLAPILibraryError {
+    #[error("status code error: {0:?}")]
     StatusError(Status),
+    #[error("api error: `{0}`")]
     APIError(ValidationError),
+    #[error("helper error: `{0}`")]
     HelperError(HelperError),
 }
 
-impl OpenCLAPILibraryError {
-    pub fn get_status_error(&self) -> Option<&Status> {
-        match self {
-            OpenCLAPILibraryError::StatusError(x) => Some(x),
-            _ => None,
-        }
-    }
-    pub fn get_api_error(&self) -> Option<&ValidationError> {
-        match self {
-            OpenCLAPILibraryError::APIError(x) => Some(x),
-            _ => None,
-        }
-    }
-    pub fn get_helper_error(&self) -> Option<&HelperError> {
-        match self {
-            OpenCLAPILibraryError::HelperError(x) => Some(x),
-            _ => None,
-        }
-    }
-}
-
-impl error::Error for OpenCLAPILibraryError {}
-impl fmt::Display for OpenCLAPILibraryError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
-    }
-}
-
-#[derive(Debug, PartialEq)]
+#[derive(Error, Debug, PartialEq)]
 pub enum ValidationError {
-    InvalidStatusCode(&'static str),
+    #[error("invalid status code {code} at function `{func}`")]
+    InvalidStatusCode { code: i32, func: &'static str },
+    #[error("invalid bitfield configuration at function `{0}`")]
     InvalidBitfield(&'static str),
-    InvalidError,
+    // #[error("undefined error")]
+    // InvalidError,
 }
 
 impl ToLibraryError for ValidationError {
@@ -73,20 +51,11 @@ impl ToLibraryError for ValidationError {
     }
 }
 
-impl error::Error for ValidationError {}
-impl fmt::Display for ValidationError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::InvalidStatusCode(fn_name) => write!(f, "Validation Error: {} ==> Unconventional status code found in function \'{}\' with resulting output.", self, fn_name),
-            Self::InvalidBitfield(obj_name) => write!(f, "Validation Error: {} ==> Unidentified bitfield configuration used during construction of the bitfield \'{}\' with resulting output.", self, obj_name),
-            _ => write!(f, "Undefined Error: {}", self),
-        }
-    }
-}
-
-#[derive(Debug, PartialEq)]
+#[derive(Error, Debug, PartialEq)]
 pub enum HelperError {
+    #[error("bytes into string")]
     BytesIntoString,
+    #[error("null pointer exception at function `{0}`")]
     NullPointerException(&'static str),
 }
 
