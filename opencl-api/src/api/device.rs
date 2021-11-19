@@ -228,8 +228,7 @@ pub fn get_host_timer(device: &DevicePtr) -> APIResult<cl_ulong> {
 }
 
 /// Partitioning a device
-// TODO: Debug CL_INVALID_VALUE error at get_count
-pub fn create_sub_devices(in_device: &DevicePtr, properties: Properties) -> APIResult<DeviceList> {
+pub fn create_sub_devices(in_device: &DevicePtr, properties: &Properties) -> APIResult<DeviceList> {
     let in_device = in_device.unwrap();
     let properties = match properties {
         Some(x) => x.as_ptr(),
@@ -285,10 +284,10 @@ mod tests {
         assert_ne!(platform_name, "");
         println!("CL_PLATFORM_NAME: {}", platform_name);
 
-        let mut device =
+        let device =
             DeviceType::new(DeviceType::CPU).unwrap() + DeviceType::new(DeviceType::GPU).unwrap();
 
-        device.set(DeviceType::GPU).unwrap();
+        // device.set(DeviceType::GPU).unwrap();
         let device_ids = get_device_ids(&id, device).unwrap();
         assert!(0 < device_ids.len());
         // Choose the first GPU device
@@ -303,7 +302,6 @@ mod tests {
         assert_ne!(vendor_id, 0);
     }
 
-    // TODO: Mention the issue is currently unfixable
     #[test]
     #[ignore]
     fn test_create_sub_device() {
@@ -316,10 +314,9 @@ mod tests {
         assert_ne!(platform_name, "");
         println!("CL_PLATFORM_NAME: {}", platform_name);
 
-        let mut device =
+        let device =
             DeviceType::new(DeviceType::CPU).unwrap() + DeviceType::new(DeviceType::GPU).unwrap();
 
-        device.set(DeviceType::GPU).unwrap();
         let device_ids = get_device_ids(&id, device).unwrap();
         assert!(0 < device_ids.len());
         // Choose the first GPU device
@@ -332,13 +329,17 @@ mod tests {
 
         if max_sub_devices > 1 {
             let sub_cu_count = max_sub_devices / 4;
-            // let properties = vec![DevicePartitionProperty::EQUALLY, sub_cu_count, 0];
             let properties = DevicePartitionProperty.equally(sub_cu_count);
 
-            let sub_device_list = create_sub_devices(&device_id, properties);
-            println!("{:?}", sub_device_list.unwrap());
-            // println!("CL_DEVICE_LIST: {:?}", sub_device_list);
-            assert_eq!(0, 1);
+            let sub_device_list = match create_sub_devices(&device_id, &properties) {
+                Ok(x) => x,
+                Err(_) => {
+                    // eprintln!("{}", x);
+                    Vec::new()
+                }
+            };
+            println!("CL_DEVICE_LIST: {:?}", sub_device_list);
+            assert!(0 < sub_device_list.len());
         }
     }
 }
