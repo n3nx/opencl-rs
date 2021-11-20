@@ -389,7 +389,6 @@ mod tests {
     use std::ptr;
 
     #[test]
-    #[ignore]
     fn test_create_buffer() {
         let platform_ids = get_platform_ids().unwrap();
         // let platform_id = platform_ids[0];
@@ -432,7 +431,6 @@ mod tests {
     }
 
     #[test]
-    // #[ignore]
     fn test_create_sub_buffer() {
         let platform_ids = get_platform_ids().unwrap();
         // let platform_id = platform_ids[0];
@@ -449,8 +447,11 @@ mod tests {
 
         // Queue v2
         let _ = CommandQueueInfo.properties(
-            CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE).unwrap()
-                + CommandQueueProperties::new(CommandQueueProperties::ON_DEVICE).unwrap(),
+            CommandQueueProperties::new(
+                CommandQueueProperties::PROFILING_ENABLE
+                    + CommandQueueProperties::ON_DEVICE_DEFAULT,
+            )
+            .unwrap(),
         );
         let queue = create_command_queue_with_properties(&context, &device_id, &None).unwrap();
 

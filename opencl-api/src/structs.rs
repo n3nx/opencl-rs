@@ -128,10 +128,9 @@ impl GetSetGo for DeviceType {
     fn new(value: cl_device_type) -> BitfieldResult<Self> {
         type T = DeviceType;
         let fn_name = "DeviceType";
+        const MAX: cl_bitfield = T::DEFAULT + T::CPU + T::GPU + T::ACCELERATOR + T::CUSTOM + T::ALL;
         match value {
-            T::DEFAULT | T::CPU | T::GPU | T::ACCELERATOR | T::CUSTOM | T::ALL => {
-                Ok(DeviceType(value))
-            }
+            val @ 1..=MAX => Ok(DeviceType(val)),
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
         }
     }
@@ -141,9 +140,10 @@ impl GetSetGo for DeviceType {
     fn set(&mut self, value: cl_device_type) -> BitfieldResult<()> {
         type T = DeviceType;
         let fn_name = "DeviceType";
+        const MAX: cl_bitfield = T::DEFAULT + T::CPU + T::GPU + T::ACCELERATOR + T::CUSTOM + T::ALL;
         match value {
-            T::DEFAULT | T::CPU | T::GPU | T::ACCELERATOR | T::CUSTOM | T::ALL => {
-                self.0 = value;
+            val @ 1..=MAX => {
+                self.0 = val;
                 Ok(())
             }
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
@@ -176,15 +176,16 @@ impl GetSetGo for DeviceFPConfig {
     fn new(value: cl_device_fp_config) -> BitfieldResult<Self> {
         type T = DeviceFPConfig;
         let fn_name = "DeviceFPConfig";
-        match value {
-            T::DENORM
+        const MAX: cl_bitfield = T::DENORM
             | T::INF_NAN
             | T::ROUND_TO_NEAREST
             | T::ROUND_TO_ZERO
             | T::ROUND_TO_INF
             | T::FMA
             | T::SOFT_FLOAT
-            | T::CORRECTLY_ROUNDED_DIVIDE_SQRT => Ok(DeviceFPConfig(value)),
+            | T::CORRECTLY_ROUNDED_DIVIDE_SQRT;
+        match value {
+            val @ 1..=MAX => Ok(DeviceFPConfig(val)),
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
         }
     }
@@ -194,16 +195,17 @@ impl GetSetGo for DeviceFPConfig {
     fn set(&mut self, value: cl_device_fp_config) -> BitfieldResult<()> {
         type T = DeviceFPConfig;
         let fn_name = "DeviceFPConfig";
-        match value {
-            T::DENORM
+        const MAX: cl_bitfield = T::DENORM
             | T::INF_NAN
             | T::ROUND_TO_NEAREST
             | T::ROUND_TO_ZERO
             | T::ROUND_TO_INF
             | T::FMA
             | T::SOFT_FLOAT
-            | T::CORRECTLY_ROUNDED_DIVIDE_SQRT => {
-                self.0 = value;
+            | T::CORRECTLY_ROUNDED_DIVIDE_SQRT;
+        match value {
+            val @ 1..=MAX => {
+                self.0 = val;
                 Ok(())
             }
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
@@ -225,8 +227,9 @@ impl GetSetGo for DeviceExecCapabilities {
     fn new(value: cl_device_exec_capabilities) -> BitfieldResult<Self> {
         type T = DeviceExecCapabilities;
         let fn_name = "DeviceExecCapabilities";
+        const MAX: cl_bitfield = T::KERNEL + T::NATIVE_KERNEL;
         match value {
-            T::KERNEL | T::NATIVE_KERNEL => Ok(DeviceExecCapabilities(value)),
+            val @ 1..=MAX => Ok(DeviceExecCapabilities(val)),
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
         }
     }
@@ -236,9 +239,10 @@ impl GetSetGo for DeviceExecCapabilities {
     fn set(&mut self, value: cl_device_exec_capabilities) -> BitfieldResult<()> {
         type T = DeviceExecCapabilities;
         let fn_name = "DeviceExecCapabilities";
+        const MAX: cl_bitfield = T::KERNEL + T::NATIVE_KERNEL;
         match value {
-            T::KERNEL | T::NATIVE_KERNEL => {
-                self.0 = value;
+            val @ 1..=MAX => {
+                self.0 = val;
                 Ok(())
             }
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
@@ -266,11 +270,12 @@ impl GetSetGo for CommandQueueProperties {
     fn new(value: cl_command_queue_properties) -> BitfieldResult<Self> {
         type T = CommandQueueProperties;
         let fn_name = "CommandQueueProperties";
+        const MAX: cl_bitfield = T::OUT_OF_ORDER_EXEC_MODE_ENABLE
+            + T::ON_DEVICE
+            + T::ON_DEVICE_DEFAULT
+            + T::PROFILING_ENABLE;
         match value {
-            T::OUT_OF_ORDER_EXEC_MODE_ENABLE
-            | T::PROFILING_ENABLE
-            | T::ON_DEVICE
-            | T::ON_DEVICE_DEFAULT => Ok(CommandQueueProperties(value)),
+            val @ 1..=MAX => Ok(CommandQueueProperties(val)),
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
         }
     }
@@ -280,12 +285,13 @@ impl GetSetGo for CommandQueueProperties {
     fn set(&mut self, value: cl_command_queue_properties) -> BitfieldResult<()> {
         type T = CommandQueueProperties;
         let fn_name = "CommandQueueProperties";
+        const MAX: cl_bitfield = T::OUT_OF_ORDER_EXEC_MODE_ENABLE
+            + T::ON_DEVICE
+            + T::ON_DEVICE_DEFAULT
+            + T::PROFILING_ENABLE;
         match value {
-            T::OUT_OF_ORDER_EXEC_MODE_ENABLE
-            | T::PROFILING_ENABLE
-            | T::ON_DEVICE
-            | T::ON_DEVICE_DEFAULT => {
-                self.0 = value;
+            val @ 1..=MAX => {
+                self.0 = val;
                 Ok(())
             }
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
@@ -314,13 +320,10 @@ impl GetSetGo for DeviceAffinityDomain {
     fn new(value: cl_device_affinity_domain) -> BitfieldResult<Self> {
         type T = DeviceAffinityDomain;
         let fn_name = "DeviceAffinityDomain";
+        const MAX: cl_bitfield =
+            T::NUMA + T::L1_CACHE + T::L2_CACHE + T::L3_CACHE + T::L4_CACHE + T::NEXT_PARTITIONABLE;
         match value {
-            T::NUMA
-            | T::L1_CACHE
-            | T::L2_CACHE
-            | T::L3_CACHE
-            | T::L4_CACHE
-            | T::NEXT_PARTITIONABLE => Ok(DeviceAffinityDomain(value)),
+            val @ 1..=MAX => Ok(DeviceAffinityDomain(val)),
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
         }
     }
@@ -330,14 +333,11 @@ impl GetSetGo for DeviceAffinityDomain {
     fn set(&mut self, value: cl_device_affinity_domain) -> BitfieldResult<()> {
         type T = DeviceAffinityDomain;
         let fn_name = "DeviceAffinityDomain";
+        const MAX: cl_bitfield =
+            T::NUMA + T::L1_CACHE + T::L2_CACHE + T::L3_CACHE + T::L4_CACHE + T::NEXT_PARTITIONABLE;
         match value {
-            T::NUMA
-            | T::L1_CACHE
-            | T::L2_CACHE
-            | T::L3_CACHE
-            | T::L4_CACHE
-            | T::NEXT_PARTITIONABLE => {
-                self.0 = value;
+            val @ 1..=MAX => {
+                self.0 = val;
                 Ok(())
             }
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
@@ -363,10 +363,10 @@ impl GetSetGo for DeviceSVMCapabilities {
     fn new(value: cl_device_svm_capabilities) -> BitfieldResult<Self> {
         type T = DeviceSVMCapabilities;
         let fn_name = "DeviceSVMCapabilities";
+        const MAX: cl_bitfield =
+            T::COARSE_GRAIN_BUFFER | T::FINE_GRAIN_BUFFER | T::FINE_GRAIN_SYSTEM + T::ATOMICS;
         match value {
-            T::COARSE_GRAIN_BUFFER | T::FINE_GRAIN_BUFFER | T::FINE_GRAIN_SYSTEM | T::ATOMICS => {
-                Ok(DeviceSVMCapabilities(value))
-            }
+            val @ 1..=MAX => Ok(DeviceSVMCapabilities(val)),
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
         }
     }
@@ -376,9 +376,11 @@ impl GetSetGo for DeviceSVMCapabilities {
     fn set(&mut self, value: cl_device_svm_capabilities) -> BitfieldResult<()> {
         type T = DeviceSVMCapabilities;
         let fn_name = "DeviceSVMCapabilities";
+        const MAX: cl_bitfield =
+            T::COARSE_GRAIN_BUFFER | T::FINE_GRAIN_BUFFER | T::FINE_GRAIN_SYSTEM + T::ATOMICS;
         match value {
-            T::COARSE_GRAIN_BUFFER | T::FINE_GRAIN_BUFFER | T::FINE_GRAIN_SYSTEM | T::ATOMICS => {
-                self.0 = value;
+            val @ 1..=MAX => {
+                self.0 = val;
                 Ok(())
             }
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
@@ -416,19 +418,20 @@ impl GetSetGo for MemFlags {
     fn new(value: cl_mem_flags) -> BitfieldResult<Self> {
         type T = MemFlags;
         let fn_name = "MemFlags";
+        const MAX: cl_bitfield = T::READ_WRITE
+            + T::WRITE_ONLY
+            + T::READ_ONLY
+            + T::USE_HOST_PTR
+            + T::ALLOC_HOST_PTR
+            + T::COPY_HOST_PTR
+            + T::HOST_WRITE_ONLY
+            + T::HOST_READ_ONLY
+            + T::HOST_NO_ACCESS
+            + T::KERNEL_READ_AND_WRITE
+            + T::SVM_FINE_GRAIN_BUFFER
+            + T::SVM_ATOMICS;
         match value {
-            T::READ_WRITE
-            | T::WRITE_ONLY
-            | T::READ_ONLY
-            | T::USE_HOST_PTR
-            | T::ALLOC_HOST_PTR
-            | T::COPY_HOST_PTR
-            | T::HOST_WRITE_ONLY
-            | T::HOST_READ_ONLY
-            | T::HOST_NO_ACCESS
-            | T::KERNEL_READ_AND_WRITE
-            | T::SVM_FINE_GRAIN_BUFFER
-            | T::SVM_ATOMICS => Ok(MemFlags(value)),
+            val @ 1..=MAX => Ok(MemFlags(val)),
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
         }
     }
@@ -438,20 +441,21 @@ impl GetSetGo for MemFlags {
     fn set(&mut self, value: cl_mem_flags) -> BitfieldResult<()> {
         type T = MemFlags;
         let fn_name = "MemFlags";
+        const MAX: cl_bitfield = T::READ_WRITE
+            + T::WRITE_ONLY
+            + T::READ_ONLY
+            + T::USE_HOST_PTR
+            + T::ALLOC_HOST_PTR
+            + T::COPY_HOST_PTR
+            + T::HOST_WRITE_ONLY
+            + T::HOST_READ_ONLY
+            + T::HOST_NO_ACCESS
+            + T::KERNEL_READ_AND_WRITE
+            + T::SVM_FINE_GRAIN_BUFFER
+            + T::SVM_ATOMICS;
         match value {
-            T::READ_WRITE
-            | T::WRITE_ONLY
-            | T::READ_ONLY
-            | T::USE_HOST_PTR
-            | T::ALLOC_HOST_PTR
-            | T::COPY_HOST_PTR
-            | T::HOST_WRITE_ONLY
-            | T::HOST_READ_ONLY
-            | T::HOST_NO_ACCESS
-            | T::KERNEL_READ_AND_WRITE
-            | T::SVM_FINE_GRAIN_BUFFER
-            | T::SVM_ATOMICS => {
-                self.0 = value;
+            val @ 1..=MAX => {
+                self.0 = val;
                 Ok(())
             }
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
@@ -476,8 +480,9 @@ impl GetSetGo for MemMigrationFlags {
     fn new(value: cl_mem_migration_flags) -> BitfieldResult<Self> {
         type T = MemMigrationFlags;
         let fn_name = "MemMigrationFlags";
+        const MAX: cl_bitfield = T::OBJECT_CONTENT_UNDEFINED + T::OBJECT_HOST;
         match value {
-            T::OBJECT_CONTENT_UNDEFINED | T::OBJECT_HOST => Ok(MemMigrationFlags(value)),
+            val @ 1..=MAX => Ok(MemMigrationFlags(val)),
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
         }
     }
@@ -487,9 +492,10 @@ impl GetSetGo for MemMigrationFlags {
     fn set(&mut self, value: cl_mem_migration_flags) -> BitfieldResult<()> {
         type T = MemMigrationFlags;
         let fn_name = "MemMigrationFlags";
+        const MAX: cl_bitfield = T::OBJECT_CONTENT_UNDEFINED + T::OBJECT_HOST;
         match value {
-            T::OBJECT_CONTENT_UNDEFINED | T::OBJECT_HOST => {
-                self.0 = value;
+            val @ 1..=MAX => {
+                self.0 = val;
                 Ok(())
             }
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
@@ -514,8 +520,9 @@ impl GetSetGo for MapFlags {
     fn new(value: cl_map_flags) -> BitfieldResult<Self> {
         type T = MapFlags;
         let fn_name = "MapFlags";
+        const MAX: cl_bitfield = T::READ + T::WRITE + T::WRITE_INVALIDATE_REGION;
         match value {
-            T::READ | T::WRITE | T::WRITE_INVALIDATE_REGION => Ok(MapFlags(value)),
+            val @ 1..=MAX => Ok(MapFlags(val)),
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
         }
     }
@@ -525,9 +532,10 @@ impl GetSetGo for MapFlags {
     fn set(&mut self, value: cl_map_flags) -> BitfieldResult<()> {
         type T = MapFlags;
         let fn_name = "MapFlags";
+        const MAX: cl_bitfield = T::READ + T::WRITE + T::WRITE_INVALIDATE_REGION;
         match value {
-            T::READ | T::WRITE | T::WRITE_INVALIDATE_REGION => {
-                self.0 = value;
+            val @ 1..=MAX => {
+                self.0 = val;
                 Ok(())
             }
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
@@ -556,10 +564,9 @@ impl GetSetGo for KernelArgTypeQualifier {
     fn new(value: cl_kernel_arg_type_qualifier) -> BitfieldResult<Self> {
         type T = KernelArgTypeQualifier;
         let fn_name = "KernelArgTypeQualifier";
+        const MAX: cl_bitfield = T::NONE + T::CONST + T::RESTRICT + T::VOLATILE + T::PIPE;
         match value {
-            T::NONE | T::CONST | T::RESTRICT | T::VOLATILE | T::PIPE => {
-                Ok(KernelArgTypeQualifier(value))
-            }
+            val @ 1..=MAX => Ok(KernelArgTypeQualifier(val)),
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
         }
     }
@@ -569,9 +576,10 @@ impl GetSetGo for KernelArgTypeQualifier {
     fn set(&mut self, value: cl_kernel_arg_type_qualifier) -> BitfieldResult<()> {
         type T = KernelArgTypeQualifier;
         let fn_name = "KernelArgTypeQualifier";
+        const MAX: cl_bitfield = T::NONE + T::CONST + T::RESTRICT + T::VOLATILE + T::PIPE;
         match value {
-            T::NONE | T::CONST | T::RESTRICT | T::VOLATILE | T::PIPE => {
-                self.0 = value;
+            val @ 1..=MAX => {
+                self.0 = val;
                 Ok(())
             }
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
@@ -600,14 +608,15 @@ impl GetSetGo for DeviceAtomicCapabilities {
     fn new(value: cl_device_atomic_capabilities) -> BitfieldResult<Self> {
         type T = DeviceAtomicCapabilities;
         let fn_name = "DeviceAtomicCapabilities";
+        const MAX: cl_bitfield = T::ORDER_RELAXED
+            + T::ORDER_ACQ_REL
+            + T::ORDER_SEQ_CST
+            + T::SCOPE_WORK_ITEM
+            + T::SCOPE_WORK_GROUP
+            + T::SCOPE_DEVICE
+            + T::SCOPE_ALL_DEVICES;
         match value {
-            T::ORDER_RELAXED
-            | T::ORDER_ACQ_REL
-            | T::ORDER_SEQ_CST
-            | T::SCOPE_WORK_ITEM
-            | T::SCOPE_WORK_GROUP
-            | T::SCOPE_DEVICE
-            | T::SCOPE_ALL_DEVICES => Ok(DeviceAtomicCapabilities(value)),
+            val @ 1..=MAX => Ok(DeviceAtomicCapabilities(val)),
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
         }
     }
@@ -617,15 +626,16 @@ impl GetSetGo for DeviceAtomicCapabilities {
     fn set(&mut self, value: cl_device_atomic_capabilities) -> BitfieldResult<()> {
         type T = DeviceAtomicCapabilities;
         let fn_name = "DeviceAtomicCapabilities";
+        const MAX: cl_bitfield = T::ORDER_RELAXED
+            + T::ORDER_ACQ_REL
+            + T::ORDER_SEQ_CST
+            + T::SCOPE_WORK_ITEM
+            + T::SCOPE_WORK_GROUP
+            + T::SCOPE_DEVICE
+            + T::SCOPE_ALL_DEVICES;
         match value {
-            T::ORDER_RELAXED
-            | T::ORDER_ACQ_REL
-            | T::ORDER_SEQ_CST
-            | T::SCOPE_WORK_ITEM
-            | T::SCOPE_WORK_GROUP
-            | T::SCOPE_DEVICE
-            | T::SCOPE_ALL_DEVICES => {
-                self.0 = value;
+            val @ 1..=MAX => {
+                self.0 = val;
                 Ok(())
             }
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
@@ -650,8 +660,9 @@ impl GetSetGo for DeviceDeviceEnqueueCapabilities {
     fn new(value: cl_device_device_enqueue_capabilities) -> BitfieldResult<Self> {
         type T = DeviceDeviceEnqueueCapabilities;
         let fn_name = "DeviceDeviceEnqueueCapabilities";
+        const MAX: cl_bitfield = T::SUPPORTED + T::REPLACEABLE_DEFAULT;
         match value {
-            T::SUPPORTED | T::REPLACEABLE_DEFAULT => Ok(DeviceDeviceEnqueueCapabilities(value)),
+            val @ 1..=MAX => Ok(DeviceDeviceEnqueueCapabilities(val)),
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
         }
     }
@@ -661,9 +672,10 @@ impl GetSetGo for DeviceDeviceEnqueueCapabilities {
     fn set(&mut self, value: cl_device_device_enqueue_capabilities) -> BitfieldResult<()> {
         type T = DeviceDeviceEnqueueCapabilities;
         let fn_name = "DeviceDeviceEnqueueCapabilities";
+        const MAX: cl_bitfield = T::SUPPORTED + T::REPLACEABLE_DEFAULT;
         match value {
-            T::SUPPORTED | T::REPLACEABLE_DEFAULT => {
-                self.0 = value;
+            val @ 1..=MAX => {
+                self.0 = val;
                 Ok(())
             }
             _ => Err(ValidationError::InvalidBitfield(fn_name)),
@@ -875,6 +887,7 @@ impl ContextProperties {
     // #ifdef CL_VERSION_1_2;
     const INTEROP_USER_SYNC: cl_context_properties = CL_CONTEXT_INTEROP_USER_SYNC;
     // #endif;
+    // TODO: FIX property generators!
     pub fn platform(&self, platform_id: &PlatformPtr) -> Properties {
         let intptr_platform_id = platform_id.unwrap() as intptr_t;
         match intptr_platform_id {

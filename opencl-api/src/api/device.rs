@@ -285,7 +285,7 @@ mod tests {
         println!("CL_PLATFORM_NAME: {}", platform_name);
 
         let device =
-            DeviceType::new(DeviceType::CPU).unwrap() + DeviceType::new(DeviceType::GPU).unwrap();
+            DeviceType::new(DeviceType::CPU + DeviceType::GPU + DeviceType::DEFAULT).unwrap();
 
         // device.set(DeviceType::GPU).unwrap();
         let device_ids = get_device_ids(&id, device).unwrap();
@@ -315,7 +315,7 @@ mod tests {
         println!("CL_PLATFORM_NAME: {}", platform_name);
 
         let device =
-            DeviceType::new(DeviceType::CPU).unwrap() + DeviceType::new(DeviceType::GPU).unwrap();
+            DeviceType::new(DeviceType::CPU + DeviceType::GPU + DeviceType::DEFAULT).unwrap();
 
         let device_ids = get_device_ids(&id, device).unwrap();
         assert!(0 < device_ids.len());

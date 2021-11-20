@@ -186,11 +186,12 @@ mod tests {
         //TODO: Add auto-detection of platforms
         let platform_id = PlatformPtr::from_ptr(platform_ids[0], "test_fn").unwrap();
 
-        let device_ids =
-            get_device_ids(&platform_id, DeviceType::new(DeviceType::DEFAULT).unwrap()).unwrap();
+        let device_ids = get_device_ids(
+            &platform_id,
+            DeviceType::new(DeviceType::DEFAULT + DeviceType::CPU + DeviceType::GPU).unwrap(),
+        )
+        .unwrap();
         assert!(0 < device_ids.len());
-
-        // eprintln!("{:?}", device_ids);
 
         // let device_id = device_ids[0];
         //TODO: Add auto-detection of devices
@@ -204,14 +205,13 @@ mod tests {
         // Queue v1
         let properties =
             CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE).unwrap();
-        // + CommandQueueProperties::new(CommandQueueProperties::ON_DEVICE_DEFAULT).unwrap();
         let queue = create_command_queue(&context, &device_id, &properties).unwrap();
 
         release_command_queue(queue).unwrap();
 
         // Queue v2
         let properties = CommandQueueInfo.properties(
-            CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE).unwrap(), // + CommandQueueProperties::new(CommandQueueProperties::ON_DEVICE_DEFAULT).unwrap(),
+            CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE).unwrap(),
         );
         eprintln!("{:?}", properties);
         let queue = create_command_queue_with_properties(&context, &device_id, &None).unwrap();
@@ -245,7 +245,6 @@ mod tests {
         // Queue v1
         let properties =
             CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE).unwrap();
-        // + CommandQueueProperties::new(CommandQueueProperties::ON_DEVICE).unwrap();
         let queue = create_command_queue(&context, &device_id, &properties).unwrap();
         // Get command queue info v1
         let command_info = get_command_queue_info(&queue, CommandQueueInfo::PROPERTIES).unwrap();
@@ -255,7 +254,7 @@ mod tests {
 
         // Queue v2
         let properties = CommandQueueInfo.properties(
-            CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE).unwrap(), // + CommandQueueProperties::new(CommandQueueProperties::ON_DEVICE).unwrap(),
+            CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE).unwrap(),
         );
         eprintln!("{:?}", properties);
         let queue =
