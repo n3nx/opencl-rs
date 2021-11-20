@@ -408,7 +408,6 @@ mod tests {
         // Queue v2
         let properties = CommandQueueInfo.properties(
             CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE).unwrap()
-                + CommandQueueProperties::new(CommandQueueProperties::ON_DEVICE).unwrap(),
         );
         let queue =
             create_command_queue_with_properties(&context, &device_id, &properties).unwrap();
