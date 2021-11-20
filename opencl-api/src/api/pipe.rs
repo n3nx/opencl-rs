@@ -25,15 +25,17 @@
 //! - Information about the number of packets currently in the pipe
 //! - Data packets
 //!
-use crate::helpers::{status_update, APIResult, ContextPtr, GetSetGo, MemPtr};
-use crate::structs::{MemFlags, PipeInfo, StatusCode};
-use opencl_heads::ffi;
-use opencl_heads::types::*;
-
-use crate::enums::{ParamValue, Size};
+use crate::objects::bitfields::MemFlags;
+use crate::objects::enums::{ParamValue, Size};
+use crate::objects::functions::status_update;
+use crate::objects::structs::{PipeInfo, StatusCode};
+use crate::objects::traits::GetSetGo;
+use crate::objects::types::{APIResult, ContextPtr, MemPtr};
 use crate::{gen_param_value, size_getter};
 use libc::c_void;
+use opencl_heads::ffi;
 use opencl_heads::ffi::clGetPipeInfo;
+use opencl_heads::types::*;
 use std::ptr;
 
 pub fn create_pipe(

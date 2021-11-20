@@ -15,11 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use crate::enums::{ParamValue, Size};
-use crate::helpers::{
-    status_update, APIResult, ContextPtr, DeviceList, GetSetGo, Properties, WrappedMutablePointer,
-};
-use crate::structs::{ContextInfo, DeviceType};
+use crate::objects::bitfields::DeviceType;
+use crate::objects::enums::{ParamValue, Size};
+use crate::objects::functions::status_update;
+use crate::objects::structs::ContextInfo;
+use crate::objects::traits::GetSetGo;
+use crate::objects::types::{APIResult, ContextPtr, DeviceList, Properties};
+use crate::objects::wrappers::WrappedMutablePointer;
 use crate::{gen_param_value, size_getter};
 use libc::c_void;
 use opencl_heads::ffi;
@@ -140,8 +142,9 @@ mod tests {
     use super::*;
     use crate::api::device::get_device_ids;
     use crate::api::platform::get_platform_ids;
-    use crate::helpers::{PlatformPtr, WrapMutPtr};
-    use crate::structs::{ContextProperties, DeviceType};
+    use crate::objects::bitfields::DeviceType;
+    use crate::objects::structs::ContextProperties;
+    use crate::objects::types::{PlatformPtr, WrapMutPtr};
 
     #[test]
     fn test_create_context() {

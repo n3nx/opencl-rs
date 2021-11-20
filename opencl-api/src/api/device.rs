@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use crate::enums::{ParamValue, Size};
-use crate::helpers::{
-    bytes_into_string, status_update, APIResult, DeviceList, DevicePtr, GetSetGo, PlatformPtr,
-    Properties,
-};
-use crate::structs::{DeviceInfo, DeviceType};
+use crate::objects::bitfields::DeviceType;
+use crate::objects::enums::{ParamValue, Size};
+use crate::objects::functions::{bytes_into_string, status_update};
+use crate::objects::structs::DeviceInfo;
+use crate::objects::traits::GetSetGo;
+use crate::objects::types::{APIResult, DeviceList, DevicePtr, PlatformPtr, Properties};
 use crate::{gen_object_list, gen_param_value, get_count, size_getter};
 use libc::c_void;
 use opencl_heads::ffi;
@@ -270,8 +270,8 @@ pub fn release_device(device: DevicePtr) -> APIResult<()> {
 mod tests {
     use super::*;
     use crate::api::platform;
-    use crate::helpers::PlatformPtr;
-    use crate::structs::{DevicePartitionProperty, PlatformInfo};
+    use crate::objects::structs::{DevicePartitionProperty, PlatformInfo};
+    use crate::objects::types::PlatformPtr;
     #[test]
     fn test_get_device_info() {
         let all_platforms = platform::get_platform_ids().unwrap();

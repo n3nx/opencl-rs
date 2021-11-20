@@ -20,12 +20,13 @@
 //! The elements of an image object are selected from a list of predefined image formats.
 //! The minimum number of elements in a memory object is one.
 
-use crate::enums::{ParamValue, Size};
-use crate::helpers::{
-    status_update, APIResult, ContextPtr, EventPtr, GetSetGo, MemFormatList, MemPtr, QueuePtr,
-    WrappedMutablePointer, WrappedPointer,
-};
-use crate::structs::{ImageInfo, MapFlags, MemFlags, StatusCode};
+use crate::objects::bitfields::{MapFlags, MemFlags};
+use crate::objects::enums::{ParamValue, Size};
+use crate::objects::functions::status_update;
+use crate::objects::structs::{ImageInfo, StatusCode};
+use crate::objects::traits::GetSetGo;
+use crate::objects::types::{APIResult, ContextPtr, EventPtr, MemFormatList, MemPtr, QueuePtr};
+use crate::objects::wrappers::{WrappedMutablePointer, WrappedPointer};
 use crate::{gen_object_list, gen_param_value, get_count, size_getter};
 use libc::c_void;
 use opencl_heads::ffi;

@@ -1,5 +1,5 @@
 /*
- * lib.rs - Lightweight OpenCL API bindings.
+ * traits.rs - helper traits for opencl api.
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -14,8 +14,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
-pub mod api;
-mod errors;
-mod objects;
+use crate::objects::types::BitfieldResult;
+use opencl_heads::types::*;
+
+pub trait GetSetGo
+where
+    Self: std::marker::Sized,
+{
+    fn get(&self) -> cl_bitfield;
+    fn set(&mut self, value: cl_bitfield) -> BitfieldResult<()>;
+    fn new(value: cl_bitfield) -> BitfieldResult<Self>;
+}

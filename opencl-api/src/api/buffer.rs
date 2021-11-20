@@ -19,12 +19,13 @@
 //! A buffer object stores a one-dimensional collection of elements.
 //! Elements of a buffer object can be a scalar data type (such as an int, float), vector data type, or a user-defined structure.
 //!
-use crate::enums::ParamValue;
-use crate::helpers::{
-    status_update, APIResult, ContextPtr, EventPtr, GetSetGo, LongProperties, MemPtr, QueuePtr,
-    WrappedMutablePointer, WrappedPointer,
-};
-use crate::structs::{BufferCreateType, MapFlags, MemFlags, StatusCode};
+use crate::objects::bitfields::{MapFlags, MemFlags};
+use crate::objects::enums::ParamValue;
+use crate::objects::functions::status_update;
+use crate::objects::structs::{BufferCreateType, StatusCode};
+use crate::objects::traits::GetSetGo;
+use crate::objects::types::{APIResult, ContextPtr, EventPtr, LongProperties, MemPtr, QueuePtr};
+use crate::objects::wrappers::*;
 use libc::c_void;
 use opencl_heads::ffi;
 use opencl_heads::types::*;
@@ -384,8 +385,9 @@ mod tests {
     use crate::api::device::get_device_ids;
     use crate::api::platform::get_platform_ids;
     use crate::api::queue::{create_command_queue_with_properties, release_command_queue};
-    use crate::helpers::{DevicePtr, GetSetGo, PlatformPtr, WrapMutPtr, WrapPtr};
-    use crate::structs::{CommandQueueInfo, CommandQueueProperties, ContextProperties, DeviceType};
+    use crate::objects::bitfields::{CommandQueueProperties, DeviceType};
+    use crate::objects::structs::{CommandQueueInfo, ContextProperties};
+    use crate::objects::types::{DevicePtr, PlatformPtr, WrapMutPtr, WrapPtr};
     use std::ptr;
 
     #[test]

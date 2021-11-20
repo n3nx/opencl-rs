@@ -18,9 +18,10 @@
 //! The platform layer allows the host program to discover OpenCL devices
 //! and their capabilities and to create contexts.
 //!
-use crate::enums::{ParamValue, Size};
-use crate::helpers::{bytes_into_string, status_update, APIResult, PlatformList, PlatformPtr};
-use crate::structs::PlatformInfo;
+use crate::objects::enums::{ParamValue, Size};
+use crate::objects::functions::{bytes_into_string, status_update};
+use crate::objects::structs::PlatformInfo;
+use crate::objects::types::{APIResult, PlatformList, PlatformPtr};
 use crate::{gen_object_list, gen_param_value, get_count, size_getter};
 use libc::c_void;
 use opencl_heads::ffi::*;

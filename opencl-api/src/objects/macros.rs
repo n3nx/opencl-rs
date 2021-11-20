@@ -1,5 +1,5 @@
 /*
- * helpers.rs - Helper functions for OpenCL APIs.
+ * macros.rs - helper macros for opencl api objects.
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -14,21 +14,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
-#![allow(dead_code)]
-use crate::enums::Status;
-use crate::errors::*;
-use crate::structs::StatusCode;
-use libc::c_void;
-use opencl_heads::types::*;
-use std::ptr;
-
-/**********************************************************************
- *
- *
- *                      Helper Macros
- *
  */
+
+#![allow(dead_code)]
 
 #[macro_export]
 macro_rules! get_count {
@@ -103,7 +91,7 @@ macro_rules! gen_param_value {
                 $ptr,
                 $param_name,
                 size,
-                crate::helpers::to_mut_ptr(&mut param_value) as *mut c_void,
+                crate::objects::functions::to_mut_ptr(&mut param_value) as *mut c_void,
                 ptr::null_mut(),
             )
         };
@@ -165,149 +153,4 @@ macro_rules! gen_add_trait {
             }
         }
     };
-}
-
-/******************************************************************
- *
- *
- *              Helper Types, Aliases and Structs
- *
- */
-
-// Aliases
-pub type WrapPtr<T> = WrappedPointer<T>;
-pub type WrapMutPtr<T> = WrappedMutablePointer<T>;
-pub type NullMutPtr = WrappedMutablePointer<c_void>;
-
-pub type APIResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
-pub type StatusCodeResult = ::std::result::Result<cl_int, ValidationError>;
-pub type HelperResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
-pub type BitfieldResult<T> = ::std::result::Result<T, ValidationError>;
-
-pub type Properties = Option<Vec<intptr_t>>;
-pub type LongProperties = Option<Vec<cl_properties>>;
-
-pub type PlatformPtr = NullMutPtr;
-pub type DevicePtr = NullMutPtr;
-pub type ContextPtr = NullMutPtr;
-pub type QueuePtr = NullMutPtr;
-pub type MemPtr = NullMutPtr;
-pub type ProgramPtr = NullMutPtr;
-pub type KernelPtr = NullMutPtr;
-pub type EventPtr = NullMutPtr;
-pub type SamplerPtr = NullMutPtr;
-pub type SVMPtr = NullMutPtr;
-
-pub type PlatformList = Vec<cl_platform_id>;
-pub type DeviceList = Vec<cl_device_id>;
-pub type MemFormatList = Vec<cl_image_format>;
-
-// Structs
-#[derive(PartialEq, Debug)]
-pub struct WrappedPointer<T>(*const T);
-impl<T> WrappedPointer<T> {
-    pub fn from<U>(x: &U) -> Self {
-        // AVOIDED: This method uses heap allocation to gain non mutable pointer over data
-        // Box::into_raw(Box::new(x)) as *const c_void
-        Self(ptr::NonNull::from(x).as_ptr() as *const T)
-    }
-    pub fn from_owned<U>(x: U) -> Self {
-        Self::from(&x)
-    }
-    /// Generally considered unsafe to run
-    pub unsafe fn from_raw(x: intptr_t) -> Self {
-        Self(x as *const T)
-    }
-    pub fn null() -> Self {
-        Self(ptr::null())
-    }
-    pub fn unwrap(&self) -> *const T {
-        self.0
-    }
-}
-
-#[derive(PartialEq, Debug)]
-pub struct WrappedMutablePointer<T>(*mut T);
-impl<T> WrappedMutablePointer<T> {
-    pub fn from<U>(x: &mut U) -> Self {
-        // AVOIDED: This method uses heap allocation to gain non mutable pointer over data
-        // Box::into_raw(Box::new(x)) as *const c_void
-        Self(ptr::NonNull::from(x).as_ptr() as *mut T)
-    }
-    pub fn from_owned<U>(mut x: U) -> Self {
-        Self::from(&mut x)
-    }
-    /// Generally considered unsafe to run
-    pub unsafe fn from_raw(x: intptr_t) -> Self {
-        Self(x as *mut T)
-    }
-    pub fn from_ptr(x: *mut T, fn_name: &'static str) -> HelperResult<Self> {
-        match ptr::NonNull::new(x) {
-            Some(dat) => Ok(Self(dat.as_ptr())),
-            None => Err(HelperError::NullPointerException(fn_name).to_error()),
-        }
-    }
-    pub fn null() -> Self {
-        Self(ptr::null_mut())
-    }
-    pub fn unwrap(&self) -> *mut T {
-        self.0
-    }
-}
-
-/*******************************************************************
- *
- *
- *                      Helper Traits
- *
- */
-
-pub trait GetSetGo
-where
-    Self: std::marker::Sized,
-{
-    fn get(&self) -> cl_bitfield;
-    fn set(&mut self, value: cl_bitfield) -> BitfieldResult<()>;
-    fn new(value: cl_bitfield) -> BitfieldResult<Self>;
-}
-
-/*******************************************************************
- *
- *
- *                      Helper Functions
- *
- */
-
-pub fn status_update<T>(
-    status_code: cl_int,
-    function_name: &'static str,
-    result: T,
-) -> APIResult<T> {
-    if StatusCode::SUCCESS != status_code {
-        #[cfg(feature = "debug_mode")]
-        eprintln!(
-            "ERROR Status Code: {} from function {}",
-            status_code, function_name
-        );
-        Err(Status::from(status_code, function_name).to_error())
-    } else {
-        Ok(result)
-    }
-}
-
-/// Converts a byte Vec into a string, removing the trailing null byte if it
-/// exists.
-pub fn bytes_into_string(mut bytes: Vec<u8>) -> HelperResult<String> {
-    if bytes.last() == Some(&0u8) {
-        bytes.pop();
-    }
-    let output = String::from_utf8(bytes).map(|str| String::from(str.trim()));
-    match output {
-        Ok(x) => Ok(x),
-        Err(_) => Err(HelperError::BytesIntoString.to_error()),
-    }
-}
-
-pub fn to_mut_ptr<T>(x: &mut T) -> *mut T {
-    &mut *x
 }

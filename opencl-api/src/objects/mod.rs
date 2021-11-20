@@ -1,5 +1,5 @@
 /*
- * lib.rs - Lightweight OpenCL API bindings.
+ * object.rs - objects and helper collection for opencl api.
  *
  * Copyright 2020-2021 Naman Bishnoi
  *
@@ -16,6 +16,11 @@
  * limitations under the License.
 */
 
-pub mod api;
-mod errors;
-mod objects;
+pub mod bitfields;
+pub mod enums;
+pub mod functions;
+pub mod macros;
+pub mod structs;
+pub mod traits;
+pub mod types;
+pub mod wrappers;

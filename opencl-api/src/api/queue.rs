@@ -18,11 +18,12 @@
 //! Considering OpenCL 1.x as base.
 
 // use crate::enums::Status;
-use crate::enums::{ParamValue, Size};
-use crate::helpers::{
-    status_update, APIResult, ContextPtr, DevicePtr, GetSetGo, LongProperties, QueuePtr,
-};
-use crate::structs::{CommandQueueInfo, CommandQueueProperties, StatusCode};
+use crate::objects::bitfields::CommandQueueProperties;
+use crate::objects::enums::{ParamValue, Size};
+use crate::objects::functions::status_update;
+use crate::objects::structs::{CommandQueueInfo, StatusCode};
+use crate::objects::traits::GetSetGo;
+use crate::objects::types::{APIResult, ContextPtr, DevicePtr, LongProperties, QueuePtr};
 use crate::{gen_param_value, size_getter};
 use libc::c_void;
 use opencl_heads::ffi;
@@ -174,8 +175,10 @@ mod tests {
     use crate::api::context::{create_context, release_context};
     use crate::api::device::get_device_ids;
     use crate::api::platform::get_platform_ids;
-    use crate::helpers::{DevicePtr, GetSetGo, PlatformPtr, WrapMutPtr};
-    use crate::structs::{CommandQueueInfo, CommandQueueProperties, ContextProperties, DeviceType};
+    use crate::objects::bitfields::{CommandQueueProperties, DeviceType};
+    use crate::objects::structs::{CommandQueueInfo, ContextProperties};
+    use crate::objects::traits::GetSetGo;
+    use crate::objects::types::{DevicePtr, PlatformPtr, WrapMutPtr};
 
     #[test]
     fn test_command_queue() {

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-use crate::enums::Status;
+use crate::objects::enums::Status;
 use thiserror::Error;
 
 // All Error Traits here

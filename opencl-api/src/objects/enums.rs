@@ -18,8 +18,9 @@
 
 #![allow(dead_code)]
 use crate::errors::{OpenCLAPILibraryError, ToLibraryError, ValidationError};
-use crate::helpers::{StatusCodeResult, WrappedMutablePointer, WrappedPointer};
-use crate::structs::StatusCode;
+use crate::objects::structs::StatusCode;
+use crate::objects::types::StatusCodeResult;
+use crate::objects::wrappers::*;
 use opencl_heads::consts::*;
 use opencl_heads::types::*;
 

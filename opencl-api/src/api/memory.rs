@@ -20,12 +20,13 @@
 //! It also eliminates the need to marshal data between the host and devices.
 //! As a result, SVM substantially simplifies OpenCL programming and may improve performance.
 //!
-use crate::enums::{ParamValue, Size};
-use crate::helpers::{
-    status_update, APIResult, ContextPtr, EventPtr, GetSetGo, MemPtr, QueuePtr, SVMPtr,
-    WrappedMutablePointer, WrappedPointer,
-};
-use crate::structs::{MapFlags, MemFlags, MemInfo, MemMigrationFlags, StatusCode};
+use crate::objects::bitfields::{MapFlags, MemFlags, MemMigrationFlags};
+use crate::objects::enums::{ParamValue, Size};
+use crate::objects::functions::status_update;
+use crate::objects::structs::{MemInfo, StatusCode};
+use crate::objects::traits::GetSetGo;
+use crate::objects::types::{APIResult, ContextPtr, EventPtr, MemPtr, QueuePtr, SVMPtr};
+use crate::objects::wrappers::{WrappedMutablePointer, WrappedPointer};
 use crate::{gen_param_value, size_getter};
 use libc::c_void;
 use opencl_heads::ffi;

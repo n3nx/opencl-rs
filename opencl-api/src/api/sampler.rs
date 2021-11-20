@@ -22,9 +22,10 @@
 //! OpenCL functions and passed as argument values to the kernel or can be samplers declared
 //! inside a kernel.
 //!
-use crate::enums::{ParamValue, Size};
-use crate::helpers::{status_update, APIResult, ContextPtr, SamplerPtr};
-use crate::structs::{SamplerInfo, StatusCode};
+use crate::objects::enums::{ParamValue, Size};
+use crate::objects::functions::status_update;
+use crate::objects::structs::{SamplerInfo, StatusCode};
+use crate::objects::types::{APIResult, ContextPtr, SamplerPtr};
 use crate::{gen_param_value, size_getter};
 use libc::c_void;
 use opencl_heads::ffi;
@@ -139,8 +140,10 @@ mod tests {
     use crate::api::context::{create_context, release_context};
     use crate::api::device::get_device_ids;
     use crate::api::platform::get_platform_ids;
-    use crate::helpers::{GetSetGo, PlatformPtr, WrapMutPtr};
-    use crate::structs::{AddressingMode, DeviceType, FilterMode};
+    use crate::objects::bitfields::DeviceType;
+    use crate::objects::structs::{AddressingMode, FilterMode};
+    use crate::objects::traits::GetSetGo;
+    use crate::objects::types::{PlatformPtr, WrapMutPtr};
 
     #[test]
     fn test_create_sampler() {
