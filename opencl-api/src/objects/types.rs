@@ -31,6 +31,7 @@ pub type APIResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
 pub type StatusCodeResult = ::std::result::Result<cl_int, ValidationError>;
 pub type HelperResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
 pub type BitfieldResult<T> = ::std::result::Result<T, ValidationError>;
+pub type PropertyResult<T> = ::std::result::Result<T, ValidationError>;
 
 pub type Properties = Option<Vec<intptr_t>>;
 pub type LongProperties = Option<Vec<cl_properties>>;

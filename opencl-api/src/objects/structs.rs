@@ -19,9 +19,10 @@
 #![allow(non_upper_case_globals, dead_code)]
 // use crate::errors::ValidationError;
 // use crate::helpers::{LongProperties, PlatformPtr, Properties};
-use crate::objects::bitfields::{CommandQueueProperties, DeviceAffinityDomain};
+use crate::errors::ValidationError;
+use crate::objects::bitfields::{DeviceAffinityDomain};
 use crate::objects::traits::GetSetGo;
-use crate::objects::types::{LongProperties, PlatformPtr, Properties};
+use crate::objects::types::{Properties, PropertyResult};
 // use libc::c_void;
 use opencl_heads::consts::*;
 use opencl_heads::types::*;
@@ -301,30 +302,6 @@ impl ContextInfo {
 }
 
 #[non_exhaustive]
-pub struct ContextProperties;
-impl ContextProperties {
-    /* cl_context_properties - cl_uint */
-    const PLATFORM: cl_context_properties = CL_CONTEXT_PLATFORM;
-    // #ifdef CL_VERSION_1_2;
-    const INTEROP_USER_SYNC: cl_context_properties = CL_CONTEXT_INTEROP_USER_SYNC;
-    // #endif;
-    // TODO: FIX property generators!
-    pub fn platform(&self, platform_id: &PlatformPtr) -> Properties {
-        let intptr_platform_id = platform_id.unwrap() as intptr_t;
-        match intptr_platform_id {
-            0 => None,
-            _ => Some(vec![Self::PLATFORM, intptr_platform_id, 0]),
-        }
-    }
-    pub fn interop_user_sync(&self, value: cl_bool) -> Properties {
-        match value {
-            0 | 1 => Some(vec![Self::INTEROP_USER_SYNC, value as isize, 0]),
-            _ => None,
-        }
-    }
-}
-
-#[non_exhaustive]
 pub struct DevicePartitionProperty;
 impl DevicePartitionProperty {
     // #ifdef CL_VERSION_1_2;
@@ -371,29 +348,29 @@ impl CommandQueueInfo {
     // #[cfg(feature = "cl_3_0")]
     pub const PROPERTIES_ARRAY: cl_command_queue_info = CL_QUEUE_PROPERTIES_ARRAY;
     // #endif;
-    fn properties_tmp(
-        &self,
-        properties: cl_command_queue_info,
-        queue_prop: CommandQueueProperties,
-    ) -> LongProperties {
-        Some(vec![
-            properties as cl_properties,
-            queue_prop.get() as cl_properties,
-            0,
-        ])
-    }
-    #[cfg(feature = "cl_1_2")]
-    pub fn properties(&self, queue_prop: CommandQueueProperties) -> LongProperties {
-        self.properties_tmp(Self::PROPERTIES, queue_prop)
-    }
-    #[cfg(feature = "cl_3_0")]
-    pub fn properties(&self, queue_prop: CommandQueueProperties) -> LongProperties {
-        self.properties_tmp(Self::PROPERTIES_ARRAY, queue_prop)
-    }
-    #[cfg(feature = "cl_2_0")]
-    pub fn size(&self, size: cl_uint) -> LongProperties {
-        Some(vec![Self::SIZE as cl_properties, size as cl_properties, 0])
-    }
+    // fn properties_tmp(
+    //     &self,
+    //     properties: cl_command_queue_info,
+    //     queue_prop: CommandQueueProperties,
+    // ) -> LongProperties {
+    //     Some(vec![
+    //         properties as cl_properties,
+    //         queue_prop.get() as cl_properties,
+    //         0,
+    //     ])
+    // }
+    // #[cfg(feature = "cl_1_2")]
+    // pub fn properties(&self, queue_prop: CommandQueueProperties) -> LongProperties {
+    //     self.properties_tmp(Self::PROPERTIES, queue_prop)
+    // }
+    // #[cfg(feature = "cl_3_0")]
+    // pub fn properties(&self, queue_prop: CommandQueueProperties) -> LongProperties {
+    //     self.properties_tmp(Self::PROPERTIES_ARRAY, queue_prop)
+    // }
+    // #[cfg(feature = "cl_2_0")]
+    // pub fn size(&self, size: cl_uint) -> LongProperties {
+    //     Some(vec![Self::SIZE as cl_properties, size as cl_properties, 0])
+    // }
 }
 
 #[non_exhaustive]
@@ -529,7 +506,7 @@ impl PipeInfo {
 }
 
 #[non_exhaustive]
-pub struct AddressingMode;
+pub struct AddressingMode(cl_addressing_mode);
 impl AddressingMode {
     /* cl_addressing_mode - cl_uint */
     pub const NONE: cl_addressing_mode = CL_ADDRESS_NONE;
@@ -539,19 +516,43 @@ impl AddressingMode {
     // #ifdef CL_VERSION_1_1;
     pub const MIRRORED_REPEAT: cl_addressing_mode = CL_ADDRESS_MIRRORED_REPEAT;
     // #endif;
-    pub fn get_property(&self, addressing_mode: cl_addressing_mode) -> Option<Vec<cl_uint>> {
-        Some(vec![SamplerInfo::ADDRESSING_MODE, addressing_mode, 0])
+    // pub fn get_property(&self, addressing_mode: cl_addressing_mode) -> Option<Vec<cl_uint>> {
+    // Some(vec![SamplerInfo::ADDRESSING_MODE, addressing_mode, 0])
+    // }
+    pub fn new(props: cl_addressing_mode) -> PropertyResult<Self> {
+        type T = AddressingMode;
+        let fn_name = "AddressingMode";
+        match props {
+            T::NONE | T::CLAMP | T::CLAMP_TO_EDGE | T::MIRRORED_REPEAT | T::REPEAT => {
+                Ok(AddressingMode(props))
+            }
+            _ => Err(ValidationError::InvalidProperty(fn_name)),
+        }
+    }
+    pub fn get(&self) -> cl_addressing_mode {
+        self.0
     }
 }
 
 #[non_exhaustive]
-pub struct FilterMode;
+pub struct FilterMode(cl_filter_mode);
 impl FilterMode {
     /* cl_filter_mode - cl_uint */
     pub const NEAREST: cl_filter_mode = CL_FILTER_NEAREST;
     pub const LINEAR: cl_filter_mode = CL_FILTER_LINEAR;
-    pub fn get_property(&self, filter_mode: cl_filter_mode) -> Option<Vec<cl_uint>> {
-        Some(vec![SamplerInfo::FILTER_MODE, filter_mode, 0])
+    // pub fn get_property(&self, filter_mode: cl_filter_mode) -> Option<Vec<cl_uint>> {
+    //     Some(vec![SamplerInfo::FILTER_MODE, filter_mode, 0])
+    // }
+    pub fn new(props: cl_filter_mode) -> PropertyResult<Self> {
+        type T = FilterMode;
+        let fn_name = "FilterMode";
+        match props {
+            T::LINEAR | T::NEAREST => Ok(FilterMode(props)),
+            _ => Err(ValidationError::InvalidProperty(fn_name)),
+        }
+    }
+    pub fn get(&self) -> cl_addressing_mode {
+        self.0
     }
 }
 

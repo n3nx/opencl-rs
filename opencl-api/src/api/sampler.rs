@@ -25,7 +25,7 @@
 use crate::objects::enums::{ParamValue, Size};
 use crate::objects::functions::status_update;
 use crate::objects::structs::{SamplerInfo, StatusCode};
-use crate::objects::types::{APIResult, ContextPtr, SamplerPtr};
+use crate::objects::types::{APIResult, ContextPtr, LongProperties, SamplerPtr};
 use crate::{gen_param_value, size_getter};
 use libc::c_void;
 use opencl_heads::ffi;
@@ -69,7 +69,8 @@ pub fn create_sampler(
 /// case the default values for supported sampler properties will be used.
 pub fn create_sampler_with_properties(
     context: &ContextPtr,
-    sampler_properties: Option<[cl_ulong; 5]>,
+    // sampler_properties: Option<[cl_ulong; 5]>,
+    sampler_properties: &LongProperties,
 ) -> APIResult<SamplerPtr> {
     let fn_name = "clCreateSamplerWithProperties";
     let mut status_code = StatusCode::INVALID_VALUE;
@@ -141,6 +142,7 @@ mod tests {
     use crate::api::device::get_device_ids;
     use crate::api::platform::get_platform_ids;
     use crate::objects::bitfields::DeviceType;
+    use crate::objects::property::SamplerProperties;
     use crate::objects::structs::{AddressingMode, FilterMode};
     use crate::objects::traits::GetSetGo;
     use crate::objects::types::{PlatformPtr, WrapMutPtr};
@@ -160,14 +162,29 @@ mod tests {
         let context = context.unwrap();
 
         // TODO: Generalize the property generator for every API
-        let sampler_properties = Some([
-            SamplerInfo::ADDRESSING_MODE as cl_ulong,
-            AddressingMode::REPEAT as cl_ulong,
-            SamplerInfo::FILTER_MODE as cl_ulong,
-            FilterMode::LINEAR as cl_ulong,
-            0,
-        ]);
-        let sampler = create_sampler_with_properties(&context, sampler_properties);
+        // let sampler_properties = Some([
+        //     SamplerInfo::ADDRESSING_MODE as cl_ulong,
+        //     AddressingMode::REPEAT as cl_ulong,
+        //     SamplerInfo::FILTER_MODE as cl_ulong,
+        //     FilterMode::LINEAR as cl_ulong,
+        //     0,
+        // ]);
+
+        // let sampler_props = SamplerProps {
+        //     normalized_coords: true,
+        //     addressing_mode: Some(AddressingMode::new(AddressingMode::REPEAT).unwrap()),
+        //     // addressing_mode: Some(AddressingMode::REPEAT),
+        //     // filter_mode: Some(FilterMode::LINEAR),
+        //     filter_mode: Some(FilterMode::new(FilterMode::LINEAR).unwrap()),
+        // }
+        // .gen();
+        let sampler_props = SamplerProperties.gen(
+            None,
+            Some(AddressingMode::new(AddressingMode::REPEAT).unwrap()),
+            Some(FilterMode::new(FilterMode::LINEAR).unwrap()),
+        );
+
+        let sampler = create_sampler_with_properties(&context, &sampler_props);
         let sampler = sampler.unwrap();
         // eprintln!("CL_CONTEXT_PTR: {:?}", context);
         assert_ne!(sampler.unwrap(), ptr::null_mut());
@@ -190,14 +207,26 @@ mod tests {
         let context = context.unwrap();
 
         // TODO: Generalize the property generator for every API
-        let sampler_properties = Some([
-            SamplerInfo::ADDRESSING_MODE as cl_ulong,
-            AddressingMode::REPEAT as cl_ulong,
-            SamplerInfo::FILTER_MODE as cl_ulong,
-            FilterMode::LINEAR as cl_ulong,
-            0,
-        ]);
-        let sampler = create_sampler_with_properties(&context, sampler_properties);
+        // let sampler_properties = Some([
+        //     SamplerInfo::ADDRESSING_MODE as cl_ulong,
+        //     AddressingMode::REPEAT as cl_ulong,
+        //     SamplerInfo::FILTER_MODE as cl_ulong,
+        //     FilterMode::LINEAR as cl_ulong,
+        //     0,
+        // ]);
+        // let sampler_props = SamplerProps {
+        //     normalized_coords: true,
+        //     addressing_mode: Some(AddressingMode::new(AddressingMode::REPEAT).unwrap()),
+        //     filter_mode: Some(FilterMode::new(FilterMode::LINEAR).unwrap()),
+        // }
+        // .gen();
+        let sampler_props = SamplerProperties.gen(
+            Some(true),
+            Some(AddressingMode::new(AddressingMode::REPEAT).unwrap()),
+            Some(FilterMode::new(FilterMode::LINEAR).unwrap()),
+        );
+
+        let sampler = create_sampler_with_properties(&context, &sampler_props);
         let sampler = sampler.unwrap();
         // Context information
         let sampler_context = get_sampler_info(&sampler, SamplerInfo::CONTEXT);

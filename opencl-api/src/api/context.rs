@@ -143,7 +143,7 @@ mod tests {
     use crate::api::device::get_device_ids;
     use crate::api::platform::get_platform_ids;
     use crate::objects::bitfields::DeviceType;
-    use crate::objects::structs::ContextProperties;
+    use crate::objects::property::ContextProperties;
     use crate::objects::types::{PlatformPtr, WrapMutPtr};
 
     #[test]
@@ -170,7 +170,7 @@ mod tests {
         // let platform_id = platform_ids[0];
         let platform_id = PlatformPtr::from_ptr(platform_ids[0], "test_fn").unwrap();
         // let properties = vec![ContextProperties::PLATFORM, platform_id as isize, 0];
-        let properties = ContextProperties.platform(&platform_id);
+        let properties = ContextProperties.gen(Some(&platform_id), None);
         let default_device = DeviceType::new(DeviceType::DEFAULT).unwrap();
         let context =
             create_context_from_type(&properties, default_device, None, WrapMutPtr::null());
@@ -186,7 +186,8 @@ mod tests {
         // let platform_id = platform_ids[0];
         let platform_id = PlatformPtr::from_ptr(platform_ids[0], "test_fn").unwrap();
         // let properties = vec![ContextProperties::PLATFORM, platform_id as isize, 0];
-        let properties = ContextProperties.platform(&platform_id);
+        // let properties = ContextProperties.platform(&platform_id);
+        let properties = ContextProperties.gen(Some(&platform_id), None);
         let default_device = DeviceType::new(DeviceType::DEFAULT).unwrap();
         let context = create_context_from_type(
             &properties,
@@ -215,7 +216,8 @@ mod tests {
         let platform_id = PlatformPtr::from_ptr(platform_ids[0], "test_fn").unwrap();
 
         // let properties = vec![ContextProperties::PLATFORM, platform_id as isize, 0];
-        let properties = ContextProperties.platform(&platform_id);
+        let properties = ContextProperties.gen(Some(&platform_id), None);
+        // let properties = ContextProperties.platform(&platform_id);
         let default_device = DeviceType::new(DeviceType::DEFAULT).unwrap();
         let context = create_context_from_type(
             &properties,

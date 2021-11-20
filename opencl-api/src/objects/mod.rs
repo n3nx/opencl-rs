@@ -24,3 +24,4 @@ pub mod structs;
 pub mod traits;
 pub mod types;
 pub mod wrappers;
+pub mod property;

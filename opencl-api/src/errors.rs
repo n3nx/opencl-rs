@@ -41,6 +41,8 @@ pub enum ValidationError {
     InvalidStatusCode { code: i32, func: &'static str },
     #[error("invalid bitfield configuration at function `{0}`")]
     InvalidBitfield(&'static str),
+    #[error("invalid property configuration at function `{0}`")]
+    InvalidProperty(&'static str),
     // #[error("undefined error")]
     // InvalidError,
 }

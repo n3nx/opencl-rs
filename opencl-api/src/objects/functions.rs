@@ -16,13 +16,12 @@
  * limitations under the License.
  */
 
+#![allow(dead_code)]
 use crate::errors::*;
 use crate::objects::enums::Status;
 use crate::objects::structs::StatusCode;
 use crate::objects::types::{APIResult, HelperResult};
-// use libc::c_void;
 use opencl_heads::types::*;
-// use std::ptr;
 
 pub fn status_update<T>(
     status_code: cl_int,
@@ -56,4 +55,11 @@ pub fn bytes_into_string(mut bytes: Vec<u8>) -> HelperResult<String> {
 
 pub fn to_mut_ptr<T>(x: &mut T) -> *mut T {
     &mut *x
+}
+
+pub fn bool_to_clbool(val: bool) -> cl_bool {
+    match val {
+        true => 1,
+        false => 0,
+    }
 }

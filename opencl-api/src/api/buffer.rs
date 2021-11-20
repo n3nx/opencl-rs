@@ -386,7 +386,9 @@ mod tests {
     use crate::api::platform::get_platform_ids;
     use crate::api::queue::{create_command_queue_with_properties, release_command_queue};
     use crate::objects::bitfields::{CommandQueueProperties, DeviceType};
-    use crate::objects::structs::{CommandQueueInfo, ContextProperties};
+    use crate::objects::property::ContextProperties;
+    // use crate::objects::structs::CommandQueueInfo;
+    use crate::objects::property::QueueProperties;
     use crate::objects::types::{DevicePtr, PlatformPtr, WrapMutPtr, WrapPtr};
     use std::ptr;
 
@@ -401,13 +403,18 @@ mod tests {
         // let device_id = device_ids[0];
         let device_id = DevicePtr::from_ptr(device_ids[0], "test_fn").unwrap();
 
-        let properties = ContextProperties.platform(&platform_id);
+        let properties = ContextProperties.gen(Some(&platform_id), None);
+        // let properties = ContextProperties.platform(&platform_id);
         let context = create_context(&properties, device_ids, None, WrapMutPtr::null());
         let context = context.unwrap();
 
         // Queue v2
-        let properties = CommandQueueInfo.properties(
-            CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE).unwrap()
+        // let properties = CommandQueueInfo.properties(
+        //     CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE).unwrap(),
+        // );
+        let properties = QueueProperties.gen(
+            Some(CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE).unwrap()),
+            None,
         );
         let queue =
             create_command_queue_with_properties(&context, &device_id, &properties).unwrap();
@@ -442,18 +449,23 @@ mod tests {
         // let device_id = device_ids[0];
         let device_id = DevicePtr::from_ptr(device_ids[0], "test_fn").unwrap();
 
-        let properties = ContextProperties.platform(&platform_id);
+        let properties = ContextProperties.gen(Some(&platform_id), None);
+        // let properties = ContextProperties.platform(&platform_id);
         let context = create_context(&properties, device_ids, None, WrapMutPtr::null());
         let context = context.unwrap();
 
         // Queue v2
-        let _ = CommandQueueInfo.properties(
-            CommandQueueProperties::new(
-                CommandQueueProperties::PROFILING_ENABLE
-                    + CommandQueueProperties::ON_DEVICE_DEFAULT,
-            )
-            .unwrap(),
-        );
+        // let _ = CommandQueueInfo.properties(
+        //     CommandQueueProperties::new(
+        //         CommandQueueProperties::PROFILING_ENABLE
+        //             + CommandQueueProperties::ON_DEVICE_DEFAULT,
+        //     )
+        //     .unwrap(),
+        // );
+        // let properties = QueueProperties.gen(
+        //     Some(CommandQueueProperties::new(CommandQueueProperties::PROFILING_ENABLE).unwrap()),
+        //     None,
+        // );
         let queue = create_command_queue_with_properties(&context, &device_id, &None).unwrap();
 
         // Start buffer test
