@@ -1,6 +1,6 @@
 [package]
 name = "opencl-api"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Xenon Lucifer Diablo <code@nmnx.org>", "Naman Bishnoi <nmn@n3n.org"]
 edition = "2018"
 description = "Actively maintained LTS support, OpenCL type associations for Rust"

@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2021-11-21
+
+[0.1.1]: ../../../compare/aaba02614cd435ab668e6961a3b53fa3ee83ab3a...fb5fed5d8d783793ee5f1af7db76cd3b3806349a
+
+### Bug Fixes
+
+- *opencl-api:* Fix `CL_INVALID_VALUE` error at get_count [#6] ([35ed6dc](35ed6dcde43873ef146572aadaf7425a4c0a02d0))
+- *opencl-api:* Fix access to multiple bitfield combinations [#10] ([590bd6d](590bd6d8326a4f0173cc645da8524ced5015d2fe))
+
+### Documentation
+
+- *opencl-rs:* Update license.html ([2d7f2b0](2d7f2b0dd487359f9d784f9c95914af7a0b94a1c))
+
+### Improvements
+
+- *opencl-api:* Improve error handling with thiserror derivations ([bdf3a66](bdf3a66a2f66f0b450236ae80c5b6ce0f407da42))
+- *opencl-api:* Generalize property list gneration for every api [#8] ([fb5fed5](fb5fed5d8d783793ee5f1af7db76cd3b3806349a))
+
+### Refactoring Updates
+
+- *opencl-api:* Classify data objects to separate files for brevity ([8bb0e27](8bb0e27bab0c96f234251e62a5d8f947dfbb3c24))
+
+### Test Checks
+
+- *opencl-api:* Fix test case `CommandQueueProperties` null pointer ([bf947b6](bf947b6e142ba731cfc04370d2f32b04465db02c))
+- *opencl-rs:* Fix test cases for compatiblity with ci builds ([b1f309f](b1f309f9b7f6f48c547bc37df836e7051a0332be))
+
+<!-- CHANGELOG SPLIT MARKER -->
 ## [0.1.0] - 2021-11-18
 
 [0.1.0]: ../../../releases/tag/v0.1.0
