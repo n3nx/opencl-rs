@@ -8,6 +8,7 @@ license = "MIT OR Apache-2.0"
 homepage = "https://nmnx.org/dev/opencl"
 repository = "https://github.com/n3nx/opencl-rs"
 keywords = ["ffi", "api", "opencl", "gpu", "gpgpu"]
+categories = ["api-bindings", "external-ffi-bindings", "science", "graphics"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
