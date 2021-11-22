@@ -25,10 +25,15 @@ pub trait ToLibraryError {
 }
 
 // Main Library Error
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq)]
 pub enum OpenCLAPILibraryError {
-    #[error("status code error: {0:?}")]
-    StatusError(Status),
+    #[error("status code {int_code} error {code:?} at `{func}`, with reason: {reason}")]
+    StatusCodeError {
+        code: Status,
+        int_code: i32,
+        func: &'static str,
+        reason: &'static str
+    },
     #[error("api error: `{0}`")]
     APIError(ValidationError),
     #[error("helper error: `{0}`")]
@@ -37,14 +42,10 @@ pub enum OpenCLAPILibraryError {
 
 #[derive(Error, Debug, PartialEq)]
 pub enum ValidationError {
-    #[error("invalid status code {code} at function `{func}`")]
-    InvalidStatusCode { code: i32, func: &'static str },
     #[error("invalid bitfield configuration at function `{0}`")]
     InvalidBitfield(&'static str),
     #[error("invalid property configuration at function `{0}`")]
     InvalidProperty(&'static str),
-    // #[error("undefined error")]
-    // InvalidError,
 }
 
 impl ToLibraryError for ValidationError {

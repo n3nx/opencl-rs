@@ -29,12 +29,13 @@ pub fn status_update<T>(
     result: T,
 ) -> APIResult<T> {
     if StatusCode::SUCCESS != status_code {
-        #[cfg(feature = "debug_mode")]
-        eprintln!(
-            "ERROR Status Code: {} from function {}",
-            status_code, function_name
-        );
-        Err(Status::from(status_code, function_name).to_error())
+        Err(OpenCLAPILibraryError::StatusCodeError {
+            code: Status::from(status_code, function_name),
+            int_code: status_code,
+            func: function_name,
+            // TODO: fix placeholder reason with api specific reference url
+            reason: "placeholder"
+        })
     } else {
         Ok(result)
     }

@@ -17,7 +17,7 @@
 */
 
 #![allow(dead_code)]
-use crate::errors::{OpenCLAPILibraryError, ToLibraryError, ValidationError};
+use crate::errors::{OpenCLAPILibraryError};
 use crate::objects::structs::StatusCode;
 use crate::objects::types::StatusCodeResult;
 use crate::objects::wrappers::*;
@@ -166,9 +166,14 @@ impl Status {
                 code: x,
                 func: fn_name,
             } => {
-                return Err(ValidationError::InvalidStatusCode {
-                    code: *x,
+                return Err(OpenCLAPILibraryError::StatusCodeError {
+                    int_code: *x,
                     func: fn_name,
+                    reason: "current status code does not match with any of the valid opencl codes",
+                    code: Status::InvalidStatusCode {
+                        code: *x,
+                        func: fn_name,
+                    },
                 });
             }
         };
@@ -249,11 +254,6 @@ impl Status {
     }
 }
 
-impl ToLibraryError for Status {
-    fn to_error(self) -> OpenCLAPILibraryError {
-        OpenCLAPILibraryError::StatusError(self)
-    }
-}
 
 #[allow(non_camel_case_types)]
 pub enum Size {
@@ -415,9 +415,11 @@ mod tests {
         let status_code = status.to_status_code().expect_err("FUNDS ARE SAIFU");
         assert_eq!(
             status_code,
-            ValidationError::InvalidStatusCode {
-                code: 80085,
-                func: fn_name
+            OpenCLAPILibraryError::StatusCodeError {
+                int_code: 80085,
+                code: Status::InvalidStatusCode { code: 80085, func: fn_name},
+                func: fn_name,
+                    reason: "current status code does not match with any of the valid opencl codes",
             }
         );
     }
