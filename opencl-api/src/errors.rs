@@ -21,49 +21,49 @@ use thiserror::Error;
 
 // All Error Traits here
 pub trait ToLibraryError {
-    fn to_error(self) -> OpenCLAPILibraryError;
+    fn to_error(self) -> OpenCLAPIError;
 }
 
 // Main Library Error
 #[derive(Error, Debug, PartialEq)]
-pub enum OpenCLAPILibraryError {
+pub enum OpenCLAPIError {
     #[error("status code {int_code} error {code:?} at `{func}`, with reason: {reason}")]
     StatusCodeError {
         code: Status,
         int_code: i32,
         func: &'static str,
-        reason: &'static str
+        reason: &'static str,
     },
-    #[error("api error: `{0}`")]
-    APIError(ValidationError),
-    #[error("helper error: `{0}`")]
-    HelperError(HelperError),
+    #[error("object validation error: `{0}`")]
+    ObjectError(ValidationError),
+    #[error("runtime error: `{0}`")]
+    RuntimeError(RuntimeError),
 }
 
 #[derive(Error, Debug, PartialEq)]
 pub enum ValidationError {
-    #[error("invalid bitfield configuration at function `{0}`")]
+    #[error("unsupported bitfield configuration applied at api function `{0}`")]
     InvalidBitfield(&'static str),
-    #[error("invalid property configuration at function `{0}`")]
+    #[error("invalid property configuration found at api function `{0}`")]
     InvalidProperty(&'static str),
 }
 
 impl ToLibraryError for ValidationError {
-    fn to_error(self) -> OpenCLAPILibraryError {
-        OpenCLAPILibraryError::APIError(self)
+    fn to_error(self) -> OpenCLAPIError {
+        OpenCLAPIError::ObjectError(self)
     }
 }
 
 #[derive(Error, Debug, PartialEq)]
-pub enum HelperError {
-    #[error("bytes into string")]
-    BytesIntoString,
-    #[error("null pointer exception at function `{0}`")]
-    NullPointerException(&'static str),
+pub enum RuntimeError {
+    #[error("string conversion error, invalid bytearray returned from opencl native api")]
+    CorruptedByteArray,
+    #[error("null pointer has been returned to rust! this exception occured at function `{0}`")]
+    NullPointer(&'static str),
 }
 
-impl ToLibraryError for HelperError {
-    fn to_error(self) -> OpenCLAPILibraryError {
-        OpenCLAPILibraryError::HelperError(self)
+impl ToLibraryError for RuntimeError {
+    fn to_error(self) -> OpenCLAPIError {
+        OpenCLAPIError::RuntimeError(self)
     }
 }

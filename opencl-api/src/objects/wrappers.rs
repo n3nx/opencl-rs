@@ -62,7 +62,7 @@ impl<T> WrappedMutablePointer<T> {
     pub fn from_ptr(x: *mut T, fn_name: &'static str) -> HelperResult<Self> {
         match ptr::NonNull::new(x) {
             Some(dat) => Ok(Self(dat.as_ptr())),
-            None => Err(HelperError::NullPointerException(fn_name).to_error()),
+            None => Err(RuntimeError::NullPointer(fn_name).to_error()),
         }
     }
     pub fn null() -> Self {

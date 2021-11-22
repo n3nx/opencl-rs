@@ -27,10 +27,10 @@ pub type WrapPtr<T> = WrappedPointer<T>;
 pub type WrapMutPtr<T> = WrappedMutablePointer<T>;
 pub type NullMutPtr = WrappedMutablePointer<c_void>;
 
-pub type APIResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
+pub type APIResult<T> = ::std::result::Result<T, OpenCLAPIError>;
 // pub type StatusCodeResult = ::std::result::Result<cl_int, ValidationError>;
-pub type StatusCodeResult = ::std::result::Result<cl_int, OpenCLAPILibraryError>;
-pub type HelperResult<T> = ::std::result::Result<T, OpenCLAPILibraryError>;
+pub type StatusCodeResult = ::std::result::Result<cl_int, OpenCLAPIError>;
+pub type HelperResult<T> = ::std::result::Result<T, OpenCLAPIError>;
 pub type BitfieldResult<T> = ::std::result::Result<T, ValidationError>;
 pub type PropertyResult<T> = ::std::result::Result<T, ValidationError>;
 

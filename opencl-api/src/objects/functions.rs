@@ -29,12 +29,12 @@ pub fn status_update<T>(
     result: T,
 ) -> APIResult<T> {
     if StatusCode::SUCCESS != status_code {
-        Err(OpenCLAPILibraryError::StatusCodeError {
+        Err(OpenCLAPIError::StatusCodeError {
             code: Status::from(status_code, function_name),
             int_code: status_code,
             func: function_name,
             // TODO: fix placeholder reason with api specific reference url
-            reason: "placeholder"
+            reason: "placeholder",
         })
     } else {
         Ok(result)
@@ -50,7 +50,7 @@ pub fn bytes_into_string(mut bytes: Vec<u8>) -> HelperResult<String> {
     let output = String::from_utf8(bytes).map(|str| String::from(str.trim()));
     match output {
         Ok(x) => Ok(x),
-        Err(_) => Err(HelperError::BytesIntoString.to_error()),
+        Err(_) => Err(RuntimeError::CorruptedByteArray.to_error()),
     }
 }
 
