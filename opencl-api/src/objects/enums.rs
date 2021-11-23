@@ -18,10 +18,10 @@
 
 #![allow(dead_code)]
 use crate::objects::structs::StatusCode;
-use crate::objects::types::StatusCodeResult;
 use crate::objects::wrappers::*;
 use opencl_heads::consts::*;
 use opencl_heads::types::*;
+use std::convert::From;
 
 // Status Codes
 #[repr(i32)]
@@ -93,149 +93,155 @@ pub enum Status {
     InvalidStatusCode(cl_int),
 }
 
-impl Status {
-    pub fn to_status_code(&self) -> StatusCodeResult {
-        let data = match self {
-            Status::Success => StatusCode::SUCCESS,
-            Status::DeviceNotFound => StatusCode::DEVICE_NOT_FOUND,
-            Status::DeviceNotAvailable => StatusCode::DEVICE_NOT_AVAILABLE,
-            Status::CompilerNotAvailable => StatusCode::COMPILER_NOT_AVAILABLE,
-            Status::MemObjectAllocationFailure => StatusCode::MEM_OBJECT_ALLOCATION_FAILURE,
-            Status::OutOfResources => StatusCode::MEM_OBJECT_ALLOCATION_FAILURE,
-            Status::OutOfHostMemory => StatusCode::OUT_OF_HOST_MEMORY,
-            Status::ProfilingInfoNotAvailable => StatusCode::PROFILING_INFO_NOT_AVAILABLE,
-            Status::MemCopyOverlap => StatusCode::MEM_COPY_OVERLAP,
-            Status::ImageFormatMismatch => StatusCode::IMAGE_FORMAT_MISMATCH,
-            Status::ImageFormatNotSupported => StatusCode::IMAGE_FORMAT_NOT_SUPPORTED,
-            Status::BuildProgramFailure => StatusCode::BUILD_PROGRAM_FAILURE,
-            Status::MapFailure => StatusCode::MAP_FAILURE,
-            Status::MisalignedSubBufferOffset => StatusCode::MISALIGNED_SUB_BUFFER_OFFSET,
-            Status::ExecStatusErrorForEventsInWaitList => {
-                CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST
-            }
-            Status::CompileProgramFailure => StatusCode::COMPILE_PROGRAM_FAILURE,
-            Status::LinkerNotAvailable => StatusCode::LINKER_NOT_AVAILABLE,
-            Status::LinkProgramFailure => StatusCode::LINK_PROGRAM_FAILURE,
-            Status::DevicePartitionFailed => StatusCode::DEVICE_PARTITION_FAILED,
-            Status::KernelArgInfoNotAvailable => StatusCode::KERNEL_ARG_INFO_NOT_AVAILABLE,
-            Status::InvalidValue => StatusCode::INVALID_VALUE,
-            Status::InvalidDeviceType => StatusCode::INVALID_DEVICE_TYPE,
-            Status::InvalidPlatform => StatusCode::INVALID_PLATFORM,
-            Status::InvalidDevice => StatusCode::INVALID_DEVICE,
-            Status::InvalidContext => StatusCode::INVALID_CONTEXT,
-            Status::InvalidQueueProperties => StatusCode::INVALID_QUEUE_PROPERTIES,
-            Status::InvalidCommandQueue => StatusCode::INVALID_COMMAND_QUEUE,
-            Status::InvalidHostPtr => StatusCode::INVALID_HOST_PTR,
-            Status::InvalidMemObject => StatusCode::INVALID_MEM_OBJECT,
-            Status::InvalidImageFormatDescriptor => StatusCode::INVALID_IMAGE_FORMAT_DESCRIPTOR,
-            Status::InvalidImageSize => StatusCode::INVALID_IMAGE_SIZE,
-            Status::InvalidSampler => StatusCode::INVALID_SAMPLER,
-            Status::InvalidBinary => StatusCode::INVALID_BINARY,
-            Status::InvalidBuildOptions => StatusCode::INVALID_BUILD_OPTIONS,
-            Status::InvalidProgram => StatusCode::INVALID_PROGRAM,
-            Status::InvalidProgramExecutable => StatusCode::INVALID_PROGRAM_EXECUTABLE,
-            Status::InvalidKernelName => StatusCode::INVALID_KERNEL_NAME,
-            Status::InvalidKernelDefinition => StatusCode::INVALID_KERNEL_DEFINITION,
-            Status::InvalidKernel => StatusCode::INVALID_KERNEL,
-            Status::InvalidArgIndex => StatusCode::INVALID_ARG_INDEX,
-            Status::InvalidArgValue => StatusCode::INVALID_ARG_VALUE,
-            Status::InvalidArgSize => StatusCode::INVALID_ARG_SIZE,
-            Status::InvalidKernelArgs => StatusCode::INVALID_KERNEL_ARGS,
-            Status::InvalidWorkDimension => StatusCode::INVALID_WORK_DIMENSION,
-            Status::InvalidWorkGroupSize => StatusCode::INVALID_WORK_GROUP_SIZE,
-            Status::InvalidWorkItemSize => StatusCode::INVALID_WORK_ITEM_SIZE,
-            Status::InvalidGlobalOffset => StatusCode::INVALID_GLOBAL_OFFSET,
-            Status::InvalidEventWaitList => StatusCode::INVALID_EVENT_WAIT_LIST,
-            Status::InvalidEvent => StatusCode::INVALID_EVENT,
-            Status::InvalidOperation => StatusCode::INVALID_OPERATION,
-            Status::InvalidGLObject => StatusCode::INVALID_GL_OBJECT,
-            Status::InvalidBufferSize => StatusCode::INVALID_BUFFER_SIZE,
-            Status::InvalidMIPLevel => StatusCode::INVALID_MIP_LEVEL,
-            Status::InvalidGlobalWorkSize => StatusCode::INVALID_GLOBAL_WORK_SIZE,
-            Status::InvalidProperty => StatusCode::INVALID_PROPERTY,
-            Status::InvalidImageDescriptor => StatusCode::INVALID_IMAGE_DESCRIPTOR,
-            Status::InvalidCompilerOptions => StatusCode::INVALID_COMPILER_OPTIONS,
-            Status::InvalidLinkerOptions => StatusCode::INVALID_LINKER_OPTIONS,
-            Status::InvalidDevicePartitionCount => StatusCode::INVALID_DEVICE_PARTITION_COUNT,
-            Status::InvalidPipeSize => StatusCode::INVALID_PIPE_SIZE,
-            Status::InvalidDeviceQueue => StatusCode::INVALID_DEVICE_QUEUE,
-            Status::InvalidSpecId => StatusCode::INVALID_SPEC_ID,
-            Status::MaxSizeRestrictionExceeded => StatusCode::MAX_SIZE_RESTRICTION_EXCEEDED,
-            Status::InvalidStatusCode(x) => *x,
-        };
-        Ok(data)
-    }
-
-    /// Generates Status from Status Code;
-    pub fn from(status_code: cl_int) -> Status {
+/// Generates Status from Status Code;
+impl From<cl_int> for Status {
+    fn from(status_code: cl_int) -> Self {
+        type Sc = StatusCode;
+        type S = Status;
         match status_code {
-            StatusCode::SUCCESS => Status::Success,
-            StatusCode::DEVICE_NOT_FOUND => Status::DeviceNotFound,
-            StatusCode::DEVICE_NOT_AVAILABLE => Status::DeviceNotAvailable,
-            StatusCode::COMPILER_NOT_AVAILABLE => Status::CompilerNotAvailable,
-            StatusCode::MEM_OBJECT_ALLOCATION_FAILURE => Status::MemObjectAllocationFailure,
-            StatusCode::OUT_OF_RESOURCES => Status::OutOfResources,
-            StatusCode::OUT_OF_HOST_MEMORY => Status::OutOfHostMemory,
-            StatusCode::PROFILING_INFO_NOT_AVAILABLE => Status::ProfilingInfoNotAvailable,
-            StatusCode::MEM_COPY_OVERLAP => Status::MemCopyOverlap,
-            StatusCode::IMAGE_FORMAT_MISMATCH => Status::ImageFormatMismatch,
-            StatusCode::IMAGE_FORMAT_NOT_SUPPORTED => Status::ImageFormatNotSupported,
-            StatusCode::BUILD_PROGRAM_FAILURE => Status::BuildProgramFailure,
-            StatusCode::MAP_FAILURE => Status::MapFailure,
-            StatusCode::MISALIGNED_SUB_BUFFER_OFFSET => Status::MisalignedSubBufferOffset,
-            StatusCode::EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST => {
-                Status::ExecStatusErrorForEventsInWaitList
-            }
-            StatusCode::COMPILE_PROGRAM_FAILURE => Status::CompileProgramFailure,
-            StatusCode::LINKER_NOT_AVAILABLE => Status::LinkerNotAvailable,
-            StatusCode::LINK_PROGRAM_FAILURE => Status::LinkProgramFailure,
-            StatusCode::DEVICE_PARTITION_FAILED => Status::DevicePartitionFailed,
-            StatusCode::KERNEL_ARG_INFO_NOT_AVAILABLE => Status::KernelArgInfoNotAvailable,
-            StatusCode::INVALID_VALUE => Status::InvalidValue,
-            StatusCode::INVALID_DEVICE_TYPE => Status::InvalidDeviceType,
-            StatusCode::INVALID_PLATFORM => Status::InvalidPlatform,
-            StatusCode::INVALID_DEVICE => Status::InvalidDevice,
-            StatusCode::INVALID_CONTEXT => Status::InvalidContext,
-            StatusCode::INVALID_QUEUE_PROPERTIES => Status::InvalidQueueProperties,
-            StatusCode::INVALID_COMMAND_QUEUE => Status::InvalidCommandQueue,
-            StatusCode::INVALID_HOST_PTR => Status::InvalidHostPtr,
-            StatusCode::INVALID_MEM_OBJECT => Status::InvalidMemObject,
-            StatusCode::INVALID_IMAGE_FORMAT_DESCRIPTOR => Status::InvalidImageFormatDescriptor,
-            StatusCode::INVALID_IMAGE_SIZE => Status::InvalidImageSize,
-            StatusCode::INVALID_SAMPLER => Status::InvalidSampler,
-            StatusCode::INVALID_BINARY => Status::InvalidBinary,
-            StatusCode::INVALID_BUILD_OPTIONS => Status::InvalidBuildOptions,
-            StatusCode::INVALID_PROGRAM => Status::InvalidProgram,
-            StatusCode::INVALID_PROGRAM_EXECUTABLE => Status::InvalidProgramExecutable,
-            StatusCode::INVALID_KERNEL_NAME => Status::InvalidKernelName,
-            StatusCode::INVALID_KERNEL_DEFINITION => Status::InvalidKernelDefinition,
-            StatusCode::INVALID_KERNEL => Status::InvalidKernel,
-            StatusCode::INVALID_ARG_INDEX => Status::InvalidArgIndex,
-            StatusCode::INVALID_ARG_VALUE => Status::InvalidArgValue,
-            StatusCode::INVALID_ARG_SIZE => Status::InvalidArgSize,
-            StatusCode::INVALID_KERNEL_ARGS => Status::InvalidKernelArgs,
-            StatusCode::INVALID_WORK_DIMENSION => Status::InvalidWorkDimension,
-            StatusCode::INVALID_WORK_GROUP_SIZE => Status::InvalidWorkGroupSize,
-            StatusCode::INVALID_WORK_ITEM_SIZE => Status::InvalidWorkItemSize,
-            StatusCode::INVALID_GLOBAL_OFFSET => Status::InvalidGlobalOffset,
-            StatusCode::INVALID_EVENT_WAIT_LIST => Status::InvalidEventWaitList,
-            StatusCode::INVALID_EVENT => Status::InvalidEvent,
-            StatusCode::INVALID_OPERATION => Status::InvalidOperation,
-            StatusCode::INVALID_GL_OBJECT => Status::InvalidGLObject,
-            StatusCode::INVALID_BUFFER_SIZE => Status::InvalidBufferSize,
-            StatusCode::INVALID_PROPERTY => Status::InvalidProperty,
-            StatusCode::INVALID_IMAGE_DESCRIPTOR => Status::InvalidImageDescriptor,
-            StatusCode::INVALID_COMPILER_OPTIONS => Status::InvalidCompilerOptions,
-            StatusCode::INVALID_LINKER_OPTIONS => Status::InvalidLinkerOptions,
-            StatusCode::INVALID_DEVICE_PARTITION_COUNT => Status::InvalidDevicePartitionCount,
-            StatusCode::INVALID_PIPE_SIZE => Status::InvalidPipeSize,
-            StatusCode::INVALID_DEVICE_QUEUE => Status::InvalidDeviceQueue,
-            StatusCode::INVALID_SPEC_ID => Status::InvalidSpecId,
-            StatusCode::MAX_SIZE_RESTRICTION_EXCEEDED => Status::MaxSizeRestrictionExceeded,
-            x => Status::InvalidStatusCode(x)
+            Sc::SUCCESS => S::Success,
+            Sc::DEVICE_NOT_FOUND => S::DeviceNotFound,
+            Sc::DEVICE_NOT_AVAILABLE => S::DeviceNotAvailable,
+            Sc::COMPILER_NOT_AVAILABLE => S::CompilerNotAvailable,
+            Sc::MEM_OBJECT_ALLOCATION_FAILURE => S::MemObjectAllocationFailure,
+            Sc::OUT_OF_RESOURCES => S::OutOfResources,
+            Sc::OUT_OF_HOST_MEMORY => S::OutOfHostMemory,
+            Sc::PROFILING_INFO_NOT_AVAILABLE => S::ProfilingInfoNotAvailable,
+            Sc::MEM_COPY_OVERLAP => S::MemCopyOverlap,
+            Sc::IMAGE_FORMAT_MISMATCH => S::ImageFormatMismatch,
+            Sc::IMAGE_FORMAT_NOT_SUPPORTED => S::ImageFormatNotSupported,
+            Sc::BUILD_PROGRAM_FAILURE => S::BuildProgramFailure,
+            Sc::MAP_FAILURE => S::MapFailure,
+            Sc::MISALIGNED_SUB_BUFFER_OFFSET => S::MisalignedSubBufferOffset,
+            Sc::EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST => S::ExecStatusErrorForEventsInWaitList,
+            Sc::COMPILE_PROGRAM_FAILURE => S::CompileProgramFailure,
+            Sc::LINKER_NOT_AVAILABLE => S::LinkerNotAvailable,
+            Sc::LINK_PROGRAM_FAILURE => S::LinkProgramFailure,
+            Sc::DEVICE_PARTITION_FAILED => S::DevicePartitionFailed,
+            Sc::KERNEL_ARG_INFO_NOT_AVAILABLE => S::KernelArgInfoNotAvailable,
+            Sc::INVALID_VALUE => S::InvalidValue,
+            Sc::INVALID_DEVICE_TYPE => S::InvalidDeviceType,
+            Sc::INVALID_PLATFORM => S::InvalidPlatform,
+            Sc::INVALID_DEVICE => S::InvalidDevice,
+            Sc::INVALID_CONTEXT => S::InvalidContext,
+            Sc::INVALID_QUEUE_PROPERTIES => S::InvalidQueueProperties,
+            Sc::INVALID_COMMAND_QUEUE => S::InvalidCommandQueue,
+            Sc::INVALID_HOST_PTR => S::InvalidHostPtr,
+            Sc::INVALID_MEM_OBJECT => S::InvalidMemObject,
+            Sc::INVALID_IMAGE_FORMAT_DESCRIPTOR => S::InvalidImageFormatDescriptor,
+            Sc::INVALID_IMAGE_SIZE => S::InvalidImageSize,
+            Sc::INVALID_SAMPLER => S::InvalidSampler,
+            Sc::INVALID_BINARY => S::InvalidBinary,
+            Sc::INVALID_BUILD_OPTIONS => S::InvalidBuildOptions,
+            Sc::INVALID_PROGRAM => S::InvalidProgram,
+            Sc::INVALID_PROGRAM_EXECUTABLE => S::InvalidProgramExecutable,
+            Sc::INVALID_KERNEL_NAME => S::InvalidKernelName,
+            Sc::INVALID_KERNEL_DEFINITION => S::InvalidKernelDefinition,
+            Sc::INVALID_KERNEL => S::InvalidKernel,
+            Sc::INVALID_ARG_INDEX => S::InvalidArgIndex,
+            Sc::INVALID_ARG_VALUE => S::InvalidArgValue,
+            Sc::INVALID_ARG_SIZE => S::InvalidArgSize,
+            Sc::INVALID_KERNEL_ARGS => S::InvalidKernelArgs,
+            Sc::INVALID_WORK_DIMENSION => S::InvalidWorkDimension,
+            Sc::INVALID_WORK_GROUP_SIZE => S::InvalidWorkGroupSize,
+            Sc::INVALID_WORK_ITEM_SIZE => S::InvalidWorkItemSize,
+            Sc::INVALID_GLOBAL_OFFSET => S::InvalidGlobalOffset,
+            Sc::INVALID_EVENT_WAIT_LIST => S::InvalidEventWaitList,
+            Sc::INVALID_EVENT => S::InvalidEvent,
+            Sc::INVALID_OPERATION => S::InvalidOperation,
+            Sc::INVALID_GL_OBJECT => S::InvalidGLObject,
+            Sc::INVALID_BUFFER_SIZE => S::InvalidBufferSize,
+            Sc::INVALID_PROPERTY => S::InvalidProperty,
+            Sc::INVALID_IMAGE_DESCRIPTOR => S::InvalidImageDescriptor,
+            Sc::INVALID_COMPILER_OPTIONS => S::InvalidCompilerOptions,
+            Sc::INVALID_LINKER_OPTIONS => S::InvalidLinkerOptions,
+            Sc::INVALID_DEVICE_PARTITION_COUNT => S::InvalidDevicePartitionCount,
+            Sc::INVALID_PIPE_SIZE => S::InvalidPipeSize,
+            Sc::INVALID_DEVICE_QUEUE => S::InvalidDeviceQueue,
+            Sc::INVALID_SPEC_ID => S::InvalidSpecId,
+            Sc::MAX_SIZE_RESTRICTION_EXCEEDED => S::MaxSizeRestrictionExceeded,
+            x => S::InvalidStatusCode(x),
         }
     }
+}
 
+/// Retrieves Status Code from Status
+impl From<Status> for cl_int {
+    fn from(status: Status) -> cl_int {
+        type Sc = StatusCode;
+        type S = Status;
+        match status {
+            S::Success => Sc::SUCCESS,
+            S::DeviceNotFound => Sc::DEVICE_NOT_FOUND,
+            S::DeviceNotAvailable => Sc::DEVICE_NOT_AVAILABLE,
+            S::CompilerNotAvailable => Sc::COMPILER_NOT_AVAILABLE,
+            S::MemObjectAllocationFailure => Sc::MEM_OBJECT_ALLOCATION_FAILURE,
+            S::OutOfResources => Sc::MEM_OBJECT_ALLOCATION_FAILURE,
+            S::OutOfHostMemory => Sc::OUT_OF_HOST_MEMORY,
+            S::ProfilingInfoNotAvailable => Sc::PROFILING_INFO_NOT_AVAILABLE,
+            S::MemCopyOverlap => Sc::MEM_COPY_OVERLAP,
+            S::ImageFormatMismatch => Sc::IMAGE_FORMAT_MISMATCH,
+            S::ImageFormatNotSupported => Sc::IMAGE_FORMAT_NOT_SUPPORTED,
+            S::BuildProgramFailure => Sc::BUILD_PROGRAM_FAILURE,
+            S::MapFailure => Sc::MAP_FAILURE,
+            S::MisalignedSubBufferOffset => Sc::MISALIGNED_SUB_BUFFER_OFFSET,
+            S::ExecStatusErrorForEventsInWaitList => {
+                CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST
+            }
+            S::CompileProgramFailure => Sc::COMPILE_PROGRAM_FAILURE,
+            S::LinkerNotAvailable => Sc::LINKER_NOT_AVAILABLE,
+            S::LinkProgramFailure => Sc::LINK_PROGRAM_FAILURE,
+            S::DevicePartitionFailed => Sc::DEVICE_PARTITION_FAILED,
+            S::KernelArgInfoNotAvailable => Sc::KERNEL_ARG_INFO_NOT_AVAILABLE,
+            S::InvalidValue => Sc::INVALID_VALUE,
+            S::InvalidDeviceType => Sc::INVALID_DEVICE_TYPE,
+            S::InvalidPlatform => Sc::INVALID_PLATFORM,
+            S::InvalidDevice => Sc::INVALID_DEVICE,
+            S::InvalidContext => Sc::INVALID_CONTEXT,
+            S::InvalidQueueProperties => Sc::INVALID_QUEUE_PROPERTIES,
+            S::InvalidCommandQueue => Sc::INVALID_COMMAND_QUEUE,
+            S::InvalidHostPtr => Sc::INVALID_HOST_PTR,
+            S::InvalidMemObject => Sc::INVALID_MEM_OBJECT,
+            S::InvalidImageFormatDescriptor => Sc::INVALID_IMAGE_FORMAT_DESCRIPTOR,
+            S::InvalidImageSize => Sc::INVALID_IMAGE_SIZE,
+            S::InvalidSampler => Sc::INVALID_SAMPLER,
+            S::InvalidBinary => Sc::INVALID_BINARY,
+            S::InvalidBuildOptions => Sc::INVALID_BUILD_OPTIONS,
+            S::InvalidProgram => Sc::INVALID_PROGRAM,
+            S::InvalidProgramExecutable => Sc::INVALID_PROGRAM_EXECUTABLE,
+            S::InvalidKernelName => Sc::INVALID_KERNEL_NAME,
+            S::InvalidKernelDefinition => Sc::INVALID_KERNEL_DEFINITION,
+            S::InvalidKernel => Sc::INVALID_KERNEL,
+            S::InvalidArgIndex => Sc::INVALID_ARG_INDEX,
+            S::InvalidArgValue => Sc::INVALID_ARG_VALUE,
+            S::InvalidArgSize => Sc::INVALID_ARG_SIZE,
+            S::InvalidKernelArgs => Sc::INVALID_KERNEL_ARGS,
+            S::InvalidWorkDimension => Sc::INVALID_WORK_DIMENSION,
+            S::InvalidWorkGroupSize => Sc::INVALID_WORK_GROUP_SIZE,
+            S::InvalidWorkItemSize => Sc::INVALID_WORK_ITEM_SIZE,
+            S::InvalidGlobalOffset => Sc::INVALID_GLOBAL_OFFSET,
+            S::InvalidEventWaitList => Sc::INVALID_EVENT_WAIT_LIST,
+            S::InvalidEvent => Sc::INVALID_EVENT,
+            S::InvalidOperation => Sc::INVALID_OPERATION,
+            S::InvalidGLObject => Sc::INVALID_GL_OBJECT,
+            S::InvalidBufferSize => Sc::INVALID_BUFFER_SIZE,
+            S::InvalidMIPLevel => Sc::INVALID_MIP_LEVEL,
+            S::InvalidGlobalWorkSize => Sc::INVALID_GLOBAL_WORK_SIZE,
+            S::InvalidProperty => Sc::INVALID_PROPERTY,
+            S::InvalidImageDescriptor => Sc::INVALID_IMAGE_DESCRIPTOR,
+            S::InvalidCompilerOptions => Sc::INVALID_COMPILER_OPTIONS,
+            S::InvalidLinkerOptions => Sc::INVALID_LINKER_OPTIONS,
+            S::InvalidDevicePartitionCount => Sc::INVALID_DEVICE_PARTITION_COUNT,
+            S::InvalidPipeSize => Sc::INVALID_PIPE_SIZE,
+            S::InvalidDeviceQueue => Sc::INVALID_DEVICE_QUEUE,
+            S::InvalidSpecId => Sc::INVALID_SPEC_ID,
+            S::MaxSizeRestrictionExceeded => Sc::MAX_SIZE_RESTRICTION_EXCEEDED,
+            S::InvalidStatusCode(x) => x,
+        }
+    }
+}
+
+impl Status {
     pub fn reason(&self) -> &'static str {
         type S = Status;
         match self {
@@ -434,48 +440,21 @@ mod tests {
     #[test]
     fn test_status_code_to_status() {
         let status_code = -69;
-        // let fn_name = "test_status_code_to_status";
         let status = Status::from(status_code);
         assert_eq!(Status::InvalidPipeSize, status);
     }
+
     #[test]
     fn test_status_to_status_code() {
-        let status = Status::Success;
-        let status_code = status.to_status_code().unwrap();
-        assert_eq!(status_code, 0)
+        let status = Status::InvalidPipeSize;
+        let status_code: cl_int = status.into();
+        assert_eq!(status_code, -69)
     }
-    // #[test]
-    // fn test_status_from_status_code() {
-    //     let fn_name = "test_status_from_status_code";
-    //     let status_code = -9999;
-    //     let status = Status::from(status_code, fn_name);
-    //     assert_eq!(
-    //         status,
-    //         Status::InvalidStatusCode {
-    //             code: status_code,
-    //             func: fn_name
-    //         }
-    //     )
-    // }
-    // #[test]
-    // fn test_undefined_error_invalid_status_code() {
-    //     let fn_name = "test_undefined_error_invalid_status_code";
-    //     let status = Status::InvalidStatusCode {
-    //         code: 80085,
-    //         func: fn_name,
-    //     };
-    //     let status_code = status.to_status_code().expect_err("FUNDS ARE SAIFU");
-    //     assert_eq!(
-    //         status_code,
-    //         OpenCLAPIError::StatusCodeError {
-    //             int_code: 80085,
-    //             code: Status::InvalidStatusCode {
-    //                 code: 80085,
-    //                 func: fn_name
-    //             },
-    //             func: fn_name,
-    //             reason: "current status code does not match with any of the valid opencl codes",
-    //         }
-    //     );
-    // }
+
+    #[test]
+    fn test_invalid_status_to_code() {
+        let status = Status::InvalidStatusCode(80085);
+        let status_code: cl_int = status.into();
+        assert_eq!(status_code, 80085);
+    }
 }
