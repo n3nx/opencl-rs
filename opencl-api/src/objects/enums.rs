@@ -17,7 +17,6 @@
 */
 
 #![allow(dead_code)]
-use crate::errors::OpenCLAPIError;
 use crate::objects::structs::StatusCode;
 use crate::objects::types::StatusCodeResult;
 use crate::objects::wrappers::*;
@@ -91,7 +90,7 @@ pub enum Status {
     InvalidDeviceQueue,
     InvalidSpecId,
     MaxSizeRestrictionExceeded,
-    InvalidStatusCode { code: i32, func: &'static str },
+    InvalidStatusCode(cl_int),
 }
 
 impl Status {
@@ -162,26 +161,13 @@ impl Status {
             Status::InvalidDeviceQueue => StatusCode::INVALID_DEVICE_QUEUE,
             Status::InvalidSpecId => StatusCode::INVALID_SPEC_ID,
             Status::MaxSizeRestrictionExceeded => StatusCode::MAX_SIZE_RESTRICTION_EXCEEDED,
-            Status::InvalidStatusCode {
-                code: x,
-                func: fn_name,
-            } => {
-                return Err(OpenCLAPIError::StatusCodeError {
-                    int_code: *x,
-                    func: fn_name,
-                    reason: "current status code does not match with any of the valid opencl codes",
-                    code: Status::InvalidStatusCode {
-                        code: *x,
-                        func: fn_name,
-                    },
-                });
-            }
+            Status::InvalidStatusCode(x) => *x,
         };
         Ok(data)
     }
 
     /// Generates Status from Status Code;
-    pub fn from(status_code: cl_int, function_name: &'static str) -> Status {
+    pub fn from(status_code: cl_int) -> Status {
         match status_code {
             StatusCode::SUCCESS => Status::Success,
             StatusCode::DEVICE_NOT_FOUND => Status::DeviceNotFound,
@@ -246,10 +232,77 @@ impl Status {
             StatusCode::INVALID_DEVICE_QUEUE => Status::InvalidDeviceQueue,
             StatusCode::INVALID_SPEC_ID => Status::InvalidSpecId,
             StatusCode::MAX_SIZE_RESTRICTION_EXCEEDED => Status::MaxSizeRestrictionExceeded,
-            x => Status::InvalidStatusCode {
-                code: x,
-                func: function_name,
-            },
+            x => Status::InvalidStatusCode(x)
+        }
+    }
+
+    pub fn reason(&self) -> &'static str {
+        type S = Status;
+        match self {
+            S::Success => "[cl_success] api executed successfully, without errors",
+            S::BuildProgramFailure => "[cl_build_program_failure] function `clBuildProgram` failed to build the specified program",
+            S::CompileProgramFailure => "[cl_compile_program_failure] function `clCompileProgram` failed to compile the specified program",
+            S::CompilerNotAvailable => "[cl_compiler_not_available] compiling or building a program from source or IL when `CL_DEVICE_COMPILER_AVAILABLE` is `CL_FALSE`",
+            S::DeviceNotFound => "[cl_device_not_found] no devices were found that match the specified device type",
+            S::DeviceNotAvailable => "[cl_device_not_available] no devices were found that match the specified device type",
+            S::DevicePartitionFailed => "[cl_device_partition_failed] device partitioning is supported but the device could not be further partitioned",
+            S::ExecStatusErrorForEventsInWaitList => "[cl_exec_status_error_for_events_in_wait_list] any APIs being blocked when an event in the event wait list has a negative value, indicating it is in an error state",
+            S::ImageFormatMismatch => "[cl_image_format_mismatch] attempting to copy images that do not use the same image format",
+            S::ImageFormatNotSupported => "[cl_image_format_not_supported] attempting to create or use an image format that is not supported",
+            S::InvalidArgIndex => "[cl_invalid_arg_index] attempting to get or set a kernel argument using an invalid index for the specified kernel",
+            S::InvalidArgSize => "[cl_invalid_arg_size] the specified size of a kernel argument does not match the size of the kernel argument",
+            S::InvalidArgValue => "[cl_invalid_arg_value] attempting to set a kernel argument that is not valid",
+            S::InvalidBinary => "[cl_invalid_binary] a program binary is not valid for a device",
+            S::InvalidBufferSize => "[cl_invalid_buffer_size] attempting to create a buffer or a sub-buffer with an invalid size",
+            S::InvalidBuildOptions => "[cl_invalid_build_options] build options passed to function `clBuildProgram` are not valid",
+            S::InvalidCommandQueue => "[cl_invalid_command_queue] the specified command queue is not a valid command queue",
+            S::InvalidCompilerOptions => "[cl_invalid_compiler_options] compiler options passed to function `clCompileProgram` are not valid",
+            S::InvalidContext => "[cl_invalid_context] a specified context is not a valid context, or when mixing objects from multiple contexts",
+            S::InvalidDevice => "[cl_invalid_device] a specified device is not valid",
+            S::InvalidDevicePartitionCount => "[cl_invalid_device_partition_count] the requested device partitioning using `CL_DEVICE_PARTITION_BY_COUNTS` is not valid",
+            S::InvalidDeviceQueue => "[cl_invalid_device_queue] setting a device queue kernel argument to a value that is not a valid device command queue",
+            S::InvalidDeviceType => "[cl_invalid_device_type] the requested device type is not a valid value",
+            S::InvalidEvent => "[cl_invalid_event] a specified event object is not a valid event object",
+            S::InvalidEventWaitList => "[cl_invalid_event_wait_list] the specified event wait list or number of events in the wait list is not valid",
+            S::InvalidGlobalOffset => "[cl_invalid_global_offset] the specified global offset and global work size exceeds the limits of the device",
+            S::InvalidGlobalWorkSize => "[cl_invalid_global_work_size] the specified global work size exceeds the limits of the device",
+            S::InvalidHostPtr => "[cl_invalid_host_ptr] the specified host pointer is not valid for the specified flags",
+            S::InvalidImageDescriptor => "[cl_invalid_image_descriptor] the specified image descriptor is `NULL` or specifies invalid values",
+            S::InvalidImageFormatDescriptor => "[cl_invalid_image_format_descriptor] the specified image format descriptor is `NULL` or specifies invalid value",
+            S::InvalidImageSize => "[cl_invalid_image_size] the specified image dimensions exceed the maximum dimensions for a device or all devices in a context",
+            S::InvalidKernel => "[cl_invalid_kernel] the specified kernel is not a valid kernel",
+            S::InvalidKernelArgs => "[cl_invalid_kernel_args] enqueing a kernel when some kernel arguments have not been set or are invalid",
+            S::InvalidKernelDefinition => "[cl_invalid_kernel_definition] creating a kernel for multiple devices where the number of kernel arguments or kernel argument types are not the same for all devices",
+            S::InvalidKernelName => "[cl_invalid_kernel_name] creating a kernel when no kernel with the specified name exists in the program object",
+            S::InvalidLinkerOptions => "[cl_invalid_linker_options] build options passed to `clLinkProgram` are not valid",
+            S::InvalidMemObject => "[cl_invalid_mem_object] a specified memory object is not a valid memory object",
+            S::InvalidOperation => "[cl_invalid_operation] generic error code, the requested operation is not a valid operation",
+            S::InvalidPipeSize => "[cl_invalid_pipe_size] attempting to create a pipe with an invalid packet size or number of packets",
+            S::InvalidPlatform => "[cl_invalid_platform] the specified platform is not a valid platform",
+            S::InvalidProgram => "[cl_invalid_program] a specified program is not a valid program object",
+            S::InvalidProgramExecutable => "[cl_invalid_program_executable] the specified program is valid but has not been successfully built",
+            S::InvalidProperty => "[cl_invalid_property] a specified property name is invalid, when the value for a property name is invalid, or when the same property name is specified more than once",
+            S::InvalidQueueProperties => "[cl_invalid_queue_properties] specified queue properties are valid but are not supported by the device",
+            S::InvalidSampler => "[cl_invalid_sampler] a specified sampler is not a valid sampler object",
+            S::InvalidSpecId => "[cl_invalid_spec_id] the specified specialization constant ID is not valid for the specified program",
+            S::InvalidValue => "[cl_invalid_value] generic error code, specified value is not a valid value",
+            S::InvalidWorkDimension => "[cl_invalid_work_dimension] function `clEnqueueNDRangeKernel` when the specified work dimension is not valid",
+            S::InvalidWorkGroupSize => "[cl_invalid_work_group_size] function `clEnqueueNDRangeKernel` when the specified total work-group size is not valid for the specified kernel or device",
+            S::InvalidWorkItemSize => "[cl_invalid_work_item_size] function `clEnqueueNDRangeKernel` when the specified work-group size in one dimension is not valid for the device",
+            S::KernelArgInfoNotAvailable => "[cl_kernel_arg_info_not_available] function `clGetKernelArgInfo` when kernel argument information is not available for the specified kernel",
+            S::LinkProgramFailure => "[cl_link_program_failure] function `clLinkProgram` when there is a failure to link the specified binaries or libraries",
+            S::LinkerNotAvailable => "[cl_linker_not_available] function `clLinkProgram` when `CL_DEVICE_LINKER_AVAILABLE` is `CL_FALSE`",
+            S::MapFailure => "[cl_map_failure] there is a failure to map the specified region into the host address space",
+            S::MemCopyOverlap => "[cl_mem_copy_overlap] copying from one region of a memory object to another where the source and destination regions overlap",
+            S::MemObjectAllocationFailure => "[cl_mem_object_allocation_failure] there is a failure to allocate memory for a memory object",
+            S::MisalignedSubBufferOffset => "[cl_misaligned_sub_buffer_offset] a sub-buffer object is created or used that is not aligned to `CL_DEVICE_MEM_BASE_ADDR_ALIGN` for the device",
+            S::OutOfHostMemory => "[cl_out_of_host_memory] generic error code, memory could not be allocated on the host",
+            S::OutOfResources => "[cl_out_of_resources] generic error code, resources could not be allocated on the device",
+            S::MaxSizeRestrictionExceeded => "[cl_max_size_restriction_exceeded] the size of the specified kernel argument value exceeds the maximum size defined for the kernel argument",
+            S::ProfilingInfoNotAvailable => "[cl_profiling_info_not_available] function `clGetEventProfilingInfo` when the command associated with the specified event was not enqueued into a command queue with `CL_QUEUE_PROFILING_ENABLE`",
+            S::InvalidGLObject => "placeholder",
+            S::InvalidMIPLevel => "placeholder",
+            S::InvalidStatusCode(_) => "current status code does not match with any of the valid opencl codes"
         }
     }
 }
@@ -381,8 +434,8 @@ mod tests {
     #[test]
     fn test_status_code_to_status() {
         let status_code = -69;
-        let fn_name = "test_status_code_to_status";
-        let status = Status::from(status_code, fn_name);
+        // let fn_name = "test_status_code_to_status";
+        let status = Status::from(status_code);
         assert_eq!(Status::InvalidPipeSize, status);
     }
     #[test]
@@ -391,38 +444,38 @@ mod tests {
         let status_code = status.to_status_code().unwrap();
         assert_eq!(status_code, 0)
     }
-    #[test]
-    fn test_status_from_status_code() {
-        let fn_name = "test_status_from_status_code";
-        let status_code = -9999;
-        let status = Status::from(status_code, fn_name);
-        assert_eq!(
-            status,
-            Status::InvalidStatusCode {
-                code: status_code,
-                func: fn_name
-            }
-        )
-    }
-    #[test]
-    fn test_undefined_error_invalid_status_code() {
-        let fn_name = "test_undefined_error_invalid_status_code";
-        let status = Status::InvalidStatusCode {
-            code: 80085,
-            func: fn_name,
-        };
-        let status_code = status.to_status_code().expect_err("FUNDS ARE SAIFU");
-        assert_eq!(
-            status_code,
-            OpenCLAPIError::StatusCodeError {
-                int_code: 80085,
-                code: Status::InvalidStatusCode {
-                    code: 80085,
-                    func: fn_name
-                },
-                func: fn_name,
-                reason: "current status code does not match with any of the valid opencl codes",
-            }
-        );
-    }
+    // #[test]
+    // fn test_status_from_status_code() {
+    //     let fn_name = "test_status_from_status_code";
+    //     let status_code = -9999;
+    //     let status = Status::from(status_code, fn_name);
+    //     assert_eq!(
+    //         status,
+    //         Status::InvalidStatusCode {
+    //             code: status_code,
+    //             func: fn_name
+    //         }
+    //     )
+    // }
+    // #[test]
+    // fn test_undefined_error_invalid_status_code() {
+    //     let fn_name = "test_undefined_error_invalid_status_code";
+    //     let status = Status::InvalidStatusCode {
+    //         code: 80085,
+    //         func: fn_name,
+    //     };
+    //     let status_code = status.to_status_code().expect_err("FUNDS ARE SAIFU");
+    //     assert_eq!(
+    //         status_code,
+    //         OpenCLAPIError::StatusCodeError {
+    //             int_code: 80085,
+    //             code: Status::InvalidStatusCode {
+    //                 code: 80085,
+    //                 func: fn_name
+    //             },
+    //             func: fn_name,
+    //             reason: "current status code does not match with any of the valid opencl codes",
+    //         }
+    //     );
+    // }
 }

@@ -28,17 +28,28 @@ pub fn status_update<T>(
     function_name: &'static str,
     result: T,
 ) -> APIResult<T> {
+    let status_details = status_reason(status_code, function_name);
     if StatusCode::SUCCESS != status_code {
         Err(OpenCLAPIError::StatusCodeError {
-            code: Status::from(status_code, function_name),
+            code: Status::from(status_code),
             int_code: status_code,
             func: function_name,
-            // TODO: fix placeholder reason with api specific reference url
-            reason: "placeholder",
+            reason: status_details,
         })
     } else {
         Ok(result)
     }
+}
+
+fn status_reason(status_code: cl_int, function_name: &'static str) -> String {
+    let base_url =
+        "https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#";
+    format!(
+        "{}. please refer to api docs for more details about this error: {}{}",
+        Status::from(status_code).reason(),
+        base_url,
+        function_name
+    )
 }
 
 /// Converts a byte Vec into a string, removing the trailing null byte if it

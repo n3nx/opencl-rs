@@ -27,12 +27,12 @@ pub trait ToLibraryError {
 // Main Library Error
 #[derive(Error, Debug, PartialEq)]
 pub enum OpenCLAPIError {
-    #[error("status code {int_code} error {code:?} at `{func}`, with reason: {reason}")]
+    #[error("status error {code:?}, code {int_code} at `{func}`, reason: {reason}")]
     StatusCodeError {
         code: Status,
         int_code: i32,
         func: &'static str,
-        reason: &'static str,
+        reason: String,
     },
     #[error("object validation error: `{0}`")]
     ObjectError(ValidationError),
