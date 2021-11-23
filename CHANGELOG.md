@@ -5,9 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2021-11-23
+
+[0.1.2]: ../../../compare/1cba7adf28d4fbe1cceba5f9724bd75377283b92...cde5937fd245c908a7993711933c3d45001fcd77
+
+### Bug Fixes
+
+- *opencl-api:* Add error code description for every api function [#7] ([4febe34](4febe345a3b2923412d797d08ebb9a6d1570b937))
+- *opencl-api:* Impl `From` trait to convert `Status` and `StatusCode` ([cde5937](cde5937fd245c908a7993711933c3d45001fcd77))
+
+### Improvements
+
+- *opencl-api:* Improve status code errors to be more descriptive ([9ebe1f6](9ebe1f6a692e4bf89c82d23924d4ddb545444e82))
+- *opencl-api:* Update error names and description to be more specific ([5b5239f](5b5239f3d35c730a3e3845ae76742b36fd4d85a0))
+
+<!-- CHANGELOG SPLIT MARKER -->
 ## [0.1.1] - 2021-11-21
 
-[0.1.1]: ../../../compare/aaba02614cd435ab668e6961a3b53fa3ee83ab3a...fb5fed5d8d783793ee5f1af7db76cd3b3806349a
+[0.1.1]: ../../../compare/aaba02614cd435ab668e6961a3b53fa3ee83ab3a...1cba7adf28d4fbe1cceba5f9724bd75377283b92
 
 ### Bug Fixes
 
